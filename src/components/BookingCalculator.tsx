@@ -1117,12 +1117,12 @@ export default function BookingCalculator({ initialPickup = "", initialDropoff =
     const price = distanceResult.prices[selectedVehicle];
 
     const payload = {
-      pickup: distanceResult.pickupDisplay,
-      dropoff: distanceResult.dropoffDisplay,
+      pickup: distanceResult.pickupDisplay || pickupInput,
+      dropoff: distanceResult.dropoffDisplay || dropoffInput,
       pickupCoords: { lat: distanceResult.pickupLat, lng: distanceResult.pickupLng },
       dropoffCoords: { lat: distanceResult.dropoffLat, lng: distanceResult.dropoffLng },
-      distance: distanceResult.distanceMiles,
-      duration: distanceResult.timeMinutes,
+      distance: distanceResult.distanceMiles ?? (distanceResult as any).distance,
+      duration: distanceResult.timeMinutes ?? (distanceResult as any).duration,
       stops: stops.map(s => ({ address: s.address, duration: s.duration, waiting: s.waiting, lat: s.lat, lng: s.lng })),
       waitingTime: stops.reduce((acc, s) => acc + (Number(s.waiting) || 0), 0),
       date: rideDate,
@@ -1137,7 +1137,7 @@ export default function BookingCalculator({ initialPickup = "", initialDropoff =
       passengers: passengerCount,
       luggage: luggageCount,
       paymentMethod: paymentMethod,
-      paymentStatus: "Paid",
+      paymentStatus: paymentMethod === "Pay Later" ? "Unpaid" : "Paid",
       status: "Confirmed"
     };
 
@@ -1197,12 +1197,12 @@ export default function BookingCalculator({ initialPickup = "", initialDropoff =
     const price = distanceResult.prices[selectedVehicle];
 
     const payload = {
-      pickup: distanceResult.pickupDisplay,
-      dropoff: distanceResult.dropoffDisplay,
+      pickup: distanceResult.pickupDisplay || pickupInput,
+      dropoff: distanceResult.dropoffDisplay || dropoffInput,
       pickupCoords: { lat: distanceResult.pickupLat, lng: distanceResult.pickupLng },
       dropoffCoords: { lat: distanceResult.dropoffLat, lng: distanceResult.dropoffLng },
-      distance: distanceResult.distanceMiles,
-      duration: distanceResult.timeMinutes,
+      distance: distanceResult.distanceMiles ?? (distanceResult as any).distance,
+      duration: distanceResult.timeMinutes ?? (distanceResult as any).duration,
       stops: stops.map(s => ({ address: s.address, duration: s.duration, waiting: s.waiting, lat: s.lat, lng: s.lng })),
       waitingTime: stops.reduce((acc, s) => acc + (Number(s.waiting) || 0), 0),
       date: rideDate,
