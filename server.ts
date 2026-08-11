@@ -217,6 +217,13 @@ async function sendBookingEmails(booking: any) {
     ? "Pay Later"
     : `${booking.paymentMethod} <span style="background:#dcfce7;color:#166534;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;">Paid</span>`;
 
+  let stopsListHtml = "";
+  if (hasStops) {
+    stopsListHtml = booking.stops.map((s: any, i: number) => 
+      `<li style="margin-bottom: 4px;"><span style="color: ${textMuted}; font-size: 11px;">Stop ${i+1}:</span> ${s.address} ${Number(s.waiting) > 0 ? `(Wait: ${s.waiting}m)` : ''}</li>`
+    ).join("");
+  }
+
   const detailsTableHtml = `
     <table style="width: 100%; border-collapse: collapse; font-size: 14px; margin-bottom: 25px;">
       <tr style="border-bottom: 1px solid ${borderSlate};"><td style="padding: 10px 0; color: ${textMuted};">Booking Reference</td><td style="padding: 10px 0; font-weight: 700; text-align: right; color: ${brandGreen}; font-family: monospace;">${booking.id}</td></tr>
