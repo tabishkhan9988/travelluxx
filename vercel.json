@@ -1,12 +1,22 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/api/:path*",
-      "destination": "https://ais-pre-ymwptlezjznmh6j2udjwf7-398927871248.asia-southeast1.run.app/api/:path*"
+      "src": "package.json",
+      "use": "@vercel/static-build"
     },
     {
-      "source": "/((?!api/).*)",
+      "src": "server.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/server.ts"
+    },
+    {
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
