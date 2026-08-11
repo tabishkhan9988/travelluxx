@@ -1,0 +1,6 @@
+{
+  "name": "Travelluxx",
+  "description": "Premium UK-wide airport transfers and luxury chauffeur services with real-time pricing and booking.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

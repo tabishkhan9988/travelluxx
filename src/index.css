@@ -1,0 +1,70 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Custom global styles for scrollbars and sleek animations */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+/* Leaflet light theme styles */
+.leaflet-container {
+  background: #e5e3df !important;
+  font-family: inherit;
+}
+.leaflet-tile {
+  filter: none !important;
+}
+.leaflet-bar {
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+.leaflet-bar a {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+.leaflet-bar a:hover {
+  background-color: #f8fafc !important;
+  color: #059669 !important;
+}
+.leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #e2e8f0 !important;
+}
+.leaflet-popup-tip {
+  background: #ffffff !important;
+}
+
+/* Highway road animation */
+@keyframes dash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.animate-road-dash {
+  stroke-dasharray: 10, 10;
+  animation: dash 1.5s linear infinite;
+}
+

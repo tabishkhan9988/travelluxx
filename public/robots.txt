@@ -1,0 +1,45 @@
+User-agent: *
+Allow: /
+
+# Google Search
+User-agent: Googlebot
+Allow: /
+
+# Google Images
+User-agent: Googlebot-Image
+Allow: /
+
+# Google Ads
+User-agent: AdsBot-Google
+Allow: /
+
+# Bing Search
+User-agent: Bingbot
+Allow: /
+
+# Apple Search
+User-agent: Applebot
+Allow: /
+
+# ChatGPT / OpenAI
+User-agent: GPTBot
+Allow: /
+
+# ChatGPT browsing
+User-agent: ChatGPT-User
+Allow: /
+
+# Anthropic
+User-agent: ClaudeBot
+Allow: /
+
+# Perplexity
+User-agent: PerplexityBot
+Allow: /
+
+# Common Crawl
+User-agent: CCBot
+Allow: /
+
+# Sitemap
+Sitemap: https://travelluxx.co.uk/sitemap.xml

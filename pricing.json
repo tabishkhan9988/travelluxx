@@ -1,0 +1,14 @@
+{
+  "Economy": {
+    "perMile": 1.5,
+    "minFare": 0
+  },
+  "Luxury": {
+    "perMile": 2,
+    "minFare": 0
+  },
+  "Family": {
+    "perMile": 2.5,
+    "minFare": 0
+  }
+}

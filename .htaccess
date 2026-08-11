@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Step 1: www ko non-www par redirect karo (301 permanent redirect)
+RewriteCond %{HTTP_HOST} ^www\.travelluxx\.co\.uk$ [NC]
+RewriteRule ^(.*)$ https://travelluxx.co.uk/$1 [L,R=301]
+
+# Step 2: Baaki sab requests ko Node.js app (port 3000) par proxy karo
+RewriteCond %{REQUEST_URI} !^/\.well-known/
+RewriteRule ^(.*)$ http://127.0.0.1:3000/$1 [P,L]
