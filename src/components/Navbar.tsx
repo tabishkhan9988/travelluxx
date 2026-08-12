@@ -72,13 +72,19 @@ export default function Navbar({ onScrollTo, onAdminClick, settings }: NavbarPro
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-10 text-sm font-bold">
+          <nav className="hidden md:flex items-center space-x-8 text-sm font-bold">
             <button 
               onClick={() => onScrollTo("calculator")} 
               className="text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide"
             >
               Book Now
             </button>
+            <a 
+              href="/blog" 
+              className="text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide"
+            >
+              Blog
+            </a>
             <button 
               onClick={() => onScrollTo("contact")} 
               className="text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide"

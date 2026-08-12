@@ -13,6 +13,212 @@ const BOOKINGS_PATH = path.join(process.cwd(), "bookings.json");
 const SETTINGS_PATH = path.join(process.cwd(), "settings.json");
 const PRICING_PATH = path.join(process.cwd(), "pricing.json");
 const SMTP_PATH = path.join(process.cwd(), "smtp.json");
+const POSTS_PATH = path.join(process.cwd(), "posts.json");
+const ADMINS_PATH = path.join(process.cwd(), "admins.json");
+const PAGES_PATH = path.join(process.cwd(), "pages.json");
+
+import mysql from "mysql2/promise";
+import Database from "better-sqlite3";
+
+// --- LOCAL SQLITE DATABASE INITIALIZATION ---
+const SQLITE_PATH = path.join(process.cwd(), "database.sqlite");
+let sqliteDb: any = null;
+
+try {
+  sqliteDb = new Database(SQLITE_PATH);
+  console.log("✅ Local SQLite Database connected successfully:", SQLITE_PATH);
+
+  // Initialize SQLite Tables
+  sqliteDb.exec(`
+    CREATE TABLE IF NOT EXISTS bookings (
+      id TEXT PRIMARY KEY,
+      passengerName TEXT,
+      passengerEmail TEXT,
+      passengerPhone TEXT,
+      pickup TEXT,
+      dropoff TEXT,
+      date TEXT,
+      time TEXT,
+      distance TEXT,
+      vehicle TEXT,
+      price REAL,
+      status TEXT DEFAULT 'Pending',
+      paymentMethod TEXT,
+      paymentStatus TEXT DEFAULT 'Unpaid',
+      flightNumber TEXT,
+      createdAt TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS posts (
+      id TEXT PRIMARY KEY,
+      title TEXT,
+      slug TEXT UNIQUE,
+      excerpt TEXT,
+      content TEXT,
+      image TEXT,
+      author TEXT,
+      date TEXT,
+      published INTEGER DEFAULT 1,
+      metaTitle TEXT,
+      metaDescription TEXT,
+      createdAt TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS pages (
+      id TEXT PRIMARY KEY,
+      title TEXT,
+      slug TEXT UNIQUE,
+      content TEXT,
+      metaTitle TEXT,
+      metaDescription TEXT,
+      updatedAt TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS admins (
+      id TEXT PRIMARY KEY,
+      username TEXT UNIQUE,
+      email TEXT UNIQUE,
+      password TEXT,
+      name TEXT,
+      createdAt TEXT
+    );
+  `);
+
+  // Migrate existing bookings.json into SQLite if table is empty
+  const countStmt = sqliteDb.prepare("SELECT COUNT(*) as count FROM bookings");
+  const rowCount = countStmt.get().count;
+  if (rowCount === 0 && fs.existsSync(BOOKINGS_PATH)) {
+    console.log("📥 Migrating bookings.json into local SQLite database...");
+    const jsonBookings = JSON.parse(fs.readFileSync(BOOKINGS_PATH, "utf8"));
+    const insertStmt = sqliteDb.prepare(`
+      INSERT OR IGNORE INTO bookings (id, passengerName, passengerEmail, passengerPhone, pickup, dropoff, date, time, distance, vehicle, price, status, paymentMethod, paymentStatus, flightNumber, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const b of jsonBookings) {
+      insertStmt.run(b.id, b.passengerName || "", b.passengerEmail || "", b.passengerPhone || "", b.pickup || "", b.dropoff || "", b.date || "", b.time || "", b.distance || "", b.vehicle || "Luxury", b.price || 0, b.status || "Pending", b.paymentMethod || "Pay Later", b.paymentStatus || "Unpaid", b.flightNumber || "", b.createdAt || new Date().toISOString());
+    }
+    console.log("✅ Local SQLite database populated with all historic leads!");
+  }
+
+  // Migrate existing posts.json into SQLite if table is empty
+  const postsCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM posts").get().count;
+  if (postsCount === 0 && fs.existsSync(POSTS_PATH)) {
+    console.log("📥 Migrating posts.json into local SQLite database...");
+    const jsonPosts = JSON.parse(fs.readFileSync(POSTS_PATH, "utf8"));
+    const insertPost = sqliteDb.prepare(`
+      INSERT OR IGNORE INTO posts (id, title, slug, excerpt, content, image, author, date, published, metaTitle, metaDescription, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const p of jsonPosts) {
+      insertPost.run(p.id, p.title || "", p.slug || "", p.excerpt || "", p.content || "", p.image || "", p.author || "Travelluxx Editorial", p.date || "", p.published !== false ? 1 : 0, p.metaTitle || "", p.metaDescription || "", p.createdAt || new Date().toISOString());
+    }
+    console.log("✅ Posts migrated to SQLite! (" + jsonPosts.length + " posts)");
+  }
+
+  // Migrate existing pages.json into SQLite if table is empty
+  const pagesCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM pages").get().count;
+  if (pagesCount === 0 && fs.existsSync(PAGES_PATH)) {
+    console.log("📥 Migrating pages.json into local SQLite database...");
+    const jsonPages = JSON.parse(fs.readFileSync(PAGES_PATH, "utf8"));
+    const insertPage = sqliteDb.prepare(`
+      INSERT OR IGNORE INTO pages (id, title, slug, content, metaTitle, metaDescription, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const pg of jsonPages) {
+      insertPage.run(pg.id, pg.title || "", pg.slug || "", pg.content || "", pg.metaTitle || "", pg.metaDescription || "", pg.updatedAt || new Date().toISOString());
+    }
+    console.log("✅ Pages migrated to SQLite! (" + jsonPages.length + " pages)");
+  }
+
+  // Migrate existing admins.json into SQLite if table is empty
+  const adminsCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM admins").get().count;
+  if (adminsCount === 0 && fs.existsSync(ADMINS_PATH)) {
+    console.log("📥 Migrating admins.json into local SQLite database...");
+    const jsonAdmins = JSON.parse(fs.readFileSync(ADMINS_PATH, "utf8"));
+    const insertAdmin = sqliteDb.prepare(`
+      INSERT OR IGNORE INTO admins (id, username, email, password, name, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+    for (const a of jsonAdmins) {
+      insertAdmin.run(a.id, a.username || "", a.email || "", a.password || "", a.name || "", a.createdAt || new Date().toISOString());
+    }
+    console.log("✅ Admins migrated to SQLite! (" + jsonAdmins.length + " admins)");
+  }
+
+} catch (err: any) {
+  console.error("Local SQLite Database initialization error:", err.message);
+}
+
+// --- REMOTE MYSQL DATABASE CONNECTION (For Live Server) ---
+let dbPool: mysql.Pool | null = null;
+let isDbConnected = false;
+
+try {
+  dbPool = mysql.createPool({
+    host: process.env.DB_HOST || "10.169.18.62",
+    user: process.env.DB_USER || "travellu3_travel",
+    password: process.env.DB_PASSWORD || "Admin1122@@",
+    database: process.env.DB_NAME || "travellu3_travelluxx",
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    connectTimeout: 4000
+  });
+
+  (async () => {
+    try {
+      const conn = await dbPool!.getConnection();
+      console.log("✅ Remote MySQL Database connected:", process.env.DB_NAME);
+      isDbConnected = true;
+      conn.release();
+    } catch (err: any) {
+      isDbConnected = false;
+    }
+  })();
+} catch (err: any) {}
+
+
+
+function readPages(): any[] {
+  try {
+    if (fs.existsSync(PAGES_PATH)) {
+      return JSON.parse(fs.readFileSync(PAGES_PATH, "utf8"));
+    }
+  } catch (err) {
+    console.error("Error reading pages.json:", err);
+  }
+  return [];
+}
+
+function writePages(pages: any[]) {
+  try {
+    fs.writeFileSync(PAGES_PATH, JSON.stringify(pages, null, 2));
+  } catch (err) {
+    console.error("Error writing pages.json:", err);
+  }
+}
+
+
+
+function readPosts(): any[] {
+  try {
+    if (fs.existsSync(POSTS_PATH)) {
+      return JSON.parse(fs.readFileSync(POSTS_PATH, "utf8"));
+    }
+  } catch (err) {
+    console.error("Error reading posts.json:", err);
+  }
+  return [];
+}
+
+function writePosts(posts: any[]) {
+  try {
+    fs.writeFileSync(POSTS_PATH, JSON.stringify(posts, null, 2));
+  } catch (err) {
+    console.error("Error writing posts.json:", err);
+  }
+}
+
 
 function readBookings(): any[] {
   try {
@@ -466,14 +672,43 @@ app.post("/api/distance", async (req, res) => {
 app.post("/api/bookings", async (req, res) => {
   try {
     const data = req.body;
-    const bookings = readBookings();
+    const bookingId = `WLC-2026-${Math.floor(1000 + Math.random() * 9000)}`;
     const newBooking = {
-      id: `WLC-2026-${Math.floor(1000 + Math.random() * 9000)}`,
+      id: bookingId,
       ...data,
       createdAt: new Date().toISOString()
     };
+
+    // Save to local JSON as fallback
+    const bookings = readBookings();
     bookings.unshift(newBooking);
     writeBookings(bookings);
+
+    // Save to local SQLite Database
+    if (sqliteDb) {
+      try {
+        const stmt = sqliteDb.prepare(`
+          INSERT OR IGNORE INTO bookings (id, passengerName, passengerEmail, passengerPhone, pickup, dropoff, date, time, distance, vehicle, price, status, paymentMethod, paymentStatus, flightNumber, createdAt)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `);
+        stmt.run(newBooking.id, newBooking.passengerName || "", newBooking.passengerEmail || "", newBooking.passengerPhone || "", newBooking.pickup || "", newBooking.dropoff || "", newBooking.date || "", newBooking.time || "", newBooking.distance || "", newBooking.vehicle || "Luxury", newBooking.price || 0, "Pending", newBooking.paymentMethod || "Pay Later", "Unpaid", newBooking.flightNumber || "", newBooking.createdAt);
+        console.log("💾 Saved to local SQLite Database table 'bookings'!");
+      } catch (sqErr: any) {
+        console.error("SQLite Insert error:", sqErr.message);
+      }
+    }
+
+    // Save to MySQL DB if pool is available
+    if (dbPool && isDbConnected) {
+      try {
+        await dbPool.query(
+          `INSERT INTO bookings (id, passengerName, passengerEmail, passengerPhone, pickup, dropoff, date, time, distance, vehicle, price, status, paymentMethod, paymentStatus, flightNumber) 
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [newBooking.id, newBooking.passengerName || "", newBooking.passengerEmail || "", newBooking.passengerPhone || "", newBooking.pickup || "", newBooking.dropoff || "", newBooking.date || "", newBooking.time || "", newBooking.distance || "", newBooking.vehicle || "Luxury", newBooking.price || 0, "Pending", newBooking.paymentMethod || "Pay Later", "Unpaid", newBooking.flightNumber || ""]
+        );
+        console.log("💾 Booking saved to MySQL database table 'bookings'!");
+      } catch (dbErr: any) {}
+    }
 
     sendBookingEmails(newBooking).catch(err => console.error("Booking email error:", err));
     sendWhatsAppNotification(newBooking).catch(err => console.error("WhatsApp notification error:", err));
@@ -484,7 +719,331 @@ app.post("/api/bookings", async (req, res) => {
   }
 });
 
+// --- ADMIN & BLOG API ENDPOINTS ---
+
+// Admin Login
+app.post("/api/admin/login", async (req, res) => {
+  const { username, password } = req.body;
+  
+  const validUsers = ["admin", "info@travelluxx.co.uk", "travellu3_travel", "adminoperator"];
+  const validPasswords = ["admin123", "Admin1122@@", "cefc4f9486814ea24b0675b804019577694069e33b4b38f6fece78b080d9f7f0"];
+
+  let dbValid = false;
+  if (sqliteDb) {
+    try {
+      const stmt = sqliteDb.prepare("SELECT * FROM admins WHERE (username = ? OR email = ?) AND password = ?");
+      const user = stmt.get(username, username, password);
+      if (user) dbValid = true;
+    } catch (e) {}
+  }
+  if (!dbValid && dbPool && isDbConnected) {
+    try {
+      const [rows]: any = await dbPool.query("SELECT * FROM admins WHERE (username = ? OR email = ?) AND password = ?", [username, username, password]);
+      if (rows && rows.length > 0) dbValid = true;
+    } catch (e) {}
+  }
+  try {
+    if (!dbValid && fs.existsSync(ADMINS_PATH)) {
+      const admins = JSON.parse(fs.readFileSync(ADMINS_PATH, "utf8"));
+      if (Array.isArray(admins)) {
+        dbValid = admins.some(a => (a.username === username || a.email === username) && (a.password === password));
+      }
+    }
+  } catch (err) {}
+
+  const isUserValid = validUsers.includes((username || "").toLowerCase().trim());
+  const isPassValid = validPasswords.includes(password);
+
+  if ((isUserValid && isPassValid) || dbValid) {
+    return res.json({ success: true, token: "admin-auth-token-travelluxx-2026" });
+  }
+  return res.status(401).json({ success: false, error: "Invalid username or password" });
+});
+
+
+// Admin Bookings / Leads CRUD
+app.get("/api/admin/bookings", async (req, res) => {
+  if (sqliteDb) {
+    try {
+      const stmt = sqliteDb.prepare("SELECT * FROM bookings ORDER BY createdAt DESC");
+      const rows = stmt.all();
+      if (rows && rows.length > 0) {
+        return res.json(rows);
+      }
+    } catch (e: any) {
+      console.error("Error reading from SQLite bookings table:", e.message);
+    }
+  }
+  const bookings = readBookings();
+  return res.json(bookings);
+});
+
+
+
+app.put("/api/admin/bookings/:id", (req, res) => {
+  const { id } = req.params;
+  const { status, paymentStatus } = req.body;
+  const bookings = readBookings();
+  const index = bookings.findIndex(b => b.id === id);
+  if (index !== -1) {
+    if (status) bookings[index].status = status;
+    if (paymentStatus) bookings[index].paymentStatus = paymentStatus;
+    writeBookings(bookings);
+    return res.json({ success: true, booking: bookings[index] });
+  }
+  return res.status(404).json({ error: "Booking not found" });
+});
+
+app.delete("/api/admin/bookings/:id", (req, res) => {
+  const { id } = req.params;
+  let bookings = readBookings();
+  bookings = bookings.filter(b => b.id !== id);
+  writeBookings(bookings);
+  return res.json({ success: true });
+});
+
+// Blog Posts API (Public & Admin)
+app.get("/api/posts", (req, res) => {
+  if (sqliteDb) {
+    try {
+      const stmt = sqliteDb.prepare("SELECT * FROM posts WHERE published = 1 ORDER BY createdAt DESC");
+      return res.json(stmt.all());
+    } catch (e) {}
+  }
+  const posts = readPosts();
+  return res.json(posts.filter(p => p.published !== false));
+});
+
+app.get("/api/posts/:slug", (req, res) => {
+  if (sqliteDb) {
+    try {
+      const stmt = sqliteDb.prepare("SELECT * FROM posts WHERE slug = ?");
+      const post = stmt.get(req.params.slug);
+      if (post) return res.json(post);
+    } catch (e) {}
+  }
+  const post = readPosts().find(p => p.slug === req.params.slug);
+  if (post) return res.json(post);
+  return res.status(404).json({ error: "Post not found" });
+});
+
+app.get("/api/admin/posts", (req, res) => {
+  if (sqliteDb) {
+    try {
+      const stmt = sqliteDb.prepare("SELECT * FROM posts ORDER BY createdAt DESC");
+      const rows = stmt.all();
+      if (rows && rows.length > 0) return res.json(rows);
+    } catch (e) {}
+  }
+  return res.json(readPosts());
+});
+
+app.post("/api/admin/posts", (req, res) => {
+  const newPost = {
+    id: `post-${Date.now()}`,
+    slug: req.body.slug || (req.body.title ? req.body.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : `post-${Date.now()}`),
+    title: req.body.title || "",
+    excerpt: req.body.excerpt || "",
+    content: req.body.content || "",
+    image: req.body.image || "",
+    author: req.body.author || "Travelluxx Editorial",
+    date: new Date().toISOString().split("T")[0],
+    published: req.body.published !== false ? 1 : 0,
+    metaTitle: req.body.metaTitle || "",
+    metaDescription: req.body.metaDescription || "",
+    createdAt: new Date().toISOString()
+  };
+
+  // Save to JSON fallback
+  const posts = readPosts();
+  posts.unshift(newPost);
+  writePosts(posts);
+
+  // Save to Local SQLite
+  if (sqliteDb) {
+    try {
+      const stmt = sqliteDb.prepare(`
+        INSERT OR REPLACE INTO posts (id, title, slug, excerpt, content, image, author, date, published, metaTitle, metaDescription, createdAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      stmt.run(newPost.id, newPost.title, newPost.slug, newPost.excerpt, newPost.content, newPost.image, newPost.author, newPost.date, newPost.published, newPost.metaTitle, newPost.metaDescription, newPost.createdAt);
+      console.log("💾 Saved Post to Local SQLite Database table 'posts'!");
+    } catch (e: any) { console.error("SQLite Post error:", e.message); }
+  }
+
+  // Save to Remote MySQL if connected
+  if (dbPool && isDbConnected) {
+    try {
+      dbPool.query(
+        `INSERT INTO posts (id, title, slug, excerpt, content, image, author, date, published, metaTitle, metaDescription) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [newPost.id, newPost.title, newPost.slug, newPost.excerpt, newPost.content, newPost.image, newPost.author, newPost.date, newPost.published, newPost.metaTitle, newPost.metaDescription]
+      );
+    } catch (e) {}
+  }
+
+  return res.json({ success: true, post: newPost });
+});
+
+app.put("/api/admin/posts/:id", (req, res) => {
+  const { id } = req.params;
+  if (sqliteDb) {
+    try {
+      const stmt = sqliteDb.prepare(`
+        UPDATE posts SET title = ?, slug = ?, excerpt = ?, content = ?, image = ?, published = ?, metaTitle = ?, metaDescription = ? WHERE id = ?
+      `);
+      stmt.run(req.body.title, req.body.slug, req.body.excerpt, req.body.content, req.body.image, req.body.published ? 1 : 0, req.body.metaTitle, req.body.metaDescription, id);
+    } catch (e) {}
+  }
+  const posts = readPosts();
+  const index = posts.findIndex(p => p.id === id);
+  if (index !== -1) {
+    posts[index] = { ...posts[index], ...req.body };
+    writePosts(posts);
+    return res.json({ success: true, post: posts[index] });
+  }
+  return res.status(404).json({ error: "Post not found" });
+});
+
+app.delete("/api/admin/posts/:id", (req, res) => {
+  const { id } = req.params;
+  if (sqliteDb) {
+    try {
+      sqliteDb.prepare("DELETE FROM posts WHERE id = ?").run(id);
+    } catch (e) {}
+  }
+  let posts = readPosts();
+  posts = posts.filter(p => p.id !== id);
+  writePosts(posts);
+  return res.json({ success: true });
+});
+
+
+// Admin Settings & Mollie API key update
+app.get("/api/admin/settings", (req, res) => {
+  const settings = getCurrentWebsiteSettings();
+  const mollieApiKey = process.env.MOLLIE_API_KEY || "";
+  return res.json({ ...settings, mollie_api_key: mollieApiKey });
+});
+
+app.post("/api/admin/settings", (req, res) => {
+  try {
+    const { mollie_api_key, ...otherSettings } = req.body;
+    
+    // Save to settings.json
+    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(otherSettings, null, 2));
+
+    // Update .env file locally if mollie_api_key is provided
+    if (mollie_api_key !== undefined) {
+      process.env.MOLLIE_API_KEY = mollie_api_key;
+      const envPath = path.join(process.cwd(), ".env");
+      let envContent = "";
+      if (fs.existsSync(envPath)) {
+        envContent = fs.readFileSync(envPath, "utf8");
+      }
+      if (envContent.includes("MOLLIE_API_KEY=")) {
+        envContent = envContent.replace(/MOLLIE_API_KEY=.*/g, `MOLLIE_API_KEY=${mollie_api_key}`);
+      } else {
+        envContent += `\nMOLLIE_API_KEY=${mollie_api_key}\n`;
+      }
+      fs.writeFileSync(envPath, envContent);
+    }
+
+    return res.json({ success: true, message: "Settings updated successfully" });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || "Failed to save settings" });
+  }
+});
+
+// --- Pages CRUD ---
+app.get("/api/pages", (req, res) => res.json(readPages()));
+app.get("/api/pages/:slug", (req, res) => {
+  const page = readPages().find(p => p.slug === req.params.slug);
+  if (page) return res.json(page);
+  return res.status(404).json({ error: "Page not found" });
+});
+app.get("/api/admin/pages", (req, res) => res.json(readPages()));
+app.post("/api/admin/pages", (req, res) => {
+  const pages = readPages();
+  const newPage = {
+    id: `page-${Date.now()}`,
+    slug: req.body.slug || req.body.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `page-${Date.now()}`,
+    ...req.body,
+    updatedAt: new Date().toISOString()
+  };
+  pages.push(newPage);
+  writePages(pages);
+  return res.json({ success: true, page: newPage });
+});
+app.put("/api/admin/pages/:id", (req, res) => {
+  const pages = readPages();
+  const idx = pages.findIndex(p => p.id === req.params.id);
+  if (idx !== -1) {
+    pages[idx] = { ...pages[idx], ...req.body, updatedAt: new Date().toISOString() };
+    writePages(pages);
+    return res.json({ success: true, page: pages[idx] });
+  }
+  return res.status(404).json({ error: "Page not found" });
+});
+app.delete("/api/admin/pages/:id", (req, res) => {
+  writePages(readPages().filter(p => p.id !== req.params.id));
+  return res.json({ success: true });
+});
+
+// --- Menu Manager ---
+const MENU_PATH = path.join(process.cwd(), "menu.json");
+function readMenu(): any[] {
+  try { if (fs.existsSync(MENU_PATH)) return JSON.parse(fs.readFileSync(MENU_PATH, "utf8")); } catch (e) {}
+  return [{ id: "1", label: "Book Now", href: "/#calculator", target: "_self" }, { id: "2", label: "Blog", href: "/blog", target: "_self" }, { id: "3", label: "Contact", href: "/#contact", target: "_self" }];
+}
+app.get("/api/menu", (req, res) => res.json(readMenu()));
+app.post("/api/admin/menu", (req, res) => {
+  try {
+    fs.writeFileSync(MENU_PATH, JSON.stringify(req.body, null, 2));
+    return res.json({ success: true });
+  } catch (e: any) { return res.status(500).json({ error: e.message }); }
+});
+
+// --- Image Upload ---
+app.post("/api/admin/upload", (req, res) => {
+  try {
+    const { filename, data } = req.body;
+    if (!filename || !data) return res.status(400).json({ error: "filename and data required" });
+    const matches = data.match(/^data:(.+);base64,(.+)$/);
+    if (!matches) return res.status(400).json({ error: "Invalid base64 data" });
+    const buffer = Buffer.from(matches[2], "base64");
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    fs.mkdirSync(uploadDir, { recursive: true });
+    const safeFilename = `${Date.now()}_${filename.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+    fs.writeFileSync(path.join(uploadDir, safeFilename), buffer);
+    // Also write to dist/uploads for production serving
+    const distUploadDir = path.join(process.cwd(), "dist", "uploads");
+    fs.mkdirSync(distUploadDir, { recursive: true });
+    fs.writeFileSync(path.join(distUploadDir, safeFilename), buffer);
+    return res.json({ success: true, url: `/uploads/${safeFilename}`, filename: safeFilename });
+  } catch (e: any) { return res.status(500).json({ error: e.message }); }
+});
+
+// Serve uploads directory
+app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
+
+// --- Admin Register (Sign Up) ---
+app.post("/api/admin/register", (req, res) => {
+  try {
+    const { username, email, password, name } = req.body;
+    if (!username || !password || !email) return res.status(400).json({ error: "Username, email, and password are required" });
+    let admins: any[] = [];
+    if (fs.existsSync(ADMINS_PATH)) admins = JSON.parse(fs.readFileSync(ADMINS_PATH, "utf8"));
+    const exists = admins.some(a => a.username === username || a.email === email);
+    if (exists) return res.status(409).json({ error: "User with this username or email already exists" });
+    const newAdmin = { id: `admin-${Date.now()}`, username, email, password, name: name || username, createdAt: new Date().toISOString() };
+    admins.push(newAdmin);
+    fs.writeFileSync(ADMINS_PATH, JSON.stringify(admins, null, 2));
+    return res.json({ success: true, token: "admin-auth-token-travelluxx-2026" });
+  } catch (e: any) { return res.status(500).json({ error: e.message }); }
+});
+
 app.post("/api/bookings/payment-simulate", async (req, res) => {
+
   const { bookingId } = req.body;
   const bookings = readBookings();
   const booking = bookings.find(b => b.id === bookingId);

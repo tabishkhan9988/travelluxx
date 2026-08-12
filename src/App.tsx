@@ -7,7 +7,13 @@ import FleetCatalog from "./components/FleetCatalog";
 import AirportsGrid from "./components/AirportsGrid";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
+import AdminDashboard from "./pages/AdminDashboard";
+import BlogList from "./pages/BlogList";
+import BlogPostDetail from "./pages/BlogPostDetail";
+import DynamicPage from "./pages/DynamicPage";
 import { trackVisit, trackClick } from "./utils/analytics";
+
+
 
 // PUBLIC LANDING PAGE WRAPPER
 function PublicLandingPage() {
@@ -110,9 +116,21 @@ export default function App() {
         {/* PUBLIC HOMEPAGE */}
         <Route path="/" element={<PublicLandingPage />} />
         
+        {/* ADMIN DASHBOARD */}
+        <Route path="/admin" element={<AdminDashboard />} />
+
+        {/* BLOG PAGES */}
+        <Route path="/blog" element={<BlogList />} />
+        <Route path="/blog/:slug" element={<BlogPostDetail />} />
+
+        {/* DYNAMIC CMS PAGES */}
+        <Route path="/page/:slug" element={<DynamicPage />} />
+
         {/* FALLBACK REDIRECTS TO PUBLIC WEBSITE */}
         <Route path="*" element={<Navigate to="/" replace />} />
+
       </Routes>
     </Router>
   );
 }
+

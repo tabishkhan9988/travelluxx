@@ -5,5 +5,13 @@
     "password": "cefc4f9486814ea24b0675b804019577694069e33b4b38f6fece78b080d9f7f0",
     "name": "Admin Operator",
     "createdAt": "2026-07-19T13:09:51.043Z"
+  },
+  {
+    "id": "admin-1786493566362",
+    "username": "admin1",
+    "email": "techhfnm@gmail.com",
+    "password": "admin123",
+    "name": "ADMIN",
+    "createdAt": "2026-08-12T00:12:46.362Z"
   }
 ]
