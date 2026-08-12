@@ -92,49 +92,54 @@ var PageSchema = new import_mongoose.default.Schema({
   updatedAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
 var PageModel = import_mongoose.default.models.Page || import_mongoose.default.model("Page", PageSchema);
-import_mongoose.default.connect(MONGODB_URI, {
-  serverSelectionTimeoutMS: 3e3
-}).then(async () => {
-  console.log("\u2705 MongoDB connected successfully!");
-  try {
-    const count = await BookingModel.countDocuments();
-    if (count === 0 && import_fs.default.existsSync(BOOKINGS_PATH)) {
-      console.log("\u{1F4E5} Migrating bookings.json into MongoDB...");
-      const jsonBookings = JSON.parse(import_fs.default.readFileSync(BOOKINGS_PATH, "utf8"));
-      await BookingModel.insertMany(jsonBookings, { ordered: false }).catch(() => {
-      });
-      console.log("\u2705 MongoDB populated with all historic bookings!");
+var isVercelLocalFallback = process.env.VERCEL && MONGODB_URI.includes("localhost");
+if (isVercelLocalFallback) {
+  console.log("\u26A0\uFE0F Vercel environment detected \u2014 skipping MongoDB connection (using localhost fallback). Using JSON file fallback.");
+} else {
+  import_mongoose.default.connect(MONGODB_URI, {
+    serverSelectionTimeoutMS: 3e3
+  }).then(async () => {
+    console.log("\u2705 MongoDB connected successfully!");
+    try {
+      const count = await BookingModel.countDocuments();
+      if (count === 0 && import_fs.default.existsSync(BOOKINGS_PATH)) {
+        console.log("\u{1F4E5} Migrating bookings.json into MongoDB...");
+        const jsonBookings = JSON.parse(import_fs.default.readFileSync(BOOKINGS_PATH, "utf8"));
+        await BookingModel.insertMany(jsonBookings, { ordered: false }).catch(() => {
+        });
+        console.log("\u2705 MongoDB populated with all historic bookings!");
+      }
+    } catch (err) {
+      console.error("Error migrating bookings to MongoDB:", err.message);
     }
-  } catch (err) {
-    console.error("Error migrating bookings to MongoDB:", err.message);
-  }
-  try {
-    const count = await PostModel.countDocuments();
-    if (count === 0 && import_fs.default.existsSync(POSTS_PATH)) {
-      console.log("\u{1F4E5} Migrating posts.json into MongoDB...");
-      const jsonPosts = JSON.parse(import_fs.default.readFileSync(POSTS_PATH, "utf8"));
-      await PostModel.insertMany(jsonPosts, { ordered: false }).catch(() => {
-      });
-      console.log("\u2705 MongoDB populated with all posts!");
+    try {
+      const count = await PostModel.countDocuments();
+      if (count === 0 && import_fs.default.existsSync(POSTS_PATH)) {
+        console.log("\u{1F4E5} Migrating posts.json into MongoDB...");
+        const jsonPosts = JSON.parse(import_fs.default.readFileSync(POSTS_PATH, "utf8"));
+        await PostModel.insertMany(jsonPosts, { ordered: false }).catch(() => {
+        });
+        console.log("\u2705 MongoDB populated with all posts!");
+      }
+    } catch (err) {
+      console.error("Error migrating posts to MongoDB:", err.message);
     }
-  } catch (err) {
-    console.error("Error migrating posts to MongoDB:", err.message);
-  }
-  try {
-    const count = await PageModel.countDocuments();
-    if (count === 0 && import_fs.default.existsSync(PAGES_PATH)) {
-      console.log("\u{1F4E5} Migrating pages.json into MongoDB...");
-      const jsonPages = JSON.parse(import_fs.default.readFileSync(PAGES_PATH, "utf8"));
-      await PageModel.insertMany(jsonPages, { ordered: false }).catch(() => {
-      });
-      console.log("\u2705 MongoDB populated with all pages!");
+    try {
+      const count = await PageModel.countDocuments();
+      if (count === 0 && import_fs.default.existsSync(PAGES_PATH)) {
+        console.log("\u{1F4E5} Migrating pages.json into MongoDB...");
+        const jsonPages = JSON.parse(import_fs.default.readFileSync(PAGES_PATH, "utf8"));
+        await PageModel.insertMany(jsonPages, { ordered: false }).catch(() => {
+        });
+        console.log("\u2705 MongoDB populated with all pages!");
+      }
+    } catch (err) {
+      console.error("Error migrating pages to MongoDB:", err.message);
     }
-  } catch (err) {
-    console.error("Error migrating pages to MongoDB:", err.message);
-  }
-}).catch((err) => {
-  console.error("\u274C MongoDB connection error:", err);
-});
+  }).catch((err) => {
+    console.error("\u274C MongoDB connection error:", err);
+  });
+}
 function readPages() {
   try {
     if (import_fs.default.existsSync(PAGES_PATH)) {

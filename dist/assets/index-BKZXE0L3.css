@@ -781,7 +781,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     --color-slate-800: oklch(27.9% .041 260.031);
     --color-slate-900: oklch(20.8% .042 265.755);
     --color-slate-950: oklch(12.9% .042 264.695);
-    --color-gray-200: oklch(92.8% .006 264.531);
     --color-black: #000;
     --color-white: #fff;
     --spacing: .25rem;

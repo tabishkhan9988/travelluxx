@@ -73,54 +73,60 @@ const PageSchema = new mongoose.Schema({
 const PageModel = mongoose.models.Page || mongoose.model("Page", PageSchema);
 
 // Connect to MongoDB
-mongoose.connect(MONGODB_URI, {
-  serverSelectionTimeoutMS: 3000
-})
-  .then(async () => {
-    console.log("✅ MongoDB connected successfully!");
-    
-    // Migrate existing bookings.json into MongoDB if empty
-    try {
-      const count = await BookingModel.countDocuments();
-      if (count === 0 && fs.existsSync(BOOKINGS_PATH)) {
-        console.log("📥 Migrating bookings.json into MongoDB...");
-        const jsonBookings = JSON.parse(fs.readFileSync(BOOKINGS_PATH, "utf8"));
-        await BookingModel.insertMany(jsonBookings, { ordered: false }).catch(() => {});
-        console.log("✅ MongoDB populated with all historic bookings!");
-      }
-    } catch (err: any) {
-      console.error("Error migrating bookings to MongoDB:", err.message);
-    }
+const isVercelLocalFallback = process.env.VERCEL && MONGODB_URI.includes("localhost");
 
-    // Migrate existing posts.json into MongoDB if empty
-    try {
-      const count = await PostModel.countDocuments();
-      if (count === 0 && fs.existsSync(POSTS_PATH)) {
-        console.log("📥 Migrating posts.json into MongoDB...");
-        const jsonPosts = JSON.parse(fs.readFileSync(POSTS_PATH, "utf8"));
-        await PostModel.insertMany(jsonPosts, { ordered: false }).catch(() => {});
-        console.log("✅ MongoDB populated with all posts!");
-      }
-    } catch (err: any) {
-      console.error("Error migrating posts to MongoDB:", err.message);
-    }
-
-    // Migrate existing pages.json into MongoDB if empty
-    try {
-      const count = await PageModel.countDocuments();
-      if (count === 0 && fs.existsSync(PAGES_PATH)) {
-        console.log("📥 Migrating pages.json into MongoDB...");
-        const jsonPages = JSON.parse(fs.readFileSync(PAGES_PATH, "utf8"));
-        await PageModel.insertMany(jsonPages, { ordered: false }).catch(() => {});
-        console.log("✅ MongoDB populated with all pages!");
-      }
-    } catch (err: any) {
-      console.error("Error migrating pages to MongoDB:", err.message);
-    }
+if (isVercelLocalFallback) {
+  console.log("⚠️ Vercel environment detected — skipping MongoDB connection (using localhost fallback). Using JSON file fallback.");
+} else {
+  mongoose.connect(MONGODB_URI, {
+    serverSelectionTimeoutMS: 3000
   })
-  .catch(err => {
-    console.error("❌ MongoDB connection error:", err);
-  });
+    .then(async () => {
+      console.log("✅ MongoDB connected successfully!");
+      
+      // Migrate existing bookings.json into MongoDB if empty
+      try {
+        const count = await BookingModel.countDocuments();
+        if (count === 0 && fs.existsSync(BOOKINGS_PATH)) {
+          console.log("📥 Migrating bookings.json into MongoDB...");
+          const jsonBookings = JSON.parse(fs.readFileSync(BOOKINGS_PATH, "utf8"));
+          await BookingModel.insertMany(jsonBookings, { ordered: false }).catch(() => {});
+          console.log("✅ MongoDB populated with all historic bookings!");
+        }
+      } catch (err: any) {
+        console.error("Error migrating bookings to MongoDB:", err.message);
+      }
+
+      // Migrate existing posts.json into MongoDB if empty
+      try {
+        const count = await PostModel.countDocuments();
+        if (count === 0 && fs.existsSync(POSTS_PATH)) {
+          console.log("📥 Migrating posts.json into MongoDB...");
+          const jsonPosts = JSON.parse(fs.readFileSync(POSTS_PATH, "utf8"));
+          await PostModel.insertMany(jsonPosts, { ordered: false }).catch(() => {});
+          console.log("✅ MongoDB populated with all posts!");
+        }
+      } catch (err: any) {
+        console.error("Error migrating posts to MongoDB:", err.message);
+      }
+
+      // Migrate existing pages.json into MongoDB if empty
+      try {
+        const count = await PageModel.countDocuments();
+        if (count === 0 && fs.existsSync(PAGES_PATH)) {
+          console.log("📥 Migrating pages.json into MongoDB...");
+          const jsonPages = JSON.parse(fs.readFileSync(PAGES_PATH, "utf8"));
+          await PageModel.insertMany(jsonPages, { ordered: false }).catch(() => {});
+          console.log("✅ MongoDB populated with all pages!");
+        }
+      } catch (err: any) {
+        console.error("Error migrating pages to MongoDB:", err.message);
+      }
+    })
+    .catch(err => {
+      console.error("❌ MongoDB connection error:", err);
+    });
+}
 
 
 
