@@ -29639,57 +29639,10 @@ function AdminDashboard() {
         /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-white font-bold text-xl tracking-wide", children: "Travelluxx Admin" }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[#a7aaad] text-xs mt-1", children: "Management Portal" })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex border-b border-gray-200", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            onClick: () => setAuthMode("signin"),
-            className: `flex-1 py-3 text-sm font-semibold transition ${authMode === "signin" ? "bg-white text-[#2271b1] border-b-2 border-[#2271b1]" : "bg-[#f0f0f1] text-[#50575e] hover:bg-white"}`,
-            children: "Sign In"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            onClick: () => setAuthMode("signup"),
-            className: `flex-1 py-3 text-sm font-semibold transition ${authMode === "signup" ? "bg-white text-[#2271b1] border-b-2 border-[#2271b1]" : "bg-[#f0f0f1] text-[#50575e] hover:bg-white"}`,
-            children: "Sign Up"
-          }
-        )
-      ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleAuth, className: "p-6 space-y-4", children: [
         loginError && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm text-center", children: loginError }),
-        authMode === "signup" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-[#1d2327] mb-1.5 uppercase tracking-wide", children: "Full Name" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "text",
-                value: form.name,
-                onChange: (e) => setForm({ ...form, name: e.target.value }),
-                className: "w-full border border-[#8c8f94] rounded px-3 py-2 text-sm text-[#1d2327] focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]",
-                placeholder: "Your full name"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-[#1d2327] mb-1.5 uppercase tracking-wide", children: "Email" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "email",
-                value: form.email,
-                onChange: (e) => setForm({ ...form, email: e.target.value }),
-                className: "w-full border border-[#8c8f94] rounded px-3 py-2 text-sm text-[#1d2327] focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]",
-                placeholder: "you@example.com",
-                required: true
-              }
-            )
-          ] })
-        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-[#1d2327] mb-1.5 uppercase tracking-wide", children: "Username" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-[#1d2327] mb-1.5 uppercase tracking-wide", children: "Username or Email" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "input",
             {
@@ -29697,7 +29650,7 @@ function AdminDashboard() {
               value: form.username,
               onChange: (e) => setForm({ ...form, username: e.target.value }),
               className: "w-full border border-[#8c8f94] rounded px-3 py-2 text-sm text-[#1d2327] focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]",
-              placeholder: "admin",
+              placeholder: "info@travelluxx.co.uk",
               required: true
             }
           )
@@ -29732,13 +29685,10 @@ function AdminDashboard() {
             type: "submit",
             disabled: loginLoading,
             className: "w-full bg-[#2271b1] hover:bg-[#135e96] text-white font-semibold py-2.5 rounded transition text-sm disabled:opacity-60",
-            children: loginLoading ? "Please wait..." : authMode === "signin" ? "Log In" : "Create Account"
+            children: loginLoading ? "Please wait..." : "Log In"
           }
         ),
-        authMode === "signin" && /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-center text-xs text-[#646970]", children: [
-          "Default: ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-mono text-[#1d2327]", children: "admin / admin123" })
-        ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-center text-xs text-[#646970]", children: "Sign in with your admin credentials." })
       ] })
     ] }) });
   }

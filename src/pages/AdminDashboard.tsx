@@ -228,22 +228,6 @@ export default function AdminDashboard() {
             <p className="text-[#a7aaad] text-xs mt-1">Management Portal</p>
           </div>
 
-          {/* Toggle Tabs */}
-          <div className="flex border-b border-gray-200">
-            <button
-              onClick={() => setAuthMode("signin")}
-              className={`flex-1 py-3 text-sm font-semibold transition ${authMode === "signin" ? "bg-white text-[#2271b1] border-b-2 border-[#2271b1]" : "bg-[#f0f0f1] text-[#50575e] hover:bg-white"}`}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => setAuthMode("signup")}
-              className={`flex-1 py-3 text-sm font-semibold transition ${authMode === "signup" ? "bg-white text-[#2271b1] border-b-2 border-[#2271b1]" : "bg-[#f0f0f1] text-[#50575e] hover:bg-white"}`}
-            >
-              Sign Up
-            </button>
-          </div>
-
           <form onSubmit={handleAuth} className="p-6 space-y-4">
             {loginError && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded text-sm text-center">
@@ -251,25 +235,10 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            {authMode === "signup" && (
-              <>
-                <div>
-                  <label className="block text-xs font-semibold text-[#1d2327] mb-1.5 uppercase tracking-wide">Full Name</label>
-                  <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
-                    className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm text-[#1d2327] focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]" placeholder="Your full name" />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-[#1d2327] mb-1.5 uppercase tracking-wide">Email</label>
-                  <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
-                    className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm text-[#1d2327] focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]" placeholder="you@example.com" required />
-                </div>
-              </>
-            )}
-
             <div>
-              <label className="block text-xs font-semibold text-[#1d2327] mb-1.5 uppercase tracking-wide">Username</label>
+              <label className="block text-xs font-semibold text-[#1d2327] mb-1.5 uppercase tracking-wide">Username or Email</label>
               <input type="text" value={form.username} onChange={e => setForm({ ...form, username: e.target.value })}
-                className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm text-[#1d2327] focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]" placeholder="admin" required />
+                className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm text-[#1d2327] focus:outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]" placeholder="info@travelluxx.co.uk" required />
             </div>
 
             <div>
@@ -286,14 +255,12 @@ export default function AdminDashboard() {
 
             <button type="submit" disabled={loginLoading}
               className="w-full bg-[#2271b1] hover:bg-[#135e96] text-white font-semibold py-2.5 rounded transition text-sm disabled:opacity-60">
-              {loginLoading ? "Please wait..." : authMode === "signin" ? "Log In" : "Create Account"}
+              {loginLoading ? "Please wait..." : "Log In"}
             </button>
 
-            {authMode === "signin" && (
-              <p className="text-center text-xs text-[#646970]">
-                Default: <span className="font-mono text-[#1d2327]">admin / admin123</span>
-              </p>
-            )}
+            <p className="text-center text-xs text-[#646970]">
+              Sign in with your admin credentials.
+            </p>
           </form>
         </div>
       </div>
