@@ -691,11 +691,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       --tw-leading: initial;
       --tw-font-weight: initial;
       --tw-tracking: initial;
-      --tw-ordinal: initial;
-      --tw-slashed-zero: initial;
-      --tw-numeric-figure: initial;
-      --tw-numeric-spacing: initial;
-      --tw-numeric-fraction: initial;
       --tw-shadow: 0 0 #0000;
       --tw-shadow-color: initial;
       --tw-shadow-alpha: 100%;
@@ -710,7 +705,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       --tw-ring-offset-width: 0px;
       --tw-ring-offset-color: #fff;
       --tw-ring-offset-shadow: 0 0 #0000;
-      --tw-outline-style: solid;
       --tw-blur: initial;
       --tw-brightness: initial;
       --tw-contrast: initial;
@@ -1116,10 +1110,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     visibility: visible;
   }
 
-  .\!absolute {
-    position: absolute !important;
-  }
-
   .absolute {
     position: absolute;
   }
@@ -1353,14 +1343,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     display: block;
   }
 
-  .block\! {
-    display: block !important;
-  }
-
-  .contents {
-    display: contents;
-  }
-
   .flex {
     display: flex;
   }
@@ -1371,10 +1353,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .hidden {
     display: none;
-  }
-
-  .inline {
-    display: inline;
   }
 
   .inline-block {
@@ -1621,7 +1599,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     flex-shrink: 0;
   }
 
-  .flex-grow, .grow {
+  .flex-grow {
     flex-grow: 1;
   }
 
@@ -3010,29 +2988,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
     color: var(--color-yellow-700);
   }
 
-  .capitalize {
-    text-transform: capitalize;
-  }
-
-  .lowercase {
-    text-transform: lowercase;
-  }
-
   .uppercase {
     text-transform: uppercase;
   }
 
   .italic {
     font-style: italic;
-  }
-
-  .ordinal {
-    --tw-ordinal: ordinal;
-    font-variant-numeric: var(--tw-ordinal, ) var(--tw-slashed-zero, ) var(--tw-numeric-figure, ) var(--tw-numeric-spacing, ) var(--tw-numeric-fraction, );
-  }
-
-  .underline {
-    text-decoration-line: underline;
   }
 
   .antialiased {
@@ -3128,11 +3089,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     }
   }
 
-  .outline {
-    outline-style: var(--tw-outline-style);
-    outline-width: 1px;
-  }
-
   .blur {
     --tw-blur: blur(8px);
     filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
@@ -3225,10 +3181,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
   .select-none {
     -webkit-user-select: none;
     user-select: none;
-  }
-
-  .\[vite\:html\] {
-    vite: html;
   }
 
   @media (hover: hover) {
@@ -3976,31 +3928,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
   inherits: false
 }
 
-@property --tw-ordinal {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-slashed-zero {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-numeric-figure {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-numeric-spacing {
-  syntax: "*";
-  inherits: false
-}
-
-@property --tw-numeric-fraction {
-  syntax: "*";
-  inherits: false
-}
-
 @property --tw-shadow {
   syntax: "*";
   inherits: false;
@@ -4078,12 +4005,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
   syntax: "*";
   inherits: false;
   initial-value: 0 0 #0000;
-}
-
-@property --tw-outline-style {
-  syntax: "*";
-  inherits: false;
-  initial-value: solid;
 }
 
 @property --tw-blur {

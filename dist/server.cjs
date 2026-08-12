@@ -92,53 +92,65 @@ var PageSchema = new import_mongoose.default.Schema({
   updatedAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
 var PageModel = import_mongoose.default.models.Page || import_mongoose.default.model("Page", PageSchema);
-var isVercelLocalFallback = process.env.VERCEL && MONGODB_URI.includes("localhost");
-if (isVercelLocalFallback) {
-  console.log("\u26A0\uFE0F Vercel environment detected \u2014 skipping MongoDB connection (using localhost fallback). Using JSON file fallback.");
-} else {
-  import_mongoose.default.connect(MONGODB_URI, {
-    serverSelectionTimeoutMS: 3e3
-  }).then(async () => {
+var isConnected = false;
+async function runMigrations() {
+  try {
+    const count = await BookingModel.countDocuments();
+    if (count === 0 && import_fs.default.existsSync(BOOKINGS_PATH)) {
+      console.log("\u{1F4E5} Migrating bookings.json into MongoDB...");
+      const jsonBookings = JSON.parse(import_fs.default.readFileSync(BOOKINGS_PATH, "utf8"));
+      await BookingModel.insertMany(jsonBookings, { ordered: false }).catch(() => {
+      });
+      console.log("\u2705 MongoDB populated with all historic bookings!");
+    }
+  } catch (err) {
+    console.error("Error migrating bookings to MongoDB:", err.message);
+  }
+  try {
+    const count = await PostModel.countDocuments();
+    if (count === 0 && import_fs.default.existsSync(POSTS_PATH)) {
+      console.log("\u{1F4E5} Migrating posts.json into MongoDB...");
+      const jsonPosts = JSON.parse(import_fs.default.readFileSync(POSTS_PATH, "utf8"));
+      await PostModel.insertMany(jsonPosts, { ordered: false }).catch(() => {
+      });
+      console.log("\u2705 MongoDB populated with all posts!");
+    }
+  } catch (err) {
+    console.error("Error migrating posts to MongoDB:", err.message);
+  }
+  try {
+    const count = await PageModel.countDocuments();
+    if (count === 0 && import_fs.default.existsSync(PAGES_PATH)) {
+      console.log("\u{1F4E5} Migrating pages.json into MongoDB...");
+      const jsonPages = JSON.parse(import_fs.default.readFileSync(PAGES_PATH, "utf8"));
+      await PageModel.insertMany(jsonPages, { ordered: false }).catch(() => {
+      });
+      console.log("\u2705 MongoDB populated with all pages!");
+    }
+  } catch (err) {
+    console.error("Error migrating pages to MongoDB:", err.message);
+  }
+}
+async function connectToDatabase() {
+  if (isConnected || import_mongoose.default.connection.readyState === 1) {
+    isConnected = true;
+    return;
+  }
+  const isVercelLocalFallback = process.env.VERCEL && MONGODB_URI.includes("localhost");
+  if (isVercelLocalFallback) {
+    console.log("\u26A0\uFE0F Skipping MongoDB connection (local fallback on Vercel).");
+    return;
+  }
+  try {
+    await import_mongoose.default.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 3e3
+    });
+    isConnected = true;
     console.log("\u2705 MongoDB connected successfully!");
-    try {
-      const count = await BookingModel.countDocuments();
-      if (count === 0 && import_fs.default.existsSync(BOOKINGS_PATH)) {
-        console.log("\u{1F4E5} Migrating bookings.json into MongoDB...");
-        const jsonBookings = JSON.parse(import_fs.default.readFileSync(BOOKINGS_PATH, "utf8"));
-        await BookingModel.insertMany(jsonBookings, { ordered: false }).catch(() => {
-        });
-        console.log("\u2705 MongoDB populated with all historic bookings!");
-      }
-    } catch (err) {
-      console.error("Error migrating bookings to MongoDB:", err.message);
-    }
-    try {
-      const count = await PostModel.countDocuments();
-      if (count === 0 && import_fs.default.existsSync(POSTS_PATH)) {
-        console.log("\u{1F4E5} Migrating posts.json into MongoDB...");
-        const jsonPosts = JSON.parse(import_fs.default.readFileSync(POSTS_PATH, "utf8"));
-        await PostModel.insertMany(jsonPosts, { ordered: false }).catch(() => {
-        });
-        console.log("\u2705 MongoDB populated with all posts!");
-      }
-    } catch (err) {
-      console.error("Error migrating posts to MongoDB:", err.message);
-    }
-    try {
-      const count = await PageModel.countDocuments();
-      if (count === 0 && import_fs.default.existsSync(PAGES_PATH)) {
-        console.log("\u{1F4E5} Migrating pages.json into MongoDB...");
-        const jsonPages = JSON.parse(import_fs.default.readFileSync(PAGES_PATH, "utf8"));
-        await PageModel.insertMany(jsonPages, { ordered: false }).catch(() => {
-        });
-        console.log("\u2705 MongoDB populated with all pages!");
-      }
-    } catch (err) {
-      console.error("Error migrating pages to MongoDB:", err.message);
-    }
-  }).catch((err) => {
-    console.error("\u274C MongoDB connection error:", err);
-  });
+    await runMigrations();
+  } catch (err) {
+    console.error("\u274C MongoDB connection error:", err.message);
+  }
 }
 function readPages() {
   try {
@@ -577,6 +589,7 @@ app.post("/api/distance", async (req, res) => {
 });
 app.post("/api/bookings", async (req, res) => {
   try {
+    await connectToDatabase();
     const data = req.body;
     const bookingId = `WLC-2026-${Math.floor(1e3 + Math.random() * 9e3)}`;
     const newBooking = {
@@ -613,6 +626,7 @@ app.post("/api/admin/login", async (req, res) => {
 });
 app.get("/api/admin/bookings", async (req, res) => {
   try {
+    await connectToDatabase();
     const rows = await BookingModel.find().sort({ createdAt: -1 });
     if (rows && rows.length > 0) {
       return res.json(rows);
@@ -627,6 +641,7 @@ app.put("/api/admin/bookings/:id", async (req, res) => {
   const { id } = req.params;
   const { status, paymentStatus } = req.body;
   try {
+    await connectToDatabase();
     const updateData = {};
     if (status) updateData.status = status;
     if (paymentStatus) updateData.paymentStatus = paymentStatus;
@@ -647,6 +662,7 @@ app.put("/api/admin/bookings/:id", async (req, res) => {
 app.delete("/api/admin/bookings/:id", async (req, res) => {
   const { id } = req.params;
   try {
+    await connectToDatabase();
     await BookingModel.deleteOne({ id });
   } catch (e) {
   }
@@ -657,6 +673,7 @@ app.delete("/api/admin/bookings/:id", async (req, res) => {
 });
 app.get("/api/posts", async (req, res) => {
   try {
+    await connectToDatabase();
     const posts2 = await PostModel.find({ published: 1 }).sort({ createdAt: -1 });
     if (posts2 && posts2.length > 0) return res.json(posts2);
   } catch (e) {
@@ -666,6 +683,7 @@ app.get("/api/posts", async (req, res) => {
 });
 app.get("/api/posts/:slug", async (req, res) => {
   try {
+    await connectToDatabase();
     const post2 = await PostModel.findOne({ slug: req.params.slug });
     if (post2) return res.json(post2);
   } catch (e) {
@@ -676,6 +694,7 @@ app.get("/api/posts/:slug", async (req, res) => {
 });
 app.get("/api/admin/posts", async (req, res) => {
   try {
+    await connectToDatabase();
     const rows = await PostModel.find().sort({ createdAt: -1 });
     if (rows && rows.length > 0) return res.json(rows);
   } catch (e) {
@@ -683,34 +702,40 @@ app.get("/api/admin/posts", async (req, res) => {
   return res.json(readPosts());
 });
 app.post("/api/admin/posts", async (req, res) => {
-  const newPost = {
-    id: `post-${Date.now()}`,
-    slug: req.body.slug || (req.body.title ? req.body.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : `post-${Date.now()}`),
-    title: req.body.title || "",
-    excerpt: req.body.excerpt || "",
-    content: req.body.content || "",
-    image: req.body.image || "",
-    author: req.body.author || "Travelluxx Editorial",
-    date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-    published: req.body.published !== false ? 1 : 0,
-    metaTitle: req.body.metaTitle || "",
-    metaDescription: req.body.metaDescription || "",
-    createdAt: (/* @__PURE__ */ new Date()).toISOString()
-  };
-  const posts = readPosts();
-  posts.unshift(newPost);
-  writePosts(posts);
   try {
-    await PostModel.findOneAndUpdate({ id: newPost.id }, newPost, { upsert: true });
-    console.log("\u{1F4BE} Saved Post to MongoDB!");
-  } catch (e) {
-    console.error("MongoDB Post error:", e.message);
+    await connectToDatabase();
+    const newPost = {
+      id: `post-${Date.now()}`,
+      slug: req.body.slug || (req.body.title ? req.body.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") : `post-${Date.now()}`),
+      title: req.body.title || "",
+      excerpt: req.body.excerpt || "",
+      content: req.body.content || "",
+      image: req.body.image || "",
+      author: req.body.author || "Travelluxx Editorial",
+      date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+      published: req.body.published !== false ? 1 : 0,
+      metaTitle: req.body.metaTitle || "",
+      metaDescription: req.body.metaDescription || "",
+      createdAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    const posts = readPosts();
+    posts.unshift(newPost);
+    writePosts(posts);
+    try {
+      await PostModel.findOneAndUpdate({ id: newPost.id }, newPost, { upsert: true });
+      console.log("\u{1F4BE} Saved Post to MongoDB!");
+    } catch (e) {
+      console.error("MongoDB Post error:", e.message);
+    }
+    return res.json({ success: true, post: newPost });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || "Failed to create post" });
   }
-  return res.json({ success: true, post: newPost });
 });
 app.put("/api/admin/posts/:id", async (req, res) => {
   const { id } = req.params;
   try {
+    await connectToDatabase();
     await PostModel.findOneAndUpdate({ id }, { $set: req.body });
   } catch (e) {
   }
@@ -726,6 +751,7 @@ app.put("/api/admin/posts/:id", async (req, res) => {
 app.delete("/api/admin/posts/:id", async (req, res) => {
   const { id } = req.params;
   try {
+    await connectToDatabase();
     await PostModel.deleteOne({ id });
   } catch (e) {
   }
@@ -766,6 +792,7 @@ MOLLIE_API_KEY=${mollie_api_key}
 });
 app.get("/api/pages", async (req, res) => {
   try {
+    await connectToDatabase();
     const pages = await PageModel.find();
     if (pages && pages.length > 0) return res.json(pages);
   } catch (e) {
@@ -774,6 +801,7 @@ app.get("/api/pages", async (req, res) => {
 });
 app.get("/api/pages/:slug", async (req, res) => {
   try {
+    await connectToDatabase();
     const page2 = await PageModel.findOne({ slug: req.params.slug });
     if (page2) return res.json(page2);
   } catch (e) {
@@ -784,6 +812,7 @@ app.get("/api/pages/:slug", async (req, res) => {
 });
 app.get("/api/admin/pages", async (req, res) => {
   try {
+    await connectToDatabase();
     const pages = await PageModel.find();
     if (pages && pages.length > 0) return res.json(pages);
   } catch (e) {
@@ -791,24 +820,30 @@ app.get("/api/admin/pages", async (req, res) => {
   return res.json(readPages());
 });
 app.post("/api/admin/pages", async (req, res) => {
-  const pages = readPages();
-  const newPage = {
-    id: `page-${Date.now()}`,
-    slug: req.body.slug || req.body.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `page-${Date.now()}`,
-    ...req.body,
-    updatedAt: (/* @__PURE__ */ new Date()).toISOString()
-  };
-  pages.push(newPage);
-  writePages(pages);
   try {
-    await PageModel.findOneAndUpdate({ id: newPage.id }, newPage, { upsert: true });
-    console.log("\u{1F4BE} Saved Page to MongoDB!");
-  } catch (e) {
+    await connectToDatabase();
+    const pages = readPages();
+    const newPage = {
+      id: `page-${Date.now()}`,
+      slug: req.body.slug || req.body.title?.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `page-${Date.now()}`,
+      ...req.body,
+      updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+    };
+    pages.push(newPage);
+    writePages(pages);
+    try {
+      await PageModel.findOneAndUpdate({ id: newPage.id }, newPage, { upsert: true });
+      console.log("\u{1F4BE} Saved Page to MongoDB!");
+    } catch (e) {
+    }
+    return res.json({ success: true, page: newPage });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || "Failed to create page" });
   }
-  return res.json({ success: true, page: newPage });
 });
 app.put("/api/admin/pages/:id", async (req, res) => {
   try {
+    await connectToDatabase();
     await PageModel.findOneAndUpdate({ id: req.params.id }, { ...req.body, updatedAt: (/* @__PURE__ */ new Date()).toISOString() });
   } catch (e) {
   }
@@ -823,6 +858,7 @@ app.put("/api/admin/pages/:id", async (req, res) => {
 });
 app.delete("/api/admin/pages/:id", async (req, res) => {
   try {
+    await connectToDatabase();
     await PageModel.deleteOne({ id: req.params.id });
   } catch (e) {
   }
