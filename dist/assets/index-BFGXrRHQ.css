@@ -1913,11 +1913,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     border-bottom-width: 1px;
   }
 
-  .border-b-2 {
-    border-bottom-style: var(--tw-border-style);
-    border-bottom-width: 2px;
-  }
-
   .border-l-4 {
     border-left-style: var(--tw-border-style);
     border-left-width: 4px;
@@ -2006,10 +2001,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .border-emerald-600 {
     border-color: var(--color-emerald-600);
-  }
-
-  .border-gray-200 {
-    border-color: var(--color-gray-200);
   }
 
   .border-green-200 {
@@ -3355,10 +3346,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       .hover\:bg-slate-50\/50:hover {
         background-color: color-mix(in oklab, var(--color-slate-50) 50%, transparent);
       }
-    }
-
-    .hover\:bg-white:hover {
-      background-color: var(--color-white);
     }
 
     .hover\:bg-white\/15:hover {

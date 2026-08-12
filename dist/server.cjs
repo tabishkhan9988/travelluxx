@@ -92,7 +92,9 @@ var PageSchema = new import_mongoose.default.Schema({
   updatedAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
 var PageModel = import_mongoose.default.models.Page || import_mongoose.default.model("Page", PageSchema);
-import_mongoose.default.connect(MONGODB_URI).then(async () => {
+import_mongoose.default.connect(MONGODB_URI, {
+  serverSelectionTimeoutMS: 3e3
+}).then(async () => {
   console.log("\u2705 MongoDB connected successfully!");
   try {
     const count = await BookingModel.countDocuments();

@@ -73,7 +73,9 @@ const PageSchema = new mongoose.Schema({
 const PageModel = mongoose.models.Page || mongoose.model("Page", PageSchema);
 
 // Connect to MongoDB
-mongoose.connect(MONGODB_URI)
+mongoose.connect(MONGODB_URI, {
+  serverSelectionTimeoutMS: 3000
+})
   .then(async () => {
     console.log("✅ MongoDB connected successfully!");
     
