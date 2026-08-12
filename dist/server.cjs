@@ -121,6 +121,45 @@ try {
     }
     console.log("\u2705 Local SQLite database populated with all historic leads!");
   }
+  const postsCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM posts").get().count;
+  if (postsCount === 0 && import_fs.default.existsSync(POSTS_PATH)) {
+    console.log("\u{1F4E5} Migrating posts.json into local SQLite database...");
+    const jsonPosts = JSON.parse(import_fs.default.readFileSync(POSTS_PATH, "utf8"));
+    const insertPost = sqliteDb.prepare(`
+      INSERT OR IGNORE INTO posts (id, title, slug, excerpt, content, image, author, date, published, metaTitle, metaDescription, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const p of jsonPosts) {
+      insertPost.run(p.id, p.title || "", p.slug || "", p.excerpt || "", p.content || "", p.image || "", p.author || "Travelluxx Editorial", p.date || "", p.published !== false ? 1 : 0, p.metaTitle || "", p.metaDescription || "", p.createdAt || (/* @__PURE__ */ new Date()).toISOString());
+    }
+    console.log("\u2705 Posts migrated to SQLite! (" + jsonPosts.length + " posts)");
+  }
+  const pagesCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM pages").get().count;
+  if (pagesCount === 0 && import_fs.default.existsSync(PAGES_PATH)) {
+    console.log("\u{1F4E5} Migrating pages.json into local SQLite database...");
+    const jsonPages = JSON.parse(import_fs.default.readFileSync(PAGES_PATH, "utf8"));
+    const insertPage = sqliteDb.prepare(`
+      INSERT OR IGNORE INTO pages (id, title, slug, content, metaTitle, metaDescription, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const pg of jsonPages) {
+      insertPage.run(pg.id, pg.title || "", pg.slug || "", pg.content || "", pg.metaTitle || "", pg.metaDescription || "", pg.updatedAt || (/* @__PURE__ */ new Date()).toISOString());
+    }
+    console.log("\u2705 Pages migrated to SQLite! (" + jsonPages.length + " pages)");
+  }
+  const adminsCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM admins").get().count;
+  if (adminsCount === 0 && import_fs.default.existsSync(ADMINS_PATH)) {
+    console.log("\u{1F4E5} Migrating admins.json into local SQLite database...");
+    const jsonAdmins = JSON.parse(import_fs.default.readFileSync(ADMINS_PATH, "utf8"));
+    const insertAdmin = sqliteDb.prepare(`
+      INSERT OR IGNORE INTO admins (id, username, email, password, name, createdAt)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+    for (const a of jsonAdmins) {
+      insertAdmin.run(a.id, a.username || "", a.email || "", a.password || "", a.name || "", a.createdAt || (/* @__PURE__ */ new Date()).toISOString());
+    }
+    console.log("\u2705 Admins migrated to SQLite! (" + jsonAdmins.length + " admins)");
+  }
 } catch (err) {
   console.error("Local SQLite Database initialization error:", err.message);
 }
