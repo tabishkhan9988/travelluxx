@@ -25,129 +25,133 @@ const SQLITE_PATH = path.join(process.cwd(), "database.sqlite");
 let sqliteDb: any = null;
 
 try {
-  sqliteDb = new Database(SQLITE_PATH);
-  console.log("✅ Local SQLite Database connected successfully:", SQLITE_PATH);
+  if (process.env.VERCEL) {
+    console.log("⚠️ Vercel environment detected — skipping SQLite (not supported). Using JSON file fallback.");
+  } else {
+    sqliteDb = new Database(SQLITE_PATH);
+    console.log("✅ Local SQLite Database connected successfully:", SQLITE_PATH);
 
-  // Initialize SQLite Tables
-  sqliteDb.exec(`
-    CREATE TABLE IF NOT EXISTS bookings (
-      id TEXT PRIMARY KEY,
-      passengerName TEXT,
-      passengerEmail TEXT,
-      passengerPhone TEXT,
-      pickup TEXT,
-      dropoff TEXT,
-      date TEXT,
-      time TEXT,
-      distance TEXT,
-      vehicle TEXT,
-      price REAL,
-      status TEXT DEFAULT 'Pending',
-      paymentMethod TEXT,
-      paymentStatus TEXT DEFAULT 'Unpaid',
-      flightNumber TEXT,
-      createdAt TEXT
-    );
+    // Initialize SQLite Tables
+    sqliteDb.exec(`
+      CREATE TABLE IF NOT EXISTS bookings (
+        id TEXT PRIMARY KEY,
+        passengerName TEXT,
+        passengerEmail TEXT,
+        passengerPhone TEXT,
+        pickup TEXT,
+        dropoff TEXT,
+        date TEXT,
+        time TEXT,
+        distance TEXT,
+        vehicle TEXT,
+        price REAL,
+        status TEXT DEFAULT 'Pending',
+        paymentMethod TEXT,
+        paymentStatus TEXT DEFAULT 'Unpaid',
+        flightNumber TEXT,
+        createdAt TEXT
+      );
 
-    CREATE TABLE IF NOT EXISTS posts (
-      id TEXT PRIMARY KEY,
-      title TEXT,
-      slug TEXT UNIQUE,
-      excerpt TEXT,
-      content TEXT,
-      image TEXT,
-      author TEXT,
-      date TEXT,
-      published INTEGER DEFAULT 1,
-      metaTitle TEXT,
-      metaDescription TEXT,
-      createdAt TEXT
-    );
+      CREATE TABLE IF NOT EXISTS posts (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        slug TEXT UNIQUE,
+        excerpt TEXT,
+        content TEXT,
+        image TEXT,
+        author TEXT,
+        date TEXT,
+        published INTEGER DEFAULT 1,
+        metaTitle TEXT,
+        metaDescription TEXT,
+        createdAt TEXT
+      );
 
-    CREATE TABLE IF NOT EXISTS pages (
-      id TEXT PRIMARY KEY,
-      title TEXT,
-      slug TEXT UNIQUE,
-      content TEXT,
-      metaTitle TEXT,
-      metaDescription TEXT,
-      updatedAt TEXT
-    );
+      CREATE TABLE IF NOT EXISTS pages (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        slug TEXT UNIQUE,
+        content TEXT,
+        metaTitle TEXT,
+        metaDescription TEXT,
+        updatedAt TEXT
+      );
 
-    CREATE TABLE IF NOT EXISTS admins (
-      id TEXT PRIMARY KEY,
-      username TEXT UNIQUE,
-      email TEXT UNIQUE,
-      password TEXT,
-      name TEXT,
-      createdAt TEXT
-    );
-  `);
-
-  // Migrate existing bookings.json into SQLite if table is empty
-  const countStmt = sqliteDb.prepare("SELECT COUNT(*) as count FROM bookings");
-  const rowCount = countStmt.get().count;
-  if (rowCount === 0 && fs.existsSync(BOOKINGS_PATH)) {
-    console.log("📥 Migrating bookings.json into local SQLite database...");
-    const jsonBookings = JSON.parse(fs.readFileSync(BOOKINGS_PATH, "utf8"));
-    const insertStmt = sqliteDb.prepare(`
-      INSERT OR IGNORE INTO bookings (id, passengerName, passengerEmail, passengerPhone, pickup, dropoff, date, time, distance, vehicle, price, status, paymentMethod, paymentStatus, flightNumber, createdAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      CREATE TABLE IF NOT EXISTS admins (
+        id TEXT PRIMARY KEY,
+        username TEXT UNIQUE,
+        email TEXT UNIQUE,
+        password TEXT,
+        name TEXT,
+        createdAt TEXT
+      );
     `);
-    for (const b of jsonBookings) {
-      insertStmt.run(b.id, b.passengerName || "", b.passengerEmail || "", b.passengerPhone || "", b.pickup || "", b.dropoff || "", b.date || "", b.time || "", b.distance || "", b.vehicle || "Luxury", b.price || 0, b.status || "Pending", b.paymentMethod || "Pay Later", b.paymentStatus || "Unpaid", b.flightNumber || "", b.createdAt || new Date().toISOString());
-    }
-    console.log("✅ Local SQLite database populated with all historic leads!");
-  }
 
-  // Migrate existing posts.json into SQLite if table is empty
-  const postsCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM posts").get().count;
-  if (postsCount === 0 && fs.existsSync(POSTS_PATH)) {
-    console.log("📥 Migrating posts.json into local SQLite database...");
-    const jsonPosts = JSON.parse(fs.readFileSync(POSTS_PATH, "utf8"));
-    const insertPost = sqliteDb.prepare(`
-      INSERT OR IGNORE INTO posts (id, title, slug, excerpt, content, image, author, date, published, metaTitle, metaDescription, createdAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const p of jsonPosts) {
-      insertPost.run(p.id, p.title || "", p.slug || "", p.excerpt || "", p.content || "", p.image || "", p.author || "Travelluxx Editorial", p.date || "", p.published !== false ? 1 : 0, p.metaTitle || "", p.metaDescription || "", p.createdAt || new Date().toISOString());
+    // Migrate existing bookings.json into SQLite if table is empty
+    const countStmt = sqliteDb.prepare("SELECT COUNT(*) as count FROM bookings");
+    const rowCount = countStmt.get().count;
+    if (rowCount === 0 && fs.existsSync(BOOKINGS_PATH)) {
+      console.log("📥 Migrating bookings.json into local SQLite database...");
+      const jsonBookings = JSON.parse(fs.readFileSync(BOOKINGS_PATH, "utf8"));
+      const insertStmt = sqliteDb.prepare(`
+        INSERT OR IGNORE INTO bookings (id, passengerName, passengerEmail, passengerPhone, pickup, dropoff, date, time, distance, vehicle, price, status, paymentMethod, paymentStatus, flightNumber, createdAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      for (const b of jsonBookings) {
+        insertStmt.run(b.id, b.passengerName || "", b.passengerEmail || "", b.passengerPhone || "", b.pickup || "", b.dropoff || "", b.date || "", b.time || "", b.distance || "", b.vehicle || "Luxury", b.price || 0, b.status || "Pending", b.paymentMethod || "Pay Later", b.paymentStatus || "Unpaid", b.flightNumber || "", b.createdAt || new Date().toISOString());
+      }
+      console.log("✅ Local SQLite database populated with all historic leads!");
     }
-    console.log("✅ Posts migrated to SQLite! (" + jsonPosts.length + " posts)");
-  }
 
-  // Migrate existing pages.json into SQLite if table is empty
-  const pagesCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM pages").get().count;
-  if (pagesCount === 0 && fs.existsSync(PAGES_PATH)) {
-    console.log("📥 Migrating pages.json into local SQLite database...");
-    const jsonPages = JSON.parse(fs.readFileSync(PAGES_PATH, "utf8"));
-    const insertPage = sqliteDb.prepare(`
-      INSERT OR IGNORE INTO pages (id, title, slug, content, metaTitle, metaDescription, updatedAt)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const pg of jsonPages) {
-      insertPage.run(pg.id, pg.title || "", pg.slug || "", pg.content || "", pg.metaTitle || "", pg.metaDescription || "", pg.updatedAt || new Date().toISOString());
+    // Migrate existing posts.json into SQLite if table is empty
+    const postsCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM posts").get().count;
+    if (postsCount === 0 && fs.existsSync(POSTS_PATH)) {
+      console.log("📥 Migrating posts.json into local SQLite database...");
+      const jsonPosts = JSON.parse(fs.readFileSync(POSTS_PATH, "utf8"));
+      const insertPost = sqliteDb.prepare(`
+        INSERT OR IGNORE INTO posts (id, title, slug, excerpt, content, image, author, date, published, metaTitle, metaDescription, createdAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+      for (const p of jsonPosts) {
+        insertPost.run(p.id, p.title || "", p.slug || "", p.excerpt || "", p.content || "", p.image || "", p.author || "Travelluxx Editorial", p.date || "", p.published !== false ? 1 : 0, p.metaTitle || "", p.metaDescription || "", p.createdAt || new Date().toISOString());
+      }
+      console.log("✅ Posts migrated to SQLite! (" + jsonPosts.length + " posts)");
     }
-    console.log("✅ Pages migrated to SQLite! (" + jsonPages.length + " pages)");
-  }
 
-  // Migrate existing admins.json into SQLite if table is empty
-  const adminsCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM admins").get().count;
-  if (adminsCount === 0 && fs.existsSync(ADMINS_PATH)) {
-    console.log("📥 Migrating admins.json into local SQLite database...");
-    const jsonAdmins = JSON.parse(fs.readFileSync(ADMINS_PATH, "utf8"));
-    const insertAdmin = sqliteDb.prepare(`
-      INSERT OR IGNORE INTO admins (id, username, email, password, name, createdAt)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `);
-    for (const a of jsonAdmins) {
-      insertAdmin.run(a.id, a.username || "", a.email || "", a.password || "", a.name || "", a.createdAt || new Date().toISOString());
+    // Migrate existing pages.json into SQLite if table is empty
+    const pagesCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM pages").get().count;
+    if (pagesCount === 0 && fs.existsSync(PAGES_PATH)) {
+      console.log("📥 Migrating pages.json into local SQLite database...");
+      const jsonPages = JSON.parse(fs.readFileSync(PAGES_PATH, "utf8"));
+      const insertPage = sqliteDb.prepare(`
+        INSERT OR IGNORE INTO pages (id, title, slug, content, metaTitle, metaDescription, updatedAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `);
+      for (const pg of jsonPages) {
+        insertPage.run(pg.id, pg.title || "", pg.slug || "", pg.content || "", pg.metaTitle || "", pg.metaDescription || "", pg.updatedAt || new Date().toISOString());
+      }
+      console.log("✅ Pages migrated to SQLite! (" + jsonPages.length + " pages)");
     }
-    console.log("✅ Admins migrated to SQLite! (" + jsonAdmins.length + " admins)");
-  }
 
+    // Migrate existing admins.json into SQLite if table is empty
+    const adminsCount = sqliteDb.prepare("SELECT COUNT(*) as count FROM admins").get().count;
+    if (adminsCount === 0 && fs.existsSync(ADMINS_PATH)) {
+      console.log("📥 Migrating admins.json into local SQLite database...");
+      const jsonAdmins = JSON.parse(fs.readFileSync(ADMINS_PATH, "utf8"));
+      const insertAdmin = sqliteDb.prepare(`
+        INSERT OR IGNORE INTO admins (id, username, email, password, name, createdAt)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `);
+      for (const a of jsonAdmins) {
+        insertAdmin.run(a.id, a.username || "", a.email || "", a.password || "", a.name || "", a.createdAt || new Date().toISOString());
+      }
+      console.log("✅ Admins migrated to SQLite! (" + jsonAdmins.length + " admins)");
+    }
+  } // end else (non-Vercel)
 } catch (err: any) {
   console.error("Local SQLite Database initialization error:", err.message);
 }
+
 
 // --- REMOTE MYSQL DATABASE CONNECTION (For Live Server) ---
 let dbPool: mysql.Pool | null = null;
