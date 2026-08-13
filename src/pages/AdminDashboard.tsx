@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Eye, EyeOff, LayoutDashboard, FileText, Newspaper, Menu, Image, Settings, BookOpen, LogOut, Plus, Trash2, Edit2, Save, X, Upload, ChevronUp, ChevronDown, ExternalLink, Users } from "lucide-react";
+import { Eye, EyeOff, LayoutDashboard, FileText, Newspaper, Menu, Image, Settings, BookOpen, LogOut, Plus, Trash2, Edit2, Save, X, Upload, ChevronUp, ChevronDown, ExternalLink, Users, MessageSquare } from "lucide-react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Tab = "dashboard" | "leads" | "posts" | "pages" | "media" | "menus" | "settings";
+type Tab = "dashboard" | "leads" | "posts" | "pages" | "media" | "menus" | "settings" | "inquiries";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function toBase64(file: File): Promise<string> {
@@ -13,6 +13,55 @@ function toBase64(file: File): Promise<string> {
     r.readAsDataURL(file);
   });
 }
+
+const RichEditorToolbar = ({ textareaId, value, onChange }: { textareaId: string, value: string, onChange: (val: string) => void }) => {
+  const insertTag = (tag: string, type: 'wrap' | 'replace' | 'color' | 'link' | 'image') => {
+    const txt = document.getElementById(textareaId) as HTMLTextAreaElement;
+    if (!txt) return;
+    const start = txt.selectionStart;
+    const end = txt.selectionEnd;
+    const val = txt.value;
+    const selectedText = val.substring(start, end);
+
+    let replacement = "";
+    if (type === 'wrap') {
+      replacement = `<${tag}>${selectedText || 'Text'}</${tag}>`;
+    } else if (type === 'link') {
+      const url = prompt("Enter Link URL (e.g. https://google.com):");
+      if (!url) return;
+      replacement = `<a href="${url}" target="_blank" class="text-[#047857] underline font-semibold hover:text-[#065f46]">${selectedText || 'Link Text'}</a>`;
+    } else if (type === 'color') {
+      const color = prompt("Enter color name or hex (e.g. red, #047857):", "#047857");
+      if (!color) return;
+      replacement = `<span style="color: ${color};">${selectedText || 'colored text'}</span>`;
+    } else if (type === 'image') {
+      const url = prompt("Enter Image URL:");
+      if (!url) return;
+      replacement = `<img src="${url}" alt="image" class="w-full h-auto rounded-lg shadow-sm border border-[#e2e8f0] my-4" />`;
+    }
+
+    const newVal = val.substring(0, start) + replacement + val.substring(end);
+    onChange(newVal);
+    
+    setTimeout(() => {
+      txt.focus();
+      txt.setSelectionRange(start + replacement.length, start + replacement.length);
+    }, 50);
+  };
+
+  return (
+    <div className="flex flex-wrap gap-1.5 p-2 bg-[#f0f0f1] border border-b-0 border-[#8c8f94] rounded-t-sm">
+      <button type="button" onClick={() => insertTag('strong', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs font-bold text-[#1d2327]">B</button>
+      <button type="button" onClick={() => insertTag('em', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs italic text-[#1d2327]">I</button>
+      <button type="button" onClick={() => insertTag('h2', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs font-semibold text-[#1d2327]">H2</button>
+      <button type="button" onClick={() => insertTag('h3', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs font-semibold text-[#1d2327]">H3</button>
+      <button type="button" onClick={() => insertTag('p', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs text-[#1d2327]">Paragraph</button>
+      <button type="button" onClick={() => insertTag('a', 'link')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs text-[#2271b1] underline">Link</button>
+      <button type="button" onClick={() => insertTag('span', 'color')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs text-[#d63638]">Color</button>
+      <button type="button" onClick={() => insertTag('img', 'image')} className="px-2 py-1 bg-[#2271b1] text-white border border-[#135e96] hover:bg-[#135e96] rounded text-xs">Insert Image</button>
+    </div>
+  );
+};
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminDashboard() {
@@ -30,6 +79,7 @@ export default function AdminDashboard() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [pages, setPages] = useState<any[]>([]);
+  const [inquiries, setInquiries] = useState<any[]>([]);
   const [media, setMedia] = useState<string[]>([]);
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({});
@@ -62,7 +112,7 @@ export default function AdminDashboard() {
   }, [token]);
 
   const fetchAll = () => {
-    fetchBookings(); fetchPosts(); fetchPages(); fetchSettings(); fetchMenu();
+    fetchBookings(); fetchPosts(); fetchPages(); fetchSettings(); fetchMenu(); fetchInquiries();
   };
 
   const fetchBookings = async () => {
@@ -73,6 +123,14 @@ export default function AdminDashboard() {
   };
   const fetchPages = async () => {
     const r = await fetch("/api/admin/pages"); setPages(await r.json());
+  };
+  const fetchInquiries = async () => {
+    const r = await fetch("/api/admin/inquiries"); setInquiries(await r.json());
+  };
+  const deleteInquiry = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this inquiry?")) return;
+    const r = await fetch(`/api/admin/inquiries/${id}`, { method: "DELETE" });
+    if (r.ok) fetchInquiries();
   };
   const fetchSettings = async () => {
     const r = await fetch("/api/admin/settings"); setSettings(await r.json());
@@ -108,14 +166,19 @@ export default function AdminDashboard() {
   const handleLogout = () => { localStorage.removeItem("travelluxx_admin_token"); setToken(null); };
 
   // ─── Bookings ────────────────────────────────────────────────────────────────
-  const updateBookingStatus = async (id: string, status: string) => {
-    await fetch(`/api/admin/bookings/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status }) });
-    fetchBookings();
-    if (selectedBooking?.id === id) setSelectedBooking({ ...selectedBooking, status });
+  const updateBookingStatus = async (id: string, newStatus: string) => {
+    const res = await fetch(`/api/admin/bookings/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: newStatus })
+    });
+    if (res.ok) fetchBookings();
   };
+
   const deleteBooking = async (id: string) => {
-    if (!confirm("Delete this lead?")) return;
-    await fetch(`/api/admin/bookings/${id}`, { method: "DELETE" }); fetchBookings(); setSelectedBooking(null);
+    if (!confirm("Are you sure you want to delete this booking?")) return;
+    const res = await fetch(`/api/admin/bookings/${id}`, { method: "DELETE" });
+    if (res.ok) fetchBookings();
   };
 
   const filteredBookings = bookings.filter(b => {
@@ -130,27 +193,53 @@ export default function AdminDashboard() {
     setEditingPost(null);
     setPostForm({ title: "", slug: "", excerpt: "", content: "", image: "", published: true, metaTitle: "", metaDescription: "" });
   };
-  const openEditPost = (p: any) => {
-    setEditingPost(p);
-    setPostForm({ title: p.title || "", slug: p.slug || "", excerpt: p.excerpt || "", content: p.content || "", image: p.image || "", published: p.published !== false, metaTitle: p.metaTitle || "", metaDescription: p.metaDescription || "" });
+  const openEditPost = (post: any) => {
+    setEditingPost(post);
+    setPostForm({
+      title: post.title,
+      slug: post.slug,
+      excerpt: post.excerpt || "",
+      content: post.content || "",
+      image: post.image || "",
+      published: post.published !== false,
+      metaTitle: post.metaTitle || "",
+      metaDescription: post.metaDescription || ""
+    });
   };
   const savePost = async (e: React.FormEvent) => {
     e.preventDefault();
     const url = editingPost ? `/api/admin/posts/${editingPost.id}` : "/api/admin/posts";
     const method = editingPost ? "PUT" : "POST";
-    await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(postForm) });
-    fetchPosts(); setEditingPost(undefined);
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postForm)
+    });
+    if (res.ok) {
+      setEditingPost(undefined);
+      fetchPosts();
+    }
   };
   const deletePost = async (id: string) => {
-    if (!confirm("Delete post?")) return;
-    await fetch(`/api/admin/posts/${id}`, { method: "DELETE" }); fetchPosts();
+    if (!confirm("Are you sure?")) return;
+    const res = await fetch(`/api/admin/posts/${id}`, { method: "DELETE" });
+    if (res.ok) fetchPosts();
   };
 
   // ─── Pages ───────────────────────────────────────────────────────────────────
-  const openNewPage = () => { setEditingPage(null); setPageForm({ title: "", slug: "", content: "", metaTitle: "", metaDescription: "" }); };
-  const openEditPage = (p: any) => {
-    setEditingPage(p);
-    setPageForm({ title: p.title || "", slug: p.slug || "", content: p.content || "", metaTitle: p.metaTitle || "", metaDescription: p.metaDescription || "" });
+  const openNewPage = () => {
+    setEditingPage(null);
+    setPageForm({ title: "", slug: "", content: "", metaTitle: "", metaDescription: "" });
+  };
+  const openEditPage = (page: any) => {
+    setEditingPage(page);
+    setPageForm({
+      title: page.title,
+      slug: page.slug,
+      content: page.content || "",
+      metaTitle: page.metaTitle || "",
+      metaDescription: page.metaDescription || ""
+    });
   };
   const savePage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -211,6 +300,7 @@ export default function AdminDashboard() {
     leads: bookings.length,
     today: bookings.filter(b => b.createdAt?.startsWith(new Date().toISOString().slice(0, 10))).length,
     revenue: bookings.reduce((s, b) => s + Number(b.price || 0), 0),
+    inquiries: inquiries.length,
     posts: posts.length,
     pages: pages.length,
   };
@@ -270,7 +360,8 @@ export default function AdminDashboard() {
   // ─── DASHBOARD LAYOUT ─────────────────────────────────────────────────────────
   const navItems: { id: Tab; icon: React.ReactNode; label: string }[] = [
     { id: "dashboard", icon: <LayoutDashboard className="w-4 h-4" />, label: "Dashboard" },
-    { id: "leads", icon: <BookOpen className="w-4 h-4" />, label: `Leads & Bookings` },
+    { id: "leads", icon: <BookOpen className="w-4 h-4" />, label: "Leads & Bookings" },
+    { id: "inquiries", icon: <MessageSquare className="w-4 h-4" />, label: "Contact Inquiries" },
     { id: "posts", icon: <Newspaper className="w-4 h-4" />, label: "Posts (Blog)" },
     { id: "pages", icon: <FileText className="w-4 h-4" />, label: "Pages" },
     { id: "media", icon: <Image className="w-4 h-4" />, label: "Media" },
@@ -344,11 +435,12 @@ export default function AdminDashboard() {
                 <p className="text-[#646970] text-xs mt-1">Welcome back! Here's an overview of your site.</p>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 {[
                   { label: "Total Leads", value: stats.leads, color: "#2271b1" },
                   { label: "Today's Bookings", value: stats.today, color: "#00a32a" },
                   { label: "Total Revenue", value: `£${stats.revenue.toFixed(2)}`, color: "#d63638" },
+                  { label: "Contact Inquiries", value: stats.inquiries, color: "#0284c7" },
                   { label: "Blog Posts", value: stats.posts, color: "#9c27b0" },
                 ].map(s => (
                   <div key={s.label} className="bg-white border border-[#c3c4c7] rounded shadow-sm p-5">
@@ -358,7 +450,7 @@ export default function AdminDashboard() {
                 ))}
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-3 gap-4">
                 <div className="bg-white border border-[#c3c4c7] rounded shadow-sm p-5">
                   <h3 className="font-semibold text-[#1d2327] mb-3 pb-2 border-b border-[#f0f0f1]">Recent Leads</h3>
                   <div className="space-y-2">
@@ -376,17 +468,34 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="bg-white border border-[#c3c4c7] rounded shadow-sm p-5">
-                  <h3 className="font-semibold text-[#1d2327] mb-3 pb-2 border-b border-[#f0f0f1]">Quick Links</h3>
+                  <h3 className="font-semibold text-[#1d2327] mb-3 pb-2 border-b border-[#f0f0f1]">Recent Inquiries</h3>
                   <div className="space-y-2">
+                    {inquiries.slice(0, 5).map(i => (
+                      <div key={i.id} className="flex items-center justify-between text-xs py-1.5 border-b border-[#f0f0f1] last:border-0">
+                        <div className="truncate pr-2">
+                          <span className="font-semibold text-[#1d2327]">{i.name}</span>
+                          <span className="text-[#646970] text-[10px] ml-2 block truncate">{i.message}</span>
+                        </div>
+                        <span className="text-[#646970] text-[10px] whitespace-nowrap">{i.createdAt ? new Date(i.createdAt).toLocaleDateString() : ""}</span>
+                      </div>
+                    ))}
+                    {inquiries.length === 0 && <p className="text-[#646970] text-xs">No inquiries yet.</p>}
+                  </div>
+                </div>
+
+                <div className="bg-white border border-[#c3c4c7] rounded shadow-sm p-5">
+                  <h3 className="font-semibold text-[#1d2327] mb-3 pb-2 border-b border-[#f0f0f1]">Quick Links</h3>
+                  <div className="grid grid-cols-2 gap-2">
                     {[
                       { label: "+ New Post", tab: "posts" as Tab },
                       { label: "+ New Page", tab: "pages" as Tab },
                       { label: "Upload Media", tab: "media" as Tab },
                       { label: "Manage Menus", tab: "menus" as Tab },
+                      { label: "Inquiries", tab: "inquiries" as Tab },
                       { label: "Settings", tab: "settings" as Tab },
                     ].map(l => (
                       <button key={l.label} onClick={() => setActiveTab(l.tab)}
-                        className="block w-full text-left text-xs text-[#2271b1] hover:text-[#135e96] py-1 hover:underline">
+                        className="block text-left text-xs text-[#2271b1] hover:text-[#135e96] py-1 hover:underline">
                         {l.label}
                       </button>
                     ))}
@@ -476,13 +585,15 @@ export default function AdminDashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-[#1d2327]">Posts (Blog)</h1>
-                <button onClick={openNewPost}
-                  className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition">
-                  <Plus className="w-3.5 h-3.5" /> Add New Post
-                </button>
+                {editingPost === undefined && (
+                  <button onClick={openNewPost}
+                    className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition">
+                    <Plus className="w-3.5 h-3.5" /> Add New Post
+                  </button>
+                )}
               </div>
 
-              {editingPost !== undefined && (
+              {editingPost !== undefined ? (
                 <div className="bg-white border border-[#c3c4c7] rounded shadow-sm p-6">
                   <h2 className="font-bold text-[#1d2327] mb-4 pb-3 border-b border-[#f0f0f1]">
                     {editingPost ? "Edit Post" : "Add New Post"}
@@ -509,10 +620,28 @@ export default function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Featured Image URL</label>
-                      <input type="text" value={postForm.image} onChange={e => setPostForm({ ...postForm, image: e.target.value })}
-                        placeholder="https://... or /uploads/image.jpg"
-                        className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
+                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Featured Image</label>
+                      <div className="flex gap-2">
+                        <input type="text" value={postForm.image} onChange={e => setPostForm({ ...postForm, image: e.target.value })}
+                          placeholder="https://... or upload a file"
+                          className="flex-1 border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
+                        <label className="bg-[#f0f0f1] hover:bg-[#dcdcde] text-[#50575e] border border-[#c3c4c7] px-3 py-2 rounded text-xs font-semibold cursor-pointer transition flex items-center">
+                          Upload File
+                          <input type="file" accept="image/*" onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const base64 = await toBase64(file);
+                              const res = await fetch("/api/admin/upload", {
+                                method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ filename: file.name, data: base64 })
+                              });
+                              const json = await res.json();
+                              if (json.url) setPostForm(prev => ({ ...prev, image: json.url }));
+                            }
+                          }} className="hidden" />
+                        </label>
+                      </div>
                       {postForm.image && (
                         <img src={postForm.image} alt="preview" className="mt-2 h-24 rounded border border-[#c3c4c7] object-cover" />
                       )}
@@ -520,8 +649,9 @@ export default function AdminDashboard() {
 
                     <div>
                       <label className="block text-xs font-semibold text-[#1d2327] mb-1">Content (HTML)</label>
-                      <textarea rows={8} value={postForm.content} onChange={e => setPostForm({ ...postForm, content: e.target.value })}
-                        className="w-full border border-[#8c8f94] rounded px-3 py-2 text-xs font-mono focus:outline-none focus:border-[#2271b1]" required />
+                      <RichEditorToolbar textareaId="blog-content-editor" value={postForm.content} onChange={val => setPostForm({ ...postForm, content: val })} />
+                      <textarea id="blog-content-editor" rows={12} value={postForm.content} onChange={e => setPostForm({ ...postForm, content: e.target.value })}
+                        className="w-full border border-t-0 border-[#8c8f94] rounded-b-sm px-3 py-2 text-xs font-mono focus:outline-none focus:border-[#2271b1]" required />
                     </div>
 
                     <div className="border-t border-[#f0f0f1] pt-4">
@@ -559,42 +689,42 @@ export default function AdminDashboard() {
                     </div>
                   </form>
                 </div>
-              )}
-
-              <div className="bg-white border border-[#c3c4c7] rounded shadow-sm overflow-hidden">
-                <table className="w-full text-xs">
-                  <thead className="bg-[#f0f0f1] text-[#646970] font-semibold uppercase text-[10px] tracking-wide border-b border-[#c3c4c7]">
-                    <tr>
-                      <th className="py-3 px-4 text-left">Title</th>
-                      <th className="py-3 px-4 text-left">Date</th>
-                      <th className="py-3 px-4 text-left">Status</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#f0f0f1]">
-                    {posts.length === 0 ? (
-                      <tr><td colSpan={4} className="text-center py-8 text-[#646970]">No posts yet. Add one above!</td></tr>
-                    ) : posts.map(p => (
-                      <tr key={p.id} className="hover:bg-[#f9f9f9] transition">
-                        <td className="py-3 px-4 font-semibold text-[#1d2327]">{p.title}</td>
-                        <td className="py-3 px-4 text-[#646970] font-mono">{p.date}</td>
-                        <td className="py-3 px-4">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${p.published !== false ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-                            {p.published !== false ? "Published" : "Draft"}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-right space-x-1.5">
-                          <button onClick={() => openEditPost(p)} className="text-[#2271b1] hover:underline font-semibold">Edit</button>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <a href={`/blog/${p.slug}`} target="_blank" className="text-[#2271b1] hover:underline font-semibold">View</a>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <button onClick={() => deletePost(p.id)} className="text-[#d63638] hover:underline font-semibold">Delete</button>
-                        </td>
+              ) : (
+                <div className="bg-white border border-[#c3c4c7] rounded shadow-sm overflow-hidden">
+                  <table className="w-full text-xs">
+                    <thead className="bg-[#f0f0f1] text-[#646970] font-semibold uppercase text-[10px] tracking-wide border-b border-[#c3c4c7]">
+                      <tr>
+                        <th className="py-3 px-4 text-left">Title</th>
+                        <th className="py-3 px-4 text-left">Date</th>
+                        <th className="py-3 px-4 text-left">Status</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-[#f0f0f1]">
+                      {posts.length === 0 ? (
+                        <tr><td colSpan={4} className="text-center py-8 text-[#646970]">No posts yet. Add one above!</td></tr>
+                      ) : posts.map(p => (
+                        <tr key={p.id} className="hover:bg-[#f9f9f9] transition">
+                          <td className="py-3 px-4 font-semibold text-[#1d2327]">{p.title}</td>
+                          <td className="py-3 px-4 text-[#646970] font-mono">{p.date}</td>
+                          <td className="py-3 px-4">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${p.published !== false ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                              {p.published !== false ? "Published" : "Draft"}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-right space-x-1.5">
+                            <button onClick={() => openEditPost(p)} className="text-[#2271b1] hover:underline font-semibold">Edit</button>
+                            <span className="text-[#c3c4c7]">|</span>
+                            <a href={`/blog/${p.slug}`} target="_blank" className="text-[#2271b1] hover:underline font-semibold">View</a>
+                            <span className="text-[#c3c4c7]">|</span>
+                            <button onClick={() => deletePost(p.id)} className="text-[#d63638] hover:underline font-semibold">Delete</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
 
@@ -603,13 +733,15 @@ export default function AdminDashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-[#1d2327]">Pages</h1>
-                <button onClick={openNewPage}
-                  className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition">
-                  <Plus className="w-3.5 h-3.5" /> Add New Page
-                </button>
+                {editingPage === undefined && (
+                  <button onClick={openNewPage}
+                    className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition">
+                    <Plus className="w-3.5 h-3.5" /> Add New Page
+                  </button>
+                )}
               </div>
 
-              {editingPage !== undefined && (
+              {editingPage !== undefined ? (
                 <div className="bg-white border border-[#c3c4c7] rounded shadow-sm p-6">
                   <h2 className="font-bold text-[#1d2327] mb-4 pb-3 border-b border-[#f0f0f1]">
                     {editingPage ? "Edit Page" : "Add New Page"}
@@ -631,8 +763,9 @@ export default function AdminDashboard() {
 
                     <div>
                       <label className="block text-xs font-semibold text-[#1d2327] mb-1">Page Content (HTML)</label>
-                      <textarea rows={8} value={pageForm.content} onChange={e => setPageForm({ ...pageForm, content: e.target.value })}
-                        className="w-full border border-[#8c8f94] rounded px-3 py-2 text-xs font-mono focus:outline-none focus:border-[#2271b1]" required />
+                      <RichEditorToolbar textareaId="page-content-editor" value={pageForm.content} onChange={val => setPageForm({ ...pageForm, content: val })} />
+                      <textarea id="page-content-editor" rows={12} value={pageForm.content} onChange={e => setPageForm({ ...pageForm, content: e.target.value })}
+                        className="w-full border border-t-0 border-[#8c8f94] rounded-b-sm px-3 py-2 text-xs font-mono focus:outline-none focus:border-[#2271b1]" required />
                     </div>
 
                     <div className="border-t border-[#f0f0f1] pt-4">
@@ -662,30 +795,83 @@ export default function AdminDashboard() {
                     </div>
                   </form>
                 </div>
+              ) : (
+                <div className="bg-white border border-[#c3c4c7] rounded shadow-sm overflow-hidden">
+                  <table className="w-full text-xs">
+                    <thead className="bg-[#f0f0f1] text-[#646970] font-semibold uppercase text-[10px] tracking-wide border-b border-[#c3c4c7]">
+                      <tr>
+                        <th className="py-3 px-4 text-left">Title</th>
+                        <th className="py-3 px-4 text-left">Slug / URL</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#f0f0f1]">
+                      {pages.length === 0 ? (
+                        <tr><td colSpan={3} className="text-center py-8 text-[#646970]">No pages yet.</td></tr>
+                      ) : pages.map(p => (
+                        <tr key={p.id} className="hover:bg-[#f9f9f9] transition">
+                          <td className="py-3 px-4 font-semibold text-[#1d2327]">{p.title}</td>
+                          <td className="py-3 px-4 font-mono text-[#2271b1]">/page/{p.slug}</td>
+                          <td className="py-3 px-4 text-right space-x-1.5">
+                            <button onClick={() => openEditPage(p)} className="text-[#2271b1] hover:underline font-semibold">Edit</button>
+                            <span className="text-[#c3c4c7]">|</span>
+                            <a href={`/page/${p.slug}`} target="_blank" className="text-[#2271b1] hover:underline font-semibold">View</a>
+                            <span className="text-[#c3c4c7]">|</span>
+                            <button onClick={() => deletePage(p.id)} className="text-[#d63638] hover:underline font-semibold">Delete</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
+            </div>
+          )}
+
+          {/* ─── INQUIRIES ───────────────────────────────────────── */}
+          {activeTab === "inquiries" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h1 className="text-2xl font-bold text-[#1d2327]">Contact Inquiries</h1>
+                <span className="text-[#646970] text-xs">{inquiries.length} total inquiries</span>
+              </div>
 
               <div className="bg-white border border-[#c3c4c7] rounded shadow-sm overflow-hidden">
                 <table className="w-full text-xs">
                   <thead className="bg-[#f0f0f1] text-[#646970] font-semibold uppercase text-[10px] tracking-wide border-b border-[#c3c4c7]">
                     <tr>
-                      <th className="py-3 px-4 text-left">Title</th>
-                      <th className="py-3 px-4 text-left">Slug / URL</th>
+                      <th className="py-3 px-4 text-left">Sender Details</th>
+                      <th className="py-3 px-4 text-left">Message</th>
+                      <th className="py-3 px-4 text-left">Type / Subject</th>
+                      <th className="py-3 px-4 text-left">Date</th>
                       <th className="py-3 px-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#f0f0f1]">
-                    {pages.length === 0 ? (
-                      <tr><td colSpan={3} className="text-center py-8 text-[#646970]">No pages yet.</td></tr>
-                    ) : pages.map(p => (
-                      <tr key={p.id} className="hover:bg-[#f9f9f9] transition">
-                        <td className="py-3 px-4 font-semibold text-[#1d2327]">{p.title}</td>
-                        <td className="py-3 px-4 font-mono text-[#2271b1]">/page/{p.slug}</td>
-                        <td className="py-3 px-4 text-right space-x-1.5">
-                          <button onClick={() => openEditPage(p)} className="text-[#2271b1] hover:underline font-semibold">Edit</button>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <a href={`/page/${p.slug}`} target="_blank" className="text-[#2271b1] hover:underline font-semibold">View</a>
-                          <span className="text-[#c3c4c7]">|</span>
-                          <button onClick={() => deletePage(p.id)} className="text-[#d63638] hover:underline font-semibold">Delete</button>
+                    {inquiries.length === 0 ? (
+                      <tr><td colSpan={5} className="text-center py-10 text-[#646970]">No contact inquiries found.</td></tr>
+                    ) : inquiries.map(i => (
+                      <tr key={i.id} className="hover:bg-[#f9f9f9] transition">
+                        <td className="py-3 px-4">
+                          <div className="font-semibold text-[#1d2327]">{i.name}</div>
+                          <div className="text-[#646970] font-mono">{i.email}</div>
+                          {i.phone && <div className="text-[#646970]">{i.phone}</div>}
+                        </td>
+                        <td className="py-3 px-4 max-w-[280px]">
+                          <p className="whitespace-pre-line text-[#1d2327]">{i.message}</p>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-[#2271b1] font-semibold">{i.type || "General Inquiry"}</span>
+                        </td>
+                        <td className="py-3 px-4 whitespace-nowrap text-[#646970]">
+                          {i.createdAt ? new Date(i.createdAt).toLocaleDateString() : "N/A"}<br />
+                          {i.createdAt ? new Date(i.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <button onClick={() => deleteInquiry(i.id)}
+                            className="bg-[#d63638] hover:bg-[#b32d2e] text-white px-2.5 py-1 rounded text-[10px] font-semibold transition">
+                            Delete
+                          </button>
                         </td>
                       </tr>
                     ))}

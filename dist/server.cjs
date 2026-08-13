@@ -47,6 +47,7 @@ var SMTP_PATH = import_path.default.join(process.cwd(), "smtp.json");
 var POSTS_PATH = import_path.default.join(process.cwd(), "posts.json");
 var ADMINS_PATH = import_path.default.join(process.cwd(), "admins.json");
 var PAGES_PATH = import_path.default.join(process.cwd(), "pages.json");
+var INQUIRIES_PATH = import_path.default.join(process.cwd(), "inquiries.json");
 var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/travelluxx";
 var BookingSchema = new import_mongoose.default.Schema({
   id: { type: String, required: true, unique: true },
@@ -92,6 +93,17 @@ var PageSchema = new import_mongoose.default.Schema({
   updatedAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
 var PageModel = import_mongoose.default.models.Page || import_mongoose.default.model("Page", PageSchema);
+var InquirySchema = new import_mongoose.default.Schema({
+  id: { type: String, required: true, unique: true },
+  name: String,
+  email: String,
+  phone: String,
+  type: String,
+  message: String,
+  status: { type: String, default: "Unread" },
+  createdAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
+}, { strict: false });
+var InquiryModel = import_mongoose.default.models.Inquiry || import_mongoose.default.model("Inquiry", InquirySchema);
 var isConnected = false;
 async function runMigrations() {
   try {
@@ -130,6 +142,18 @@ async function runMigrations() {
   } catch (err) {
     console.error("Error migrating pages to MongoDB:", err.message);
   }
+  try {
+    const count = await InquiryModel.countDocuments();
+    if (count === 0 && import_fs.default.existsSync(INQUIRIES_PATH)) {
+      console.log("\u{1F4E5} Migrating inquiries.json into MongoDB...");
+      const jsonInquiries = JSON.parse(import_fs.default.readFileSync(INQUIRIES_PATH, "utf8"));
+      await InquiryModel.insertMany(jsonInquiries, { ordered: false }).catch(() => {
+      });
+      console.log("\u2705 MongoDB populated with all inquiries!");
+    }
+  } catch (err) {
+    console.error("Error migrating inquiries to MongoDB:", err.message);
+  }
 }
 async function connectToDatabase() {
   if (isConnected || import_mongoose.default.connection.readyState === 1) {
@@ -150,6 +174,23 @@ async function connectToDatabase() {
     await runMigrations();
   } catch (err) {
     console.error("\u274C MongoDB connection error:", err.message);
+  }
+}
+function readInquiries() {
+  try {
+    if (import_fs.default.existsSync(INQUIRIES_PATH)) {
+      return JSON.parse(import_fs.default.readFileSync(INQUIRIES_PATH, "utf8"));
+    }
+  } catch (err) {
+    console.error("Error reading inquiries.json:", err);
+  }
+  return [];
+}
+function writeInquiries(inquiries) {
+  try {
+    import_fs.default.writeFileSync(INQUIRIES_PATH, JSON.stringify(inquiries, null, 2));
+  } catch (err) {
+    console.error("Error writing inquiries.json:", err);
   }
 }
 function readPages() {
@@ -363,7 +404,7 @@ Thank you for choosing ${ws.business_name}!`;
     }
   }
 }
-async function sendBookingEmails(booking) {
+async function sendBookingEmails(booking, isConfirmedEmail = false) {
   const ws = getCurrentWebsiteSettings();
   const brandGreen = "#047857";
   const bgSlate = "#f8fafc";
@@ -425,34 +466,32 @@ async function sendBookingEmails(booking) {
       </div>
     </div>
   `;
-  const passengerHtml = commonEmailHtml(
-    "Booking Confirmed!",
-    `Hi <strong>${booking.passengerName}</strong>,<br>Your premium private hire booking is registered successfully. Please find your complete travel and fare breakdown details below:`
-  );
+  const emailTitle = isConfirmedEmail ? "Booking Confirmed!" : "Booking Request Received";
+  const emailSubtitle = isConfirmedEmail ? `Hi <strong>${booking.passengerName}</strong>,<br>Great news! Your booking request has been confirmed. Below are your travel details and final fare summary:` : `Hi <strong>${booking.passengerName}</strong>,<br>We have received your private hire booking request. Our team is verifying vehicle availability, and we will email you a confirmation shortly. Details:`;
+  const passengerHtml = commonEmailHtml(emailTitle, emailSubtitle);
   const operatorHtml = commonEmailHtml(
-    "[NEW BOOKING RECEIVED]",
-    `New booking registered by <strong>${booking.passengerName}</strong> (${booking.passengerPhone}). Complete details below:`
+    `[NEW BOOKING REQUEST - ${booking.id}]`,
+    `New pending booking registered by <strong>${booking.passengerName}</strong> (${booking.passengerPhone}). Details below:`
   );
   const smtpSettings = readSmtpSettings();
   const fromAddress = `"${ws.business_name}" <${smtpSettings.senderAddress || smtpSettings.smtpUser || ws.business_email}>`;
   const passengerEmail = booking.passengerEmail || booking.email;
+  const subjectPrefix = isConfirmedEmail ? "Booking Confirmed" : "Booking Pending Confirmation";
   if (passengerEmail) {
     await sendEmailSafely({
       from: fromAddress,
       to: passengerEmail,
       replyTo: ws.business_email,
-      subject: `Booking Confirmed: Ref ${booking.id} - ${ws.business_name}`,
+      subject: `${subjectPrefix}: Ref ${booking.id} - ${ws.business_name}`,
       html: passengerHtml
     });
-  } else {
-    console.warn("No passenger email provided for booking", booking.id);
   }
-  if (ws.business_email) {
+  if (!isConfirmedEmail && ws.business_email) {
     await sendEmailSafely({
       from: fromAddress,
       to: ws.business_email,
       replyTo: passengerEmail || ws.business_email,
-      subject: `[New Booking] Ref ${booking.id} - ${booking.passengerName || "Passenger"} (${booking.vehicle || "Vehicle"})`,
+      subject: `[New Booking Request] Ref ${booking.id} - ${booking.passengerName || "Passenger"} (${booking.vehicle || "Vehicle"})`,
       html: operatorHtml
     });
   }
@@ -642,22 +681,37 @@ app.put("/api/admin/bookings/:id", async (req, res) => {
   const { status, paymentStatus } = req.body;
   try {
     await connectToDatabase();
+    let oldBooking = null;
+    if (import_mongoose.default.connection.readyState === 1) {
+      oldBooking = await BookingModel.findOne({ id });
+    }
+    if (!oldBooking) {
+      const bookings2 = readBookings();
+      oldBooking = bookings2.find((b) => b.id === id);
+    }
     const updateData = {};
     if (status) updateData.status = status;
     if (paymentStatus) updateData.paymentStatus = paymentStatus;
-    await BookingModel.findOneAndUpdate({ id }, { $set: updateData });
+    if (import_mongoose.default.connection.readyState === 1) {
+      await BookingModel.findOneAndUpdate({ id }, { $set: updateData });
+    }
+    const bookings = readBookings();
+    const index = bookings.findIndex((b) => b.id === id);
+    if (index !== -1) {
+      const updatedBooking = { ...bookings[index], ...updateData };
+      if (status) bookings[index].status = status;
+      if (paymentStatus) bookings[index].paymentStatus = paymentStatus;
+      writeBookings(bookings);
+      if (status === "Confirmed" && oldBooking?.status !== "Confirmed") {
+        await sendBookingEmails(updatedBooking, true).catch((err) => console.error("Confirmed email error:", err));
+      }
+      return res.json({ success: true, booking: bookings[index] });
+    }
+    return res.status(404).json({ error: "Booking not found" });
   } catch (e) {
     console.error("Error updating MongoDB booking:", e.message);
+    return res.status(500).json({ error: e.message });
   }
-  const bookings = readBookings();
-  const index = bookings.findIndex((b) => b.id === id);
-  if (index !== -1) {
-    if (status) bookings[index].status = status;
-    if (paymentStatus) bookings[index].paymentStatus = paymentStatus;
-    writeBookings(bookings);
-    return res.json({ success: true, booking: bookings[index] });
-  }
-  return res.status(404).json({ error: "Booking not found" });
 });
 app.delete("/api/admin/bookings/:id", async (req, res) => {
   const { id } = req.params;
@@ -1028,17 +1082,56 @@ app.get("/api/mollie/status/:bookingId", (req, res) => {
 });
 app.post("/api/contact", async (req, res) => {
   try {
+    await connectToDatabase();
     const inquiry = {
       id: `INQ-${Math.floor(1e3 + Math.random() * 9e3)}`,
       ...req.body,
       status: "Unread",
       createdAt: (/* @__PURE__ */ new Date()).toISOString()
     };
-    sendContactEmails(inquiry).catch((err) => console.error("Contact email error:", err));
+    const inquiries = readInquiries();
+    inquiries.unshift(inquiry);
+    writeInquiries(inquiries);
+    try {
+      if (import_mongoose.default.connection.readyState === 1) {
+        const dbInquiry = new InquiryModel(inquiry);
+        await dbInquiry.save();
+        console.log("\u{1F4BE} Saved contact inquiry to MongoDB!");
+      }
+    } catch (err) {
+      console.error("MongoDB inquiry save error:", err.message);
+    }
+    await sendContactEmails(inquiry).catch((err) => console.error("Contact email error:", err));
     return res.json({ success: true, inquiry });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
+});
+app.get("/api/admin/inquiries", async (req, res) => {
+  try {
+    await connectToDatabase();
+    if (import_mongoose.default.connection.readyState === 1) {
+      const rows = await InquiryModel.find().sort({ createdAt: -1 });
+      if (rows && rows.length > 0) return res.json(rows);
+    }
+  } catch (e) {
+    console.error("Error reading from MongoDB inquiries:", e.message);
+  }
+  return res.json(readInquiries());
+});
+app.delete("/api/admin/inquiries/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await connectToDatabase();
+    if (import_mongoose.default.connection.readyState === 1) {
+      await InquiryModel.deleteOne({ id });
+    }
+  } catch (e) {
+  }
+  let inquiries = readInquiries();
+  inquiries = inquiries.filter((i) => i.id !== id);
+  writeInquiries(inquiries);
+  return res.json({ success: true });
 });
 app.get("/api/pricing", (req, res) => {
   res.json(getCurrentPricingSettings());

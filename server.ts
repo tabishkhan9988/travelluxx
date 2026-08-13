@@ -16,6 +16,7 @@ const SMTP_PATH = path.join(process.cwd(), "smtp.json");
 const POSTS_PATH = path.join(process.cwd(), "posts.json");
 const ADMINS_PATH = path.join(process.cwd(), "admins.json");
 const PAGES_PATH = path.join(process.cwd(), "pages.json");
+const INQUIRIES_PATH = path.join(process.cwd(), "inquiries.json");
 
 import mongoose from "mongoose";
 
@@ -72,6 +73,19 @@ const PageSchema = new mongoose.Schema({
 
 const PageModel = mongoose.models.Page || mongoose.model("Page", PageSchema);
 
+const InquirySchema = new mongoose.Schema({
+  id: { type: String, required: true, unique: true },
+  name: String,
+  email: String,
+  phone: String,
+  type: String,
+  message: String,
+  status: { type: String, default: "Unread" },
+  createdAt: { type: String, default: () => new Date().toISOString() }
+}, { strict: false });
+
+const InquiryModel = mongoose.models.Inquiry || mongoose.model("Inquiry", InquirySchema);
+
 // Connect to MongoDB
 // Connect to MongoDB
 let isConnected = false;
@@ -115,6 +129,19 @@ async function runMigrations() {
   } catch (err: any) {
     console.error("Error migrating pages to MongoDB:", err.message);
   }
+
+  // Migrate existing inquiries.json into MongoDB if empty
+  try {
+    const count = await InquiryModel.countDocuments();
+    if (count === 0 && fs.existsSync(INQUIRIES_PATH)) {
+      console.log("📥 Migrating inquiries.json into MongoDB...");
+      const jsonInquiries = JSON.parse(fs.readFileSync(INQUIRIES_PATH, "utf8"));
+      await InquiryModel.insertMany(jsonInquiries, { ordered: false }).catch(() => {});
+      console.log("✅ MongoDB populated with all inquiries!");
+    }
+  } catch (err: any) {
+    console.error("Error migrating inquiries to MongoDB:", err.message);
+  }
 }
 
 async function connectToDatabase() {
@@ -138,6 +165,27 @@ async function connectToDatabase() {
     await runMigrations();
   } catch (err: any) {
     console.error("❌ MongoDB connection error:", err.message);
+  }
+}
+
+
+
+function readInquiries(): any[] {
+  try {
+    if (fs.existsSync(INQUIRIES_PATH)) {
+      return JSON.parse(fs.readFileSync(INQUIRIES_PATH, "utf8"));
+    }
+  } catch (err) {
+    console.error("Error reading inquiries.json:", err);
+  }
+  return [];
+}
+
+function writeInquiries(inquiries: any[]) {
+  try {
+    fs.writeFileSync(INQUIRIES_PATH, JSON.stringify(inquiries, null, 2));
+  } catch (err) {
+    console.error("Error writing inquiries.json:", err);
   }
 }
 
@@ -373,7 +421,7 @@ Thank you for choosing ${ws.business_name}!`;
   }
 }
 
-async function sendBookingEmails(booking: any) {
+async function sendBookingEmails(booking: any, isConfirmedEmail = false) {
   const ws = getCurrentWebsiteSettings();
   const brandGreen = "#047857";
   const bgSlate = "#f8fafc";
@@ -419,7 +467,6 @@ async function sendBookingEmails(booking: any) {
     </table>
   `;
 
-
   const commonEmailHtml = (title: string, subtitle: string) => `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: ${bgSlate}; padding: 40px 20px; color: ${textDark}; line-height: 1.6; max-width: 600px; margin: 0 auto; border-radius: 16px; border: 1px solid ${borderSlate};">
       <div style="background-color: ${brandGreen}; border-radius: 12px 12px 0 0; padding: 30px; text-align: center; margin: -40px -20px 30px -20px;">
@@ -443,38 +490,41 @@ async function sendBookingEmails(booking: any) {
     </div>
   `;
 
-  const passengerHtml = commonEmailHtml(
-    "Booking Confirmed!",
-    `Hi <strong>${booking.passengerName}</strong>,<br>Your premium private hire booking is registered successfully. Please find your complete travel and fare breakdown details below:`
-  );
+  const emailTitle = isConfirmedEmail ? "Booking Confirmed!" : "Booking Request Received";
+  const emailSubtitle = isConfirmedEmail
+    ? `Hi <strong>${booking.passengerName}</strong>,<br>Great news! Your booking request has been confirmed. Below are your travel details and final fare summary:`
+    : `Hi <strong>${booking.passengerName}</strong>,<br>We have received your private hire booking request. Our team is verifying vehicle availability, and we will email you a confirmation shortly. Details:`;
+
+  const passengerHtml = commonEmailHtml(emailTitle, emailSubtitle);
 
   const operatorHtml = commonEmailHtml(
-    "[NEW BOOKING RECEIVED]",
-    `New booking registered by <strong>${booking.passengerName}</strong> (${booking.passengerPhone}). Complete details below:`
+    `[NEW BOOKING REQUEST - ${booking.id}]`,
+    `New pending booking registered by <strong>${booking.passengerName}</strong> (${booking.passengerPhone}). Details below:`
   );
 
   const smtpSettings = readSmtpSettings();
   const fromAddress = `"${ws.business_name}" <${smtpSettings.senderAddress || smtpSettings.smtpUser || ws.business_email}>`;
   const passengerEmail = booking.passengerEmail || booking.email;
 
+  const subjectPrefix = isConfirmedEmail ? "Booking Confirmed" : "Booking Pending Confirmation";
+
   if (passengerEmail) {
     await sendEmailSafely({
       from: fromAddress,
       to: passengerEmail,
       replyTo: ws.business_email,
-      subject: `Booking Confirmed: Ref ${booking.id} - ${ws.business_name}`,
+      subject: `${subjectPrefix}: Ref ${booking.id} - ${ws.business_name}`,
       html: passengerHtml,
     });
-  } else {
-    console.warn("No passenger email provided for booking", booking.id);
   }
 
-  if (ws.business_email) {
+  // Only send notification to operator on initial creation (not on status change)
+  if (!isConfirmedEmail && ws.business_email) {
     await sendEmailSafely({
       from: fromAddress,
       to: ws.business_email,
       replyTo: passengerEmail || ws.business_email,
-      subject: `[New Booking] Ref ${booking.id} - ${booking.passengerName || "Passenger"} (${booking.vehicle || "Vehicle"})`,
+      subject: `[New Booking Request] Ref ${booking.id} - ${booking.passengerName || "Passenger"} (${booking.vehicle || "Vehicle"})`,
       html: operatorHtml,
     });
   }
@@ -704,23 +754,45 @@ app.put("/api/admin/bookings/:id", async (req, res) => {
   
   try {
     await connectToDatabase();
+    
+    // Find the old booking to check status change
+    let oldBooking: any = null;
+    if (mongoose.connection.readyState === 1) {
+      oldBooking = await BookingModel.findOne({ id });
+    }
+    if (!oldBooking) {
+      const bookings = readBookings();
+      oldBooking = bookings.find(b => b.id === id);
+    }
+    
     const updateData: any = {};
     if (status) updateData.status = status;
     if (paymentStatus) updateData.paymentStatus = paymentStatus;
-    await BookingModel.findOneAndUpdate({ id }, { $set: updateData });
+    
+    if (mongoose.connection.readyState === 1) {
+      await BookingModel.findOneAndUpdate({ id }, { $set: updateData });
+    }
+
+    const bookings = readBookings();
+    const index = bookings.findIndex(b => b.id === id);
+    if (index !== -1) {
+      const updatedBooking = { ...bookings[index], ...updateData };
+      if (status) bookings[index].status = status;
+      if (paymentStatus) bookings[index].paymentStatus = paymentStatus;
+      writeBookings(bookings);
+      
+      // If status changed to Confirmed, send confirmation email!
+      if (status === "Confirmed" && oldBooking?.status !== "Confirmed") {
+        await sendBookingEmails(updatedBooking, true).catch(err => console.error("Confirmed email error:", err));
+      }
+
+      return res.json({ success: true, booking: bookings[index] });
+    }
+    return res.status(404).json({ error: "Booking not found" });
   } catch (e: any) {
     console.error("Error updating MongoDB booking:", e.message);
+    return res.status(500).json({ error: e.message });
   }
-
-  const bookings = readBookings();
-  const index = bookings.findIndex(b => b.id === id);
-  if (index !== -1) {
-    if (status) bookings[index].status = status;
-    if (paymentStatus) bookings[index].paymentStatus = paymentStatus;
-    writeBookings(bookings);
-    return res.json({ success: true, booking: bookings[index] });
-  }
-  return res.status(404).json({ error: "Booking not found" });
 });
 
 app.delete("/api/admin/bookings/:id", async (req, res) => {
@@ -1129,17 +1201,63 @@ app.get("/api/mollie/status/:bookingId", (req, res) => {
 
 app.post("/api/contact", async (req, res) => {
   try {
+    await connectToDatabase();
     const inquiry = {
       id: `INQ-${Math.floor(1000 + Math.random() * 9000)}`,
       ...req.body,
       status: "Unread",
       createdAt: new Date().toISOString()
     };
-    sendContactEmails(inquiry).catch(err => console.error("Contact email error:", err));
+
+    // Save to local JSON as fallback
+    const inquiries = readInquiries();
+    inquiries.unshift(inquiry);
+    writeInquiries(inquiries);
+
+    // Save to MongoDB
+    try {
+      if (mongoose.connection.readyState === 1) {
+        const dbInquiry = new InquiryModel(inquiry);
+        await dbInquiry.save();
+        console.log("💾 Saved contact inquiry to MongoDB!");
+      }
+    } catch (err: any) {
+      console.error("MongoDB inquiry save error:", err.message);
+    }
+
+    await sendContactEmails(inquiry).catch(err => console.error("Contact email error:", err));
     return res.json({ success: true, inquiry });
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
   }
+});
+
+// Admin Inquiries API
+app.get("/api/admin/inquiries", async (req, res) => {
+  try {
+    await connectToDatabase();
+    if (mongoose.connection.readyState === 1) {
+      const rows = await InquiryModel.find().sort({ createdAt: -1 });
+      if (rows && rows.length > 0) return res.json(rows);
+    }
+  } catch (e: any) {
+    console.error("Error reading from MongoDB inquiries:", e.message);
+  }
+  return res.json(readInquiries());
+});
+
+app.delete("/api/admin/inquiries/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await connectToDatabase();
+    if (mongoose.connection.readyState === 1) {
+      await InquiryModel.deleteOne({ id });
+    }
+  } catch (e) {}
+  let inquiries = readInquiries();
+  inquiries = inquiries.filter(i => i.id !== id);
+  writeInquiries(inquiries);
+  return res.json({ success: true });
 });
 
 app.get("/api/pricing", (req, res) => {
