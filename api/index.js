@@ -1,20 +1,10 @@
-let app;
-try {
-  const mod = require('../dist/server.cjs');
-  app = mod.default || mod;
-} catch (e) {
-  console.error('[Vercel] Failed to load server.cjs:', e.message);
-  // Minimal fallback express app if server.cjs fails to load
-  const express = require('express');
-  const fallback = express();
-  fallback.use((req, res) => {
-    res.status(500).json({ error: 'Server initialization failed', detail: e.message, stack: e.stack });
-  });
-  app = fallback;
-}
+import express from 'express';
+import mod from '../dist/server.cjs';
+
+const app = mod.default || mod;
 
 // Wrapper to catch and return unhandled errors directly in response
-module.exports = async (req, res) => {
+export default async (req, res) => {
   let activeRes = res;
   
   const errorHandler = (err) => {
