@@ -86,6 +86,21 @@ const InquirySchema = new mongoose.Schema({
 
 const InquiryModel = mongoose.models.Inquiry || mongoose.model("Inquiry", InquirySchema);
 
+const SettingSchema = new mongoose.Schema({
+  key: { type: String, required: true, unique: true },
+  value: mongoose.Schema.Types.Mixed
+});
+
+const SettingModel = mongoose.models.Setting || mongoose.model("Setting", SettingSchema);
+
+const UploadSchema = new mongoose.Schema({
+  filename: { type: String, required: true, unique: true },
+  mimeType: String,
+  data: Buffer
+});
+
+const UploadModel = mongoose.models.Upload || mongoose.model("Upload", UploadSchema);
+
 // Connect to MongoDB
 // Connect to MongoDB
 let isConnected = false;
@@ -163,6 +178,7 @@ async function connectToDatabase() {
     isConnected = true;
     console.log("✅ MongoDB connected successfully!");
     await runMigrations();
+    await syncSettingsFromDb();
   } catch (err: any) {
     console.error("❌ MongoDB connection error:", err.message);
   }
@@ -182,14 +198,16 @@ function readInquiries(): any[] {
 }
 
 function writeInquiries(inquiries: any[]) {
+  if (process.env.VERCEL) {
+    console.log("ℹ️ Skipping writeInquiries to local file on Vercel.");
+    return;
+  }
   try {
     fs.writeFileSync(INQUIRIES_PATH, JSON.stringify(inquiries, null, 2));
   } catch (err) {
     console.error("Error writing inquiries.json:", err);
   }
 }
-
-
 
 function readPages(): any[] {
   try {
@@ -203,14 +221,16 @@ function readPages(): any[] {
 }
 
 function writePages(pages: any[]) {
+  if (process.env.VERCEL) {
+    console.log("ℹ️ Skipping writePages to local file on Vercel.");
+    return;
+  }
   try {
     fs.writeFileSync(PAGES_PATH, JSON.stringify(pages, null, 2));
   } catch (err) {
     console.error("Error writing pages.json:", err);
   }
 }
-
-
 
 function readPosts(): any[] {
   try {
@@ -224,13 +244,16 @@ function readPosts(): any[] {
 }
 
 function writePosts(posts: any[]) {
+  if (process.env.VERCEL) {
+    console.log("ℹ️ Skipping writePosts to local file on Vercel.");
+    return;
+  }
   try {
     fs.writeFileSync(POSTS_PATH, JSON.stringify(posts, null, 2));
   } catch (err) {
     console.error("Error writing posts.json:", err);
   }
 }
-
 
 function readBookings(): any[] {
   try {
@@ -244,6 +267,10 @@ function readBookings(): any[] {
 }
 
 function writeBookings(bookings: any[]) {
+  if (process.env.VERCEL) {
+    console.log("ℹ️ Skipping writeBookings to local file on Vercel.");
+    return;
+  }
   try {
     fs.writeFileSync(BOOKINGS_PATH, JSON.stringify(bookings, null, 2));
   } catch (err) {
@@ -251,7 +278,35 @@ function writeBookings(bookings: any[]) {
   }
 }
 
+
+let cachedWebsiteSettings: any = null;
+let cachedPricingSettings: any = null;
+let cachedSmtpSettings: any = null;
+
+async function syncSettingsFromDb() {
+  try {
+    if (mongoose.connection.readyState === 1) {
+      const dbWebsite = await SettingModel.findOne({ key: "website" });
+      if (dbWebsite && dbWebsite.value) cachedWebsiteSettings = dbWebsite.value;
+
+      const dbPricing = await SettingModel.findOne({ key: "pricing" });
+      if (dbPricing && dbPricing.value) cachedPricingSettings = dbPricing.value;
+
+      const dbSmtp = await SettingModel.findOne({ key: "smtp" });
+      if (dbSmtp && dbSmtp.value) cachedSmtpSettings = dbSmtp.value;
+
+      console.log("🔄 Loaded settings cache from MongoDB!");
+    }
+  } catch (err: any) {
+    console.error("Error syncing settings from DB:", err.message);
+  }
+}
+
 function getCurrentWebsiteSettings() {
+  if (cachedWebsiteSettings) {
+    return cachedWebsiteSettings;
+  }
+
   const defaultSettings = {
     business_name: "Travelluxx",
     business_email: "info@travelluxx.co.uk",
@@ -269,16 +324,22 @@ function getCurrentWebsiteSettings() {
     const webSettingsPath = path.join(process.cwd(), "website_settings.json");
     if (fs.existsSync(SETTINGS_PATH)) {
       const data = JSON.parse(fs.readFileSync(SETTINGS_PATH, "utf8"));
-      return { ...defaultSettings, ...data };
+      cachedWebsiteSettings = { ...defaultSettings, ...data };
+      return cachedWebsiteSettings;
     } else if (fs.existsSync(webSettingsPath)) {
       const data = JSON.parse(fs.readFileSync(webSettingsPath, "utf8"));
-      return { ...defaultSettings, ...data };
+      cachedWebsiteSettings = { ...defaultSettings, ...data };
+      return cachedWebsiteSettings;
     }
   } catch (err) {}
   return defaultSettings;
 }
 
 function getCurrentPricingSettings() {
+  if (cachedPricingSettings) {
+    return cachedPricingSettings;
+  }
+
   const defaultPricing = {
     economy_price_per_mile: 1.50,
     luxury_price_per_mile: 2.00,
@@ -290,13 +351,26 @@ function getCurrentPricingSettings() {
   try {
     if (fs.existsSync(PRICING_PATH)) {
       const data = JSON.parse(fs.readFileSync(PRICING_PATH, "utf8"));
-      return { ...defaultPricing, ...data };
+      cachedPricingSettings = { ...defaultPricing, ...data };
+      return cachedPricingSettings;
     }
   } catch (err) {}
   return defaultPricing;
 }
 
 function readSmtpSettings(): any {
+  if (cachedSmtpSettings) {
+    const ws = getCurrentWebsiteSettings() as any;
+    return {
+      smtpHost: cachedSmtpSettings.smtpHost || process.env.SMTP_HOST || "mail.travelluxx.co.uk",
+      smtpPort: cachedSmtpSettings.smtpPort || process.env.SMTP_PORT || "465",
+      smtpUser: cachedSmtpSettings.smtpUser || process.env.SMTP_USER || ws.business_email || "info@travelluxx.co.uk",
+      smtpPass: cachedSmtpSettings.smtpPass || process.env.SMTP_PASS || "sdjnefvpasotcja",
+      smtpSecure: cachedSmtpSettings.smtpSecure !== undefined ? cachedSmtpSettings.smtpSecure : (process.env.SMTP_SECURE !== "false"),
+      senderAddress: cachedSmtpSettings.senderAddress || cachedSmtpSettings.smtpUser || process.env.SMTP_USER || ws.business_email || "info@travelluxx.co.uk"
+    };
+  }
+
   let saved: any = {};
   try {
     if (fs.existsSync(SMTP_PATH)) {
@@ -317,7 +391,7 @@ function readSmtpSettings(): any {
   } catch (err) {}
 
   const ws = getCurrentWebsiteSettings() as any;
-  return {
+  cachedSmtpSettings = {
     smtpHost: saved.smtpHost || process.env.SMTP_HOST || "mail.travelluxx.co.uk",
     smtpPort: saved.smtpPort || process.env.SMTP_PORT || "465",
     smtpUser: saved.smtpUser || process.env.SMTP_USER || ws.business_email || "info@travelluxx.co.uk",
@@ -325,6 +399,7 @@ function readSmtpSettings(): any {
     smtpSecure: saved.smtpSecure !== undefined ? saved.smtpSecure : (process.env.SMTP_SECURE !== "false"),
     senderAddress: saved.senderAddress || saved.smtpUser || process.env.SMTP_USER || ws.business_email || "info@travelluxx.co.uk"
   };
+  return cachedSmtpSettings;
 }
 
 function getMollieClient() {
@@ -1019,39 +1094,99 @@ app.delete("/api/admin/pages/:id", async (req, res) => {
 
 // --- Menu Manager ---
 const MENU_PATH = path.join(process.cwd(), "menu.json");
+let cachedMenu: any = null;
+
 function readMenu(): any[] {
-  try { if (fs.existsSync(MENU_PATH)) return JSON.parse(fs.readFileSync(MENU_PATH, "utf8")); } catch (e) {}
-  return [{ id: "1", label: "Book Now", href: "/#calculator", target: "_self" }, { id: "2", label: "Blog", href: "/blog", target: "_self" }, { id: "3", label: "Contact", href: "/#contact", target: "_self" }];
-}
-app.get("/api/menu", (req, res) => res.json(readMenu()));
-app.post("/api/admin/menu", (req, res) => {
+  if (cachedMenu) return cachedMenu;
   try {
-    fs.writeFileSync(MENU_PATH, JSON.stringify(req.body, null, 2));
+    if (fs.existsSync(MENU_PATH)) {
+      cachedMenu = JSON.parse(fs.readFileSync(MENU_PATH, "utf8"));
+      return cachedMenu;
+    }
+  } catch (e) {}
+  cachedMenu = [
+    { id: "1", label: "Book Now", href: "/#calculator", target: "_self" },
+    { id: "2", label: "Blog", href: "/blog", target: "_self" },
+    { id: "3", label: "Contact", href: "/#contact", target: "_self" }
+  ];
+  return cachedMenu;
+}
+
+app.get("/api/menu", (req, res) => res.json(readMenu()));
+
+app.post("/api/admin/menu", async (req, res) => {
+  try {
+    await connectToDatabase();
+    cachedMenu = req.body;
+    if (mongoose.connection.readyState === 1) {
+      await SettingModel.findOneAndUpdate({ key: "menu" }, { value: req.body }, { upsert: true });
+      console.log("💾 Saved menu to MongoDB!");
+    }
+    if (!process.env.VERCEL) {
+      fs.writeFileSync(MENU_PATH, JSON.stringify(req.body, null, 2));
+    }
     return res.json({ success: true });
-  } catch (e: any) { return res.status(500).json({ error: e.message }); }
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
 });
 
 // --- Image Upload ---
-app.post("/api/admin/upload", (req, res) => {
+app.post("/api/admin/upload", async (req, res) => {
   try {
+    await connectToDatabase();
     const { filename, data } = req.body;
     if (!filename || !data) return res.status(400).json({ error: "filename and data required" });
     const matches = data.match(/^data:(.+);base64,(.+)$/);
     if (!matches) return res.status(400).json({ error: "Invalid base64 data" });
+    const mimeType = matches[1];
     const buffer = Buffer.from(matches[2], "base64");
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    fs.mkdirSync(uploadDir, { recursive: true });
     const safeFilename = `${Date.now()}_${filename.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
-    fs.writeFileSync(path.join(uploadDir, safeFilename), buffer);
-    // Also write to dist/uploads for production serving
-    const distUploadDir = path.join(process.cwd(), "dist", "uploads");
-    fs.mkdirSync(distUploadDir, { recursive: true });
-    fs.writeFileSync(path.join(distUploadDir, safeFilename), buffer);
+
+    if (mongoose.connection.readyState === 1) {
+      const uploadDoc = new UploadModel({
+        filename: safeFilename,
+        mimeType: mimeType,
+        data: buffer
+      });
+      await uploadDoc.save();
+      console.log(`💾 Successfully uploaded ${safeFilename} to MongoDB virtual FS!`);
+    }
+
+    if (!process.env.VERCEL) {
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      fs.mkdirSync(uploadDir, { recursive: true });
+      fs.writeFileSync(path.join(uploadDir, safeFilename), buffer);
+      
+      const distUploadDir = path.join(process.cwd(), "dist", "uploads");
+      fs.mkdirSync(distUploadDir, { recursive: true });
+      fs.writeFileSync(path.join(distUploadDir, safeFilename), buffer);
+    }
     return res.json({ success: true, url: `/uploads/${safeFilename}`, filename: safeFilename });
-  } catch (e: any) { return res.status(500).json({ error: e.message }); }
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
 });
 
-// Serve uploads directory
+// Serve virtual uploads from MongoDB
+app.get("/uploads/:filename", async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    if (mongoose.connection.readyState === 1) {
+      const uploadDoc = await UploadModel.findOne({ filename: req.params.filename });
+      if (uploadDoc && uploadDoc.data) {
+        res.setHeader("Content-Type", uploadDoc.mimeType || "image/jpeg");
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+        return res.send(uploadDoc.data);
+      }
+    }
+  } catch (e) {
+    console.error("Error serving virtual upload:", e);
+  }
+  next();
+});
+
+// Serve uploads directory fallback
 app.use("/uploads", express.static(path.join(process.cwd(), "public", "uploads")));
 
 // --- Admin Register (Sign Up - DISABLED) ---
@@ -1268,11 +1403,21 @@ app.get("/api/settings", (req, res) => {
   res.json(getCurrentWebsiteSettings());
 });
 
-app.post("/api/settings", (req, res) => {
+app.post("/api/settings", async (req, res) => {
   try {
+    await connectToDatabase();
     const current = getCurrentWebsiteSettings();
     const updated = { ...current, ...req.body };
-    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(updated, null, 2));
+    cachedWebsiteSettings = updated;
+
+    if (mongoose.connection.readyState === 1) {
+      await SettingModel.findOneAndUpdate({ key: "website" }, { value: updated }, { upsert: true });
+      console.log("💾 Saved website settings to MongoDB!");
+    }
+
+    if (!process.env.VERCEL) {
+      fs.writeFileSync(SETTINGS_PATH, JSON.stringify(updated, null, 2));
+    }
     res.json({ success: true, settings: updated });
   } catch (err: any) {
     res.status(500).json({ error: err.message || "Failed to update settings" });
@@ -1291,8 +1436,9 @@ app.get("/api/smtp-settings", (req, res) => {
   });
 });
 
-app.post("/api/smtp-settings", (req, res) => {
+app.post("/api/smtp-settings", async (req, res) => {
   try {
+    await connectToDatabase();
     const { smtpHost, smtpPort, smtpUser, smtpPass, smtpSecure, senderAddress } = req.body;
     const current = readSmtpSettings();
     const updated = {
@@ -1303,7 +1449,16 @@ app.post("/api/smtp-settings", (req, res) => {
       smtpSecure: smtpSecure !== undefined ? smtpSecure : current.smtpSecure,
       senderAddress: senderAddress || current.senderAddress || smtpUser || current.smtpUser
     };
-    fs.writeFileSync(SMTP_PATH, JSON.stringify(updated, null, 2));
+    cachedSmtpSettings = updated;
+
+    if (mongoose.connection.readyState === 1) {
+      await SettingModel.findOneAndUpdate({ key: "smtp" }, { value: updated }, { upsert: true });
+      console.log("💾 Saved SMTP settings to MongoDB!");
+    }
+
+    if (!process.env.VERCEL) {
+      fs.writeFileSync(SMTP_PATH, JSON.stringify(updated, null, 2));
+    }
     res.json({ success: true, smtp: updated });
   } catch (err: any) {
     res.status(500).json({ error: err.message || "Failed to save SMTP settings" });
@@ -1334,15 +1489,25 @@ app.post("/api/test-email", async (req, res) => {
   }
 });
 
-app.post("/api/settings/logo", (req, res) => {
+app.post("/api/settings/logo", async (req, res) => {
   try {
+    await connectToDatabase();
     const { logo } = req.body;
     if (!logo) {
       return res.status(400).json({ error: "No logo data provided" });
     }
     const current = getCurrentWebsiteSettings();
     const updated = { ...current, logo_image: logo, logoImage: logo };
-    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(updated, null, 2));
+    cachedWebsiteSettings = updated;
+
+    if (mongoose.connection.readyState === 1) {
+      await SettingModel.findOneAndUpdate({ key: "website" }, { value: updated }, { upsert: true });
+      console.log("💾 Saved website settings logo to MongoDB!");
+    }
+
+    if (!process.env.VERCEL) {
+      fs.writeFileSync(SETTINGS_PATH, JSON.stringify(updated, null, 2));
+    }
     res.json({ success: true, logo, settings: updated });
   } catch (err: any) {
     res.status(500).json({ error: err.message || "Failed to save logo" });
