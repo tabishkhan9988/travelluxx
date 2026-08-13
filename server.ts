@@ -21,7 +21,7 @@ const INQUIRIES_PATH = path.join(process.cwd(), "inquiries.json");
 import mongoose from "mongoose";
 
 // --- MONGODB CONNECTION & SCHEMAS ---
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost:27017/travelluxx";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://info_db_user:rexkTuz4elj0srRx@cluster0.utakxdh.mongodb.net/travelluxx";
 
 const BookingSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
@@ -373,7 +373,7 @@ function readSmtpSettings(): any {
       smtpHost: cachedSmtpSettings.smtpHost || process.env.SMTP_HOST || "mail.travelluxx.co.uk",
       smtpPort: cachedSmtpSettings.smtpPort || process.env.SMTP_PORT || "465",
       smtpUser: cachedSmtpSettings.smtpUser || process.env.SMTP_USER || ws.business_email || "info@travelluxx.co.uk",
-      smtpPass: cachedSmtpSettings.smtpPass || process.env.SMTP_PASS || "sdjnefvpasotcja",
+      smtpPass: cachedSmtpSettings.smtpPass || process.env.SMTP_PASS || "7JjGeytEq@565FF6xN",
       smtpSecure: cachedSmtpSettings.smtpSecure !== undefined ? cachedSmtpSettings.smtpSecure : (process.env.SMTP_SECURE !== "false"),
       senderAddress: cachedSmtpSettings.senderAddress || cachedSmtpSettings.smtpUser || process.env.SMTP_USER || ws.business_email || "info@travelluxx.co.uk"
     };
@@ -403,7 +403,7 @@ function readSmtpSettings(): any {
     smtpHost: saved.smtpHost || process.env.SMTP_HOST || "mail.travelluxx.co.uk",
     smtpPort: saved.smtpPort || process.env.SMTP_PORT || "465",
     smtpUser: saved.smtpUser || process.env.SMTP_USER || ws.business_email || "info@travelluxx.co.uk",
-    smtpPass: saved.smtpPass || process.env.SMTP_PASS || "sdjnefvpasotcja",
+    smtpPass: saved.smtpPass || process.env.SMTP_PASS || "7JjGeytEq@565FF6xN",
     smtpSecure: saved.smtpSecure !== undefined ? saved.smtpSecure : (process.env.SMTP_SECURE !== "false"),
     senderAddress: saved.senderAddress || saved.smtpUser || process.env.SMTP_USER || ws.business_email || "info@travelluxx.co.uk"
   };
