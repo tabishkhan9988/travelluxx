@@ -282,6 +282,8 @@ function writeBookings(bookings: any[]) {
 let cachedWebsiteSettings: any = null;
 let cachedPricingSettings: any = null;
 let cachedSmtpSettings: any = null;
+let cachedMollieApiKey: string | null = null;
+let cachedMenu: any = null;
 
 async function syncSettingsFromDb() {
   try {
@@ -294,6 +296,12 @@ async function syncSettingsFromDb() {
 
       const dbSmtp = await SettingModel.findOne({ key: "smtp" });
       if (dbSmtp && dbSmtp.value) cachedSmtpSettings = dbSmtp.value;
+
+      const dbMollie = await SettingModel.findOne({ key: "mollie_api_key" });
+      if (dbMollie && dbMollie.value) cachedMollieApiKey = dbMollie.value;
+
+      const dbMenu = await SettingModel.findOne({ key: "menu" });
+      if (dbMenu && dbMenu.value) cachedMenu = dbMenu.value;
 
       console.log("🔄 Loaded settings cache from MongoDB!");
     }
@@ -980,31 +988,51 @@ app.delete("/api/admin/posts/:id", async (req, res) => {
 // Admin Settings & Mollie API key update
 app.get("/api/admin/settings", (req, res) => {
   const settings = getCurrentWebsiteSettings();
-  const mollieApiKey = process.env.MOLLIE_API_KEY || "";
+  const mollieApiKey = process.env.MOLLIE_API_KEY || cachedMollieApiKey || settings?.mollie_api_key || "";
   return res.json({ ...settings, mollie_api_key: mollieApiKey });
 });
 
-app.post("/api/admin/settings", (req, res) => {
+app.post("/api/admin/settings", async (req, res) => {
   try {
+    await connectToDatabase();
     const { mollie_api_key, ...otherSettings } = req.body;
     
-    // Save to settings.json
-    fs.writeFileSync(SETTINGS_PATH, JSON.stringify(otherSettings, null, 2));
-
-    // Update .env file locally if mollie_api_key is provided
+    const current = getCurrentWebsiteSettings();
+    const updated = { ...current, ...otherSettings };
     if (mollie_api_key !== undefined) {
+      updated.mollie_api_key = mollie_api_key;
+      cachedMollieApiKey = mollie_api_key;
       process.env.MOLLIE_API_KEY = mollie_api_key;
-      const envPath = path.join(process.cwd(), ".env");
-      let envContent = "";
-      if (fs.existsSync(envPath)) {
-        envContent = fs.readFileSync(envPath, "utf8");
+      
+      if (mongoose.connection.readyState === 1) {
+        await SettingModel.findOneAndUpdate({ key: "mollie_api_key" }, { value: mollie_api_key }, { upsert: true });
+        console.log("💾 Saved Mollie API Key to MongoDB!");
       }
-      if (envContent.includes("MOLLIE_API_KEY=")) {
-        envContent = envContent.replace(/MOLLIE_API_KEY=.*/g, `MOLLIE_API_KEY=${mollie_api_key}`);
-      } else {
-        envContent += `\nMOLLIE_API_KEY=${mollie_api_key}\n`;
+    }
+    
+    cachedWebsiteSettings = updated;
+
+    if (mongoose.connection.readyState === 1) {
+      await SettingModel.findOneAndUpdate({ key: "website" }, { value: updated }, { upsert: true });
+      console.log("💾 Saved admin settings to MongoDB!");
+    }
+
+    if (!process.env.VERCEL) {
+      fs.writeFileSync(SETTINGS_PATH, JSON.stringify(otherSettings, null, 2));
+
+      if (mollie_api_key !== undefined) {
+        const envPath = path.join(process.cwd(), ".env");
+        let envContent = "";
+        if (fs.existsSync(envPath)) {
+          envContent = fs.readFileSync(envPath, "utf8");
+        }
+        if (envContent.includes("MOLLIE_API_KEY=")) {
+          envContent = envContent.replace(/MOLLIE_API_KEY=.*/g, `MOLLIE_API_KEY=${mollie_api_key}`);
+        } else {
+          envContent += `\nMOLLIE_API_KEY=${mollie_api_key}\n`;
+        }
+        fs.writeFileSync(envPath, envContent);
       }
-      fs.writeFileSync(envPath, envContent);
     }
 
     return res.json({ success: true, message: "Settings updated successfully" });
@@ -1094,7 +1122,6 @@ app.delete("/api/admin/pages/:id", async (req, res) => {
 
 // --- Menu Manager ---
 const MENU_PATH = path.join(process.cwd(), "menu.json");
-let cachedMenu: any = null;
 
 function readMenu(): any[] {
   if (cachedMenu) return cachedMenu;

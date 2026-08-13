@@ -275,6 +275,8 @@ function writeBookings(bookings) {
 var cachedWebsiteSettings = null;
 var cachedPricingSettings = null;
 var cachedSmtpSettings = null;
+var cachedMollieApiKey = null;
+var cachedMenu = null;
 async function syncSettingsFromDb() {
   try {
     if (import_mongoose.default.connection.readyState === 1) {
@@ -284,6 +286,10 @@ async function syncSettingsFromDb() {
       if (dbPricing && dbPricing.value) cachedPricingSettings = dbPricing.value;
       const dbSmtp = await SettingModel.findOne({ key: "smtp" });
       if (dbSmtp && dbSmtp.value) cachedSmtpSettings = dbSmtp.value;
+      const dbMollie = await SettingModel.findOne({ key: "mollie_api_key" });
+      if (dbMollie && dbMollie.value) cachedMollieApiKey = dbMollie.value;
+      const dbMenu = await SettingModel.findOne({ key: "menu" });
+      if (dbMenu && dbMenu.value) cachedMenu = dbMenu.value;
       console.log("\u{1F504} Loaded settings cache from MongoDB!");
     }
   } catch (err) {
@@ -883,28 +889,46 @@ app.delete("/api/admin/posts/:id", async (req, res) => {
 });
 app.get("/api/admin/settings", (req, res) => {
   const settings = getCurrentWebsiteSettings();
-  const mollieApiKey = process.env.MOLLIE_API_KEY || "";
+  const mollieApiKey = process.env.MOLLIE_API_KEY || cachedMollieApiKey || settings?.mollie_api_key || "";
   return res.json({ ...settings, mollie_api_key: mollieApiKey });
 });
-app.post("/api/admin/settings", (req, res) => {
+app.post("/api/admin/settings", async (req, res) => {
   try {
+    await connectToDatabase();
     const { mollie_api_key, ...otherSettings } = req.body;
-    import_fs.default.writeFileSync(SETTINGS_PATH, JSON.stringify(otherSettings, null, 2));
+    const current = getCurrentWebsiteSettings();
+    const updated = { ...current, ...otherSettings };
     if (mollie_api_key !== void 0) {
+      updated.mollie_api_key = mollie_api_key;
+      cachedMollieApiKey = mollie_api_key;
       process.env.MOLLIE_API_KEY = mollie_api_key;
-      const envPath = import_path.default.join(process.cwd(), ".env");
-      let envContent = "";
-      if (import_fs.default.existsSync(envPath)) {
-        envContent = import_fs.default.readFileSync(envPath, "utf8");
+      if (import_mongoose.default.connection.readyState === 1) {
+        await SettingModel.findOneAndUpdate({ key: "mollie_api_key" }, { value: mollie_api_key }, { upsert: true });
+        console.log("\u{1F4BE} Saved Mollie API Key to MongoDB!");
       }
-      if (envContent.includes("MOLLIE_API_KEY=")) {
-        envContent = envContent.replace(/MOLLIE_API_KEY=.*/g, `MOLLIE_API_KEY=${mollie_api_key}`);
-      } else {
-        envContent += `
+    }
+    cachedWebsiteSettings = updated;
+    if (import_mongoose.default.connection.readyState === 1) {
+      await SettingModel.findOneAndUpdate({ key: "website" }, { value: updated }, { upsert: true });
+      console.log("\u{1F4BE} Saved admin settings to MongoDB!");
+    }
+    if (!process.env.VERCEL) {
+      import_fs.default.writeFileSync(SETTINGS_PATH, JSON.stringify(otherSettings, null, 2));
+      if (mollie_api_key !== void 0) {
+        const envPath = import_path.default.join(process.cwd(), ".env");
+        let envContent = "";
+        if (import_fs.default.existsSync(envPath)) {
+          envContent = import_fs.default.readFileSync(envPath, "utf8");
+        }
+        if (envContent.includes("MOLLIE_API_KEY=")) {
+          envContent = envContent.replace(/MOLLIE_API_KEY=.*/g, `MOLLIE_API_KEY=${mollie_api_key}`);
+        } else {
+          envContent += `
 MOLLIE_API_KEY=${mollie_api_key}
 `;
+        }
+        import_fs.default.writeFileSync(envPath, envContent);
       }
-      import_fs.default.writeFileSync(envPath, envContent);
     }
     return res.json({ success: true, message: "Settings updated successfully" });
   } catch (err) {
@@ -987,7 +1011,6 @@ app.delete("/api/admin/pages/:id", async (req, res) => {
   return res.json({ success: true });
 });
 var MENU_PATH = import_path.default.join(process.cwd(), "menu.json");
-var cachedMenu = null;
 function readMenu() {
   if (cachedMenu) return cachedMenu;
   try {
