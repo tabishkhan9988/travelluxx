@@ -1,54 +1,16 @@
 [
   {
-    "id": "post-1786496071863",
-    "slug": "shdshjdk",
-    "title": "shdshjdk",
+    "id": "post-1786803111392",
+    "slug": "test",
+    "title": "test",
     "excerpt": "",
-    "content": "/huikjjk/jl",
+    "content": "testtest",
     "image": "",
     "author": "Travelluxx Editorial",
-    "date": "2026-08-12",
+    "date": "2026-08-15",
     "published": 1,
     "metaTitle": "",
     "metaDescription": "",
-    "createdAt": "2026-08-12T00:54:31.863Z"
-  },
-  {
-    "id": "post-1786495161657",
-    "slug": "test",
-    "title": "test",
-    "excerpt": "test",
-    "content": "testtesttesttest",
-    "image": "",
-    "published": true,
-    "metaTitle": "",
-    "metaDescription": "",
-    "date": "2026-08-12"
-  },
-  {
-    "id": "post-1",
-    "slug": "executive-chauffeur-guide-london-airports",
-    "title": "The Ultimate Executive Chauffeur Guide for London & Airport Transfers",
-    "excerpt": "Discover how luxury private transfers save time and elevate your travel experience between Heathrow, Gatwick, and central London.",
-    "content": "<p>Navigating London's busy airports requires precision, luxury, and reliability. Whether arriving at Heathrow Terminal 5 or Gatwick North, a dedicated private chauffeur ensures a seamless transition from flight to final destination.</p><h3>Why Choose Private Executive Transfers?</h3><ul><li>Flight Tracking for automatic adjustment on delays</li><li>Complimentary wait time and meet & greet service</li><li>High-end vehicles: Mercedes E-Class, S-Class, and V-Class Extra Long</li></ul><p>Book your journey in advance with Travelluxx for fixed rates and stress-free luxury mobility.</p>",
-    "image": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=1200&q=80",
-    "author": "Travelluxx Editorial",
-    "date": "2026-08-10",
-    "published": true,
-    "metaTitle": "London Airport Chauffeur Service | Travelluxx",
-    "metaDescription": "Luxury private chauffeur transfers for London Heathrow, Gatwick, Stansted and Luton."
-  },
-  {
-    "id": "post-2",
-    "slug": "birmingham-to-london-first-class-chauffeur-travel",
-    "title": "First-Class Chauffeur Travel: Birmingham to London & Beyond",
-    "excerpt": "Experience seamless intercity travel across the UK in executive comfort with dedicated Wi-Fi, refreshments, and professional drivers.",
-    "content": "<p>Long-distance travel between major UK business hubs like Birmingham, Manchester, and London demands maximum comfort and privacy. Avoid crowded trains and fixed schedules with our bespoke chauffeur solutions.</p><h3>Comfort Tailored for Executives</h3><p>Every vehicle in our fleet is meticulously maintained and sanitized, equipped with climate control, leather upholstery, and privacy glass to allow you to work or relax on the go.</p>",
-    "image": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=1200&q=80",
-    "author": "Travelluxx Editorial",
-    "date": "2026-08-08",
-    "published": true,
-    "metaTitle": "Birmingham to London Executive Transfers | Travelluxx",
-    "metaDescription": "Intercity private chauffeur service between Birmingham and London."
+    "createdAt": "2026-08-15T14:11:51.392Z"
   }
 ]

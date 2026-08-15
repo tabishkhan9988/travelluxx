@@ -21,7 +21,7 @@ const INQUIRIES_PATH = path.join(process.cwd(), "inquiries.json");
 import mongoose from "mongoose";
 
 // --- MONGODB CONNECTION & SCHEMAS ---
-const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://info_db_user:rexkTuz4elj0srRx@cluster0.utakxdh.mongodb.net/travelluxx";
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://info_db_user:rexkTuz4elj0srRx@cluster0.utakxdh.mongodb.net/travelluxx?retryWrites=true&w=majority&appName=Cluster0";
 
 const BookingSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
@@ -42,7 +42,7 @@ const BookingSchema = new mongoose.Schema({
   createdAt: { type: String, default: () => new Date().toISOString() }
 }, { strict: false });
 
-const BookingModel = mongoose.models.Booking || mongoose.model("Booking", BookingSchema);
+const BookingModel = mongoose.model("Booking", BookingSchema);
 
 const PostSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
@@ -59,7 +59,7 @@ const PostSchema = new mongoose.Schema({
   createdAt: { type: String, default: () => new Date().toISOString() }
 }, { strict: false });
 
-const PostModel = mongoose.models.Post || mongoose.model("Post", PostSchema);
+const PostModel = mongoose.model("Post", PostSchema);
 
 const PageSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
@@ -71,7 +71,7 @@ const PageSchema = new mongoose.Schema({
   updatedAt: { type: String, default: () => new Date().toISOString() }
 }, { strict: false });
 
-const PageModel = mongoose.models.Page || mongoose.model("Page", PageSchema);
+const PageModel = mongoose.model("Page", PageSchema);
 
 const InquirySchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
@@ -84,14 +84,14 @@ const InquirySchema = new mongoose.Schema({
   createdAt: { type: String, default: () => new Date().toISOString() }
 }, { strict: false });
 
-const InquiryModel = mongoose.models.Inquiry || mongoose.model("Inquiry", InquirySchema);
+const InquiryModel = mongoose.model("Inquiry", InquirySchema);
 
 const SettingSchema = new mongoose.Schema({
   key: { type: String, required: true, unique: true },
   value: mongoose.Schema.Types.Mixed
 });
 
-const SettingModel = mongoose.models.Setting || mongoose.model("Setting", SettingSchema);
+const SettingModel = mongoose.model("Setting", SettingSchema);
 
 const UploadSchema = new mongoose.Schema({
   filename: { type: String, required: true, unique: true },
@@ -99,7 +99,7 @@ const UploadSchema = new mongoose.Schema({
   data: Buffer
 });
 
-const UploadModel = mongoose.models.Upload || mongoose.model("Upload", UploadSchema);
+const UploadModel = mongoose.model("Upload", UploadSchema);
 
 // Connect to MongoDB
 // Connect to MongoDB
