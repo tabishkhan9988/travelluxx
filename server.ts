@@ -987,10 +987,15 @@ app.post("/api/admin/posts", async (req, res) => {
 
 app.put("/api/admin/posts/:id", async (req, res) => {
   const { id } = req.params;
+  const updateData = { ...req.body };
+  delete updateData._id;
+  delete updateData.__v;
   try {
     await connectToDatabase();
-    await PostModel.findOneAndUpdate({ id }, { $set: req.body });
-  } catch (e) {}
+    await PostModel.findOneAndUpdate({ id }, { $set: updateData });
+  } catch (e) {
+    console.error("Error updating MongoDB post:", e);
+  }
   const posts = readPosts();
   const index = posts.findIndex(p => p.id === id);
   if (index !== -1) {
@@ -1129,10 +1134,15 @@ app.post("/api/admin/pages", async (req, res) => {
 });
 
 app.put("/api/admin/pages/:id", async (req, res) => {
+  const updateData = { ...req.body };
+  delete updateData._id;
+  delete updateData.__v;
   try {
     await connectToDatabase();
-    await PageModel.findOneAndUpdate({ id: req.params.id }, { ...req.body, updatedAt: new Date().toISOString() });
-  } catch (e) {}
+    await PageModel.findOneAndUpdate({ id: req.params.id }, { ...updateData, updatedAt: new Date().toISOString() });
+  } catch (e) {
+    console.error("Error updating MongoDB page:", e);
+  }
 
   const pages = readPages();
   const idx = pages.findIndex(p => p.id === req.params.id);

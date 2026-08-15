@@ -420,6 +420,7 @@ export default function AdminDashboard() {
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
   const [mediaViewMode, setMediaViewMode] = useState<"grid" | "list">("grid");
   const [saveStatus, setSaveStatus] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   // Quick Edit states
   const [quickEditingPostId, setQuickEditingPostId] = useState<string | null>(null);
@@ -470,6 +471,46 @@ export default function AdminDashboard() {
     if (token) {
       fetchAll();
     }
+  }, [token]);
+
+  // Sync state to URL hash
+  useEffect(() => {
+    if (!token) return;
+    let targetHash = activeTab as string;
+    if (activeTab === "settings") {
+      targetHash = `settings/${settingsTab}`;
+    }
+    if (window.location.hash !== `#${targetHash}`) {
+      window.location.hash = targetHash;
+    }
+  }, [activeTab, settingsTab, token]);
+
+  // Sync URL hash to state
+  useEffect(() => {
+    if (!token) return;
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (!hash) return;
+      const parts = hash.split("/");
+      const primaryTab = parts[0] as Tab;
+      const validTabs: Tab[] = ["dashboard", "leads", "posts", "pages", "media", "menus", "settings", "inquiries"];
+      if (validTabs.includes(primaryTab)) {
+        setActiveTab(primaryTab);
+        if (primaryTab === "settings" && parts[1]) {
+          const subTab = parts[1] as any;
+          const validSubTabs = ["general", "connectors", "writing", "reading", "discussion", "media", "permalinks", "privacy"];
+          if (validSubTabs.includes(subTab)) {
+            setSettingsTab(subTab);
+          }
+        }
+      }
+    };
+
+    // Initial check on mount/token load
+    handleHashChange();
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, [token]);
 
   const fetchAll = () => {
@@ -578,16 +619,23 @@ export default function AdminDashboard() {
   };
   const savePost = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    const url = editingPost ? `/api/admin/posts/${editingPost.id}` : "/api/admin/posts";
-    const method = editingPost ? "PUT" : "POST";
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(postForm)
-    });
-    if (res.ok) {
-      setEditingPost(undefined);
-      fetchPosts();
+    setIsSaving(true);
+    try {
+      const url = editingPost ? `/api/admin/posts/${editingPost.id}` : "/api/admin/posts";
+      const method = editingPost ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postForm)
+      });
+      if (res.ok) {
+        setEditingPost(undefined);
+        fetchPosts();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
     }
   };
   const deletePost = async (id: string) => {
@@ -614,10 +662,17 @@ export default function AdminDashboard() {
   };
   const savePage = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    const url = editingPage ? `/api/admin/pages/${editingPage.id}` : "/api/admin/pages";
-    const method = editingPage ? "PUT" : "POST";
-    await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(pageForm) });
-    fetchPages(); setEditingPage(undefined);
+    setIsSaving(true);
+    try {
+      const url = editingPage ? `/api/admin/pages/${editingPage.id}` : "/api/admin/pages";
+      const method = editingPage ? "PUT" : "POST";
+      await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(pageForm) });
+      fetchPages(); setEditingPage(undefined);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
   };
   const deletePage = async (id: string) => {
     if (!confirm("Delete page?")) return;
@@ -636,15 +691,22 @@ export default function AdminDashboard() {
   const saveQuickPost = async (id: string) => {
     const post = posts.find(p => p.id === id);
     if (!post) return;
-    const updatedPost = { ...post, ...quickPostForm };
-    const res = await fetch(`/api/admin/posts/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedPost)
-    });
-    if (res.ok) {
-      setQuickEditingPostId(null);
-      fetchPosts();
+    setIsSaving(true);
+    try {
+      const updatedPost = { ...post, ...quickPostForm };
+      const res = await fetch(`/api/admin/posts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedPost)
+      });
+      if (res.ok) {
+        setQuickEditingPostId(null);
+        fetchPosts();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
     }
   };
   const openQuickEditPage = (page: any) => {
@@ -658,15 +720,22 @@ export default function AdminDashboard() {
   const saveQuickPage = async (id: string) => {
     const page = pages.find(p => p.id === id);
     if (!page) return;
-    const updatedPage = { ...page, ...quickPageForm };
-    const res = await fetch(`/api/admin/pages/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedPage)
-    });
-    if (res.ok) {
-      setQuickEditingPageId(null);
-      fetchPages();
+    setIsSaving(true);
+    try {
+      const updatedPage = { ...page, ...quickPageForm };
+      const res = await fetch(`/api/admin/pages/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedPage)
+      });
+      if (res.ok) {
+        setQuickEditingPageId(null);
+        fetchPages();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -706,8 +775,15 @@ export default function AdminDashboard() {
 
   // ─── Menu ─────────────────────────────────────────────────────────────────────
   const saveMenu = async () => {
-    await fetch("/api/admin/menu", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(menuItems) });
-    setSaveStatus("Menu saved!"); setTimeout(() => setSaveStatus(""), 3000);
+    setIsSaving(true);
+    try {
+      await fetch("/api/admin/menu", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(menuItems) });
+      setSaveStatus("Menu saved!"); setTimeout(() => setSaveStatus(""), 3000);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsSaving(false);
+    }
   };
   const addMenuItem = () => {
     if (!newMenuItem.label || !newMenuItem.href) return;
@@ -726,9 +802,17 @@ export default function AdminDashboard() {
   // ─── Settings ─────────────────────────────────────────────────────────────────
   const saveSettings = async (e: React.FormEvent) => {
     e.preventDefault(); setSaveStatus("Saving...");
-    const res = await fetch("/api/admin/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings) });
-    if (res.ok) { setSaveStatus("Settings saved!"); setTimeout(() => setSaveStatus(""), 4000); }
-    else setSaveStatus("Failed to save.");
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/admin/settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings) });
+      if (res.ok) { setSaveStatus("Settings saved!"); setTimeout(() => setSaveStatus(""), 4000); }
+      else setSaveStatus("Failed to save.");
+    } catch (err) {
+      console.error(err);
+      setSaveStatus("Failed to save.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   // ─── Stats ───────────────────────────────────────────────────────────────────
@@ -1072,8 +1156,15 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         onClick={() => savePost()}
-                        className="bg-[#2271b1] hover:bg-[#135e96] text-white px-4 py-1.5 rounded-sm font-semibold shadow-sm transition"
+                        disabled={isSaving}
+                        className="bg-[#2271b1] hover:bg-[#135e96] text-white px-4 py-1.5 rounded-sm font-semibold shadow-sm transition flex items-center gap-1.5 disabled:opacity-50"
                       >
+                        {isSaving && (
+                          <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                        )}
                         Save
                       </button>
                     </div>
@@ -1464,8 +1555,15 @@ export default function AdminDashboard() {
                                     <button
                                       type="button"
                                       onClick={() => saveQuickPost(p.id)}
-                                      className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded-sm font-semibold transition shadow-sm"
+                                      disabled={isSaving}
+                                      className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded-sm font-semibold transition shadow-sm flex items-center gap-1 disabled:opacity-50"
                                     >
+                                      {isSaving && (
+                                        <svg className="animate-spin h-3 w-3 text-white" fill="none" viewBox="0 0 24 24">
+                                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                        </svg>
+                                      )}
                                       Update
                                     </button>
                                   </div>
@@ -1561,8 +1659,15 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         onClick={() => savePage()}
-                        className="bg-[#2271b1] hover:bg-[#135e96] text-white px-4 py-1.5 rounded-sm font-semibold shadow-sm transition"
+                        disabled={isSaving}
+                        className="bg-[#2271b1] hover:bg-[#135e96] text-white px-4 py-1.5 rounded-sm font-semibold shadow-sm transition flex items-center gap-1.5 disabled:opacity-50"
                       >
+                        {isSaving && (
+                          <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                        )}
                         Save
                       </button>
                     </div>
@@ -1917,10 +2022,10 @@ export default function AdminDashboard() {
                                     </button>
                                     <button
                                       type="button"
-                                      onClick={() => saveQuickPage(p.id)}
+                                      onClick={() => saveQuickPage(p.id)} disabled={isSaving}
                                       className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded-sm font-semibold transition shadow-sm"
                                     >
-                                      Update
+                                      {isSaving && <svg className="animate-spin h-3 w-3 mr-1 text-white inline-block" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>}Update
                                     </button>
                                   </div>
                                 </div>
@@ -2198,9 +2303,17 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              <button onClick={saveMenu}
-                className="bg-[#2271b1] hover:bg-[#135e96] text-white px-5 py-2 rounded text-sm font-semibold flex items-center gap-2 transition">
-                <Save className="w-4 h-4" /> Save Menu Changes
+              <button onClick={saveMenu} disabled={isSaving}
+                className="bg-[#2271b1] hover:bg-[#135e96] text-white px-5 py-2 rounded text-sm font-semibold flex items-center gap-2 transition disabled:opacity-50">
+                {isSaving ? (
+                  <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : (
+                  <Save className="w-4 h-4" />
+                )}
+                Save Menu Changes
               </button>
             </div>
           )}
@@ -2427,9 +2540,17 @@ export default function AdminDashboard() {
                     )}
 
                     <div className="pt-4 border-t border-[#f0f0f1] flex justify-end">
-                      <button type="submit"
-                        className="bg-[#2271b1] hover:bg-[#135e96] text-white px-5 py-2 rounded-sm text-xs font-semibold flex items-center gap-1.5 transition shadow-sm">
-                        <Save className="w-4 h-4" /> Save Changes
+                      <button type="submit" disabled={isSaving}
+                        className="bg-[#2271b1] hover:bg-[#135e96] text-white px-5 py-2 rounded-sm text-xs font-semibold flex items-center gap-1.5 transition shadow-sm disabled:opacity-50">
+                        {isSaving ? (
+                          <svg className="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                        ) : (
+                          <Save className="w-4 h-4" />
+                        )}
+                        Save Changes
                       </button>
                     </div>
                   </form>
