@@ -2932,7 +2932,7 @@ export default function AdminDashboard() {
                       onChange={async (e) => {
                         if (e.target.files && e.target.files.length > 0) {
                           setUploading(true);
-                          for (const file of Array.from(e.target.files)) {
+                          for (const file of Array.from(e.target.files) as File[]) {
                             try {
                               const base64Data = await toBase64(file);
                               const res = await fetch("/api/admin/upload", {
