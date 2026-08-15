@@ -36,6 +36,23 @@ export default function Navbar({ onScrollTo, onAdminClick, settings }: NavbarPro
     return () => window.removeEventListener("custom_images_updated", handleUpdate);
   }, [settings]);
 
+  const [menuItems, setMenuItems] = useState<any[]>([
+    { id: "1", label: "Book Now", href: "/#calculator", target: "_self" },
+    { id: "2", label: "Blog", href: "/blog", target: "_self" },
+    { id: "3", label: "Contact", href: "/#contact", target: "_self" }
+  ]);
+
+  useEffect(() => {
+    fetch("/api/menu")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setMenuItems(data);
+        }
+      })
+      .catch(err => console.error("Failed to load menu:", err));
+  }, []);
+
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
       {/* Main Navbar */}
@@ -73,24 +90,33 @@ export default function Navbar({ onScrollTo, onAdminClick, settings }: NavbarPro
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8 text-sm font-bold">
-            <button 
-              onClick={() => onScrollTo("calculator")} 
-              className="text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide"
-            >
-              Book Now
-            </button>
-            <a 
-              href="/blog" 
-              className="text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide"
-            >
-              Blog
-            </a>
-            <button 
-              onClick={() => onScrollTo("contact")} 
-              className="text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide"
-            >
-              Contact
-            </button>
+            {menuItems.map((item) => {
+              const isAnchor = item.href.startsWith("/#") || item.href.startsWith("#");
+              const sectionId = isAnchor ? item.href.split("#")[1] : "";
+              
+              if (isAnchor && sectionId) {
+                return (
+                  <button 
+                    key={item.id}
+                    onClick={() => onScrollTo(sectionId)} 
+                    className="text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide"
+                  >
+                    {item.label}
+                  </button>
+                );
+              }
+
+              return (
+                <a 
+                  key={item.id}
+                  href={item.href} 
+                  target={item.target || "_self"}
+                  className="text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide"
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </nav>
 
           {/* Mobile menu button */}
@@ -107,26 +133,38 @@ export default function Navbar({ onScrollTo, onAdminClick, settings }: NavbarPro
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-slate-150 py-4 px-6 space-y-4 shadow-lg">
+        <div className="md:hidden bg-white border-t border-slate-150 py-4 px-6 shadow-lg">
           <div className="flex flex-col space-y-3">
-            <button
-              onClick={() => {
-                onScrollTo("calculator");
-                setIsOpen(false);
-              }}
-              className="text-left text-slate-800 hover:text-emerald-600 font-bold py-2 transition cursor-pointer text-sm"
-            >
-              Book Now
-            </button>
-            <button
-              onClick={() => {
-                onScrollTo("contact");
-                setIsOpen(false);
-              }}
-              className="text-left text-slate-800 hover:text-emerald-600 font-bold py-2 transition cursor-pointer text-sm"
-            >
-              Contact
-            </button>
+            {menuItems.map((item) => {
+              const isAnchor = item.href.startsWith("/#") || item.href.startsWith("#");
+              const sectionId = isAnchor ? item.href.split("#")[1] : "";
+              
+              if (isAnchor && sectionId) {
+                return (
+                  <button 
+                    key={item.id}
+                    onClick={() => {
+                      onScrollTo(sectionId);
+                      setIsOpen(false);
+                    }}
+                    className="text-left text-slate-800 hover:text-emerald-600 font-bold py-2 transition cursor-pointer text-sm"
+                  >
+                    {item.label}
+                  </button>
+                );
+              }
+
+              return (
+                <a 
+                  key={item.id}
+                  href={item.href}
+                  target={item.target || "_self"}
+                  className="text-left text-slate-800 hover:text-emerald-600 font-bold py-2 transition cursor-pointer text-sm"
+                >
+                  {item.label}
+                </a>
+              );
+            })}
           </div>
         </div>
       )}
