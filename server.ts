@@ -986,7 +986,11 @@ app.delete("/api/admin/posts/:id", async (req, res) => {
 
 
 // Admin Settings & Mollie API key update
-app.get("/api/admin/settings", (req, res) => {
+app.get("/api/admin/settings", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {}
   const settings = getCurrentWebsiteSettings();
   const mollieApiKey = process.env.MOLLIE_API_KEY || cachedMollieApiKey || settings?.mollie_api_key || "";
   return res.json({ ...settings, mollie_api_key: mollieApiKey });
@@ -1139,7 +1143,13 @@ function readMenu(): any[] {
   return cachedMenu;
 }
 
-app.get("/api/menu", (req, res) => res.json(readMenu()));
+app.get("/api/menu", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {}
+  return res.json(readMenu());
+});
 
 app.post("/api/admin/menu", async (req, res) => {
   try {
@@ -1422,11 +1432,19 @@ app.delete("/api/admin/inquiries/:id", async (req, res) => {
   return res.json({ success: true });
 });
 
-app.get("/api/pricing", (req, res) => {
+app.get("/api/pricing", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {}
   res.json(getCurrentPricingSettings());
 });
 
-app.get("/api/settings", (req, res) => {
+app.get("/api/settings", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {}
   res.json(getCurrentWebsiteSettings());
 });
 
@@ -1451,7 +1469,11 @@ app.post("/api/settings", async (req, res) => {
   }
 });
 
-app.get("/api/smtp-settings", (req, res) => {
+app.get("/api/smtp-settings", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {}
   const smtp = readSmtpSettings();
   res.json({
     smtpHost: smtp.smtpHost,
