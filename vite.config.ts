@@ -27,6 +27,10 @@ export default defineConfig(() => {
       // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
       allowedHosts: ['travelluxx.co.uk', 'www.travelluxx.co.uk'],
+      proxy: {
+        '/api': 'http://localhost:3001',
+        '/uploads': 'http://localhost:3001',
+      },
     },
   };
 });
