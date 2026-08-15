@@ -99,8 +99,16 @@ export default function BlogPostDetail() {
 
       {/* Inject custom global CSS to format all standard HTML elements from backend text editors */}
       <style>{`
+        .article-body-content {
+          word-break: break-word;
+          overflow-wrap: break-word;
+          white-space: normal !important;
+        }
         .article-body-content p {
           margin-bottom: 1.5rem;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          white-space: normal !important;
         }
         .article-body-content h2 {
           font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;

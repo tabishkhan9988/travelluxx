@@ -6,7 +6,7 @@ var __commonJS = (cb, mod) => function __require() {
 };
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 var require_index_001 = __commonJS({
-  "assets/index-48a-mz-g.js"(exports, module) {
+  "assets/index-CZI9x22A.js"(exports, module) {
     function _mergeNamespaces(n, m) {
       for (var i = 0; i < m.length; i++) {
         const e = m[i];
@@ -43769,8 +43769,16 @@ ${escapeText(this.code(index, length))}
           ] })
         ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
+        .article-body-content {
+          word-break: break-word;
+          overflow-wrap: break-word;
+          white-space: normal !important;
+        }
         .article-body-content p {
           margin-bottom: 1.5rem;
+          word-break: break-word;
+          overflow-wrap: break-word;
+          white-space: normal !important;
         }
         .article-body-content h2 {
           font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
