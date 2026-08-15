@@ -436,7 +436,7 @@ export default function AdminDashboard() {
 
   // In-Editor Media integration states
   const [editorMediaModalOpen, setEditorMediaModalOpen] = useState(false);
-  const [editorTarget, setEditorTarget] = useState<"post" | "page">("post");
+  const [editorTarget, setEditorTarget] = useState<"post" | "page" | "post-featured" | "page-featured" | "yoast-post-social" | "yoast-page-social" | "yoast-post-x" | "yoast-page-x">("post");
   const [selectedEditorMediaUrl, setSelectedEditorMediaUrl] = useState<string | null>(null);
   const [editorMediaAltText, setEditorMediaAltText] = useState("");
   const [editorMediaTitleText, setEditorMediaTitleText] = useState("");
@@ -454,11 +454,40 @@ export default function AdminDashboard() {
 
   // Post editor
   const [editingPost, setEditingPost] = useState<any>(undefined);
-  const [postForm, setPostForm] = useState({ title: "", slug: "", excerpt: "", content: "", image: "", published: true, metaTitle: "", metaDescription: "" });
+  const [postForm, setPostForm] = useState({
+    title: "",
+    slug: "",
+    excerpt: "",
+    content: "",
+    image: "",
+    published: true,
+    metaTitle: "",
+    metaDescription: "",
+    date: "",
+    author: "admin",
+    template: "Single Posts",
+    discussion: "Open",
+    socialImage: "",
+    xImage: ""
+  });
 
   // Page editor
   const [editingPage, setEditingPage] = useState<any>(undefined);
-  const [pageForm, setPageForm] = useState({ title: "", slug: "", content: "", metaTitle: "", metaDescription: "", published: true });
+  const [pageForm, setPageForm] = useState({
+    title: "",
+    slug: "",
+    content: "",
+    metaTitle: "",
+    metaDescription: "",
+    published: true,
+    date: "",
+    author: "admin",
+    template: "Default Template",
+    discussion: "Closed",
+    image: "",
+    socialImage: "",
+    xImage: ""
+  });
 
   // Media upload
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -602,7 +631,22 @@ export default function AdminDashboard() {
   // ─── Posts ────────────────────────────────────────────────────────────────────
   const openNewPost = () => {
     setEditingPost(null);
-    setPostForm({ title: "", slug: "", excerpt: "", content: "", image: "", published: true, metaTitle: "", metaDescription: "" });
+    setPostForm({
+      title: "",
+      slug: "",
+      excerpt: "",
+      content: "",
+      image: "",
+      published: true,
+      metaTitle: "",
+      metaDescription: "",
+      date: new Date().toISOString().split("T")[0],
+      author: "admin",
+      template: "Single Posts",
+      discussion: "Open",
+      socialImage: "",
+      xImage: ""
+    });
   };
   const openEditPost = (post: any) => {
     setEditingPost(post);
@@ -614,7 +658,13 @@ export default function AdminDashboard() {
       image: post.image || "",
       published: post.published !== false,
       metaTitle: post.metaTitle || "",
-      metaDescription: post.metaDescription || ""
+      metaDescription: post.metaDescription || "",
+      date: post.date || new Date().toISOString().split("T")[0],
+      author: post.author || "admin",
+      template: post.template || "Single Posts",
+      discussion: post.discussion || "Open",
+      socialImage: post.socialImage || "",
+      xImage: post.xImage || ""
     });
   };
   const savePost = async (e?: React.FormEvent) => {
@@ -647,7 +697,21 @@ export default function AdminDashboard() {
   // ─── Pages ───────────────────────────────────────────────────────────────────
   const openNewPage = () => {
     setEditingPage(null);
-    setPageForm({ title: "", slug: "", content: "", metaTitle: "", metaDescription: "", published: true });
+    setPageForm({
+      title: "",
+      slug: "",
+      content: "",
+      metaTitle: "",
+      metaDescription: "",
+      published: true,
+      date: new Date().toISOString().split("T")[0],
+      author: "admin",
+      template: "Default Template",
+      discussion: "Closed",
+      image: "",
+      socialImage: "",
+      xImage: ""
+    });
   };
   const openEditPage = (page: any) => {
     setEditingPage(page);
@@ -657,7 +721,14 @@ export default function AdminDashboard() {
       content: page.content || "",
       metaTitle: page.metaTitle || "",
       metaDescription: page.metaDescription || "",
-      published: page.published !== false
+      published: page.published !== false,
+      date: page.date || new Date().toISOString().split("T")[0],
+      author: page.author || "admin",
+      template: page.template || "Default Template",
+      discussion: page.discussion || "Closed",
+      image: page.image || "",
+      socialImage: page.socialImage || "",
+      xImage: page.xImage || ""
     });
   };
   const savePage = async (e?: React.FormEvent) => {
@@ -740,17 +811,24 @@ export default function AdminDashboard() {
   };
 
   const insertImageIntoEditor = (imageUrl: string, altText: string) => {
-    const imgHtml = `<img src="${imageUrl}" alt="${altText || ''}" />`;
     if (editorTarget === "post") {
-      setPostForm(prev => ({
-        ...prev,
-        content: prev.content + imgHtml
-      }));
-    } else {
-      setPageForm(prev => ({
-        ...prev,
-        content: prev.content + imgHtml
-      }));
+      const imgHtml = `<img src="${imageUrl}" alt="${altText || ''}" />`;
+      setPostForm(prev => ({ ...prev, content: prev.content + imgHtml }));
+    } else if (editorTarget === "page") {
+      const imgHtml = `<img src="${imageUrl}" alt="${altText || ''}" />`;
+      setPageForm(prev => ({ ...prev, content: prev.content + imgHtml }));
+    } else if (editorTarget === "post-featured") {
+      setPostForm(prev => ({ ...prev, image: imageUrl }));
+    } else if (editorTarget === "page-featured") {
+      setPageForm(prev => ({ ...prev, image: imageUrl }));
+    } else if (editorTarget === "yoast-post-social") {
+      setPostForm(prev => ({ ...prev, socialImage: imageUrl }));
+    } else if (editorTarget === "yoast-page-social") {
+      setPageForm(prev => ({ ...prev, socialImage: imageUrl }));
+    } else if (editorTarget === "yoast-post-x") {
+      setPostForm(prev => ({ ...prev, xImage: imageUrl }));
+    } else if (editorTarget === "yoast-page-x") {
+      setPageForm(prev => ({ ...prev, xImage: imageUrl }));
     }
     setEditorMediaModalOpen(false);
     setSelectedEditorMediaUrl(null);
@@ -1245,7 +1323,6 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                         </div>
-
                         {/* Yoast SEO meta box below content */}
                         <YoastSeoBox
                           tab={yoastPostTab}
@@ -1294,7 +1371,7 @@ export default function AdminDashboard() {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    setEditorTarget("post");
+                                    setEditorTarget("post-featured");
                                     setEditorMediaModalOpen(true);
                                   }}
                                   className="w-full bg-[#f6f7f7] hover:bg-[#f0f0f1] border border-[#c3c4c7] text-[#2271b1] hover:text-[#0a4b78] py-4 rounded text-center font-semibold transition"
@@ -1319,22 +1396,25 @@ export default function AdminDashboard() {
                               {/* Status */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Status</span>
-                                <button
-                                  type="button"
-                                  onClick={() => setPostForm(prev => ({ ...prev, published: !prev.published }))}
-                                  className="font-semibold text-[#2271b1] flex items-center gap-1.5"
+                                <select
+                                  value={postForm.published ? "published" : "draft"}
+                                  onChange={e => setPostForm(prev => ({ ...prev, published: e.target.value === "published" }))}
+                                  className="border border-[#8c8f94] bg-white rounded-sm px-1 py-0.5 text-xs text-[#2c3338] outline-none text-right"
                                 >
-                                  <span className="w-4 h-4 bg-[#00a32a] text-white rounded-full flex items-center justify-center text-[9px] font-bold">✓</span>
-                                  {postForm.published ? "Published" : "Draft"}
-                                </button>
+                                  <option value="published">Published</option>
+                                  <option value="draft">Draft</option>
+                                </select>
                               </div>
 
                               {/* Publish Date */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Publish</span>
-                                <span className="font-semibold text-[#2271b1] cursor-pointer">
-                                  {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} @ 9:20 pm UTC-0
-                                </span>
+                                <input
+                                  type="date"
+                                  value={postForm.date ? postForm.date.split("T")[0] : ""}
+                                  onChange={e => setPostForm(prev => ({ ...prev, date: e.target.value }))}
+                                  className="border border-[#8c8f94] bg-white rounded-sm px-1 py-0.5 text-xs text-[#2c3338] outline-none w-28 text-right"
+                                />
                               </div>
 
                               {/* Slug */}
@@ -1351,19 +1431,19 @@ export default function AdminDashboard() {
                               {/* Author */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Author</span>
-                                <span className="font-semibold text-[#2c3338]">admin</span>
+                                <select value={postForm.author} onChange={e => setPostForm({...postForm, author: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="admin">admin</option><option value="Travelluxx Editorial">Travelluxx Editorial</option></select>
                               </div>
 
                               {/* Template */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Template</span>
-                                <span className="font-semibold text-[#2271b1] cursor-pointer">Single Posts</span>
+                                <select value={postForm.template} onChange={e => setPostForm({...postForm, template: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="Single Posts">Single Posts</option><option value="Full Width">Full Width</option><option value="Default Template">Default Template</option></select>
                               </div>
 
                               {/* Discussion */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Discussion</span>
-                                <span className="font-semibold text-[#2271b1] cursor-pointer">Open</span>
+                                <select value={postForm.discussion} onChange={e => setPostForm({...postForm, discussion: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="Open">Open</option><option value="Closed">Closed</option></select>
                               </div>
                             </div>
                           </div>
@@ -1756,7 +1836,7 @@ export default function AdminDashboard() {
                           contentType="page"
                           onMetaTitleChange={v => setPageForm(prev => ({ ...prev, metaTitle: v }))}
                           onSlugChange={v => setPageForm(prev => ({ ...prev, slug: v }))}
-                          onMetaDescriptionChange={v => setPageForm(prev => ({ ...prev, metaDescription: v }))}
+                                          onMetaDescriptionChange={v => setPageForm(prev => ({ ...prev, metaDescription: v }))}
                         />
                       </div>
 
@@ -1779,16 +1859,26 @@ export default function AdminDashboard() {
                             {/* Featured Image Selector Placeholder */}
                             <div>
                               <span className="block font-semibold text-[#2c3338] mb-2">Featured image</span>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setEditorTarget("page");
-                                  setEditorMediaModalOpen(true);
-                                }}
-                                className="w-full bg-[#f6f7f7] hover:bg-[#f0f0f1] border border-[#c3c4c7] text-[#2271b1] hover:text-[#0a4b78] py-4 rounded text-center font-semibold transition"
-                              >
-                                Set featured image
-                              </button>
+                              {pageForm.image ? (
+                                <div className="relative group aspect-video rounded border border-[#c3c4c7] overflow-hidden bg-slate-50 flex items-center justify-center">
+                                  <img src={pageForm.image} alt="preview" className="max-w-full max-h-full object-cover" />
+                                  <button type="button" onClick={() => setPageForm({ ...pageForm, image: "" })}
+                                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-700">
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditorTarget("page-featured");
+                                    setEditorMediaModalOpen(true);
+                                  }}
+                                  className="w-full bg-[#f6f7f7] hover:bg-[#f0f0f1] border border-[#c3c4c7] text-[#2271b1] hover:text-[#0a4b78] py-4 rounded text-center font-semibold transition"
+                                >
+                                  Set featured image
+                                </button>
+                              )}
                             </div>
 
                             {/* Word count stats */}
@@ -1801,22 +1891,25 @@ export default function AdminDashboard() {
                               {/* Status */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Status</span>
-                                <button
-                                  type="button"
-                                  onClick={() => setPageForm(prev => ({ ...prev, published: !prev.published }))}
-                                  className="font-semibold text-[#2271b1] flex items-center gap-1.5"
+                                <select
+                                  value={pageForm.published ? "published" : "draft"}
+                                  onChange={e => setPageForm(prev => ({ ...prev, published: e.target.value === "published" }))}
+                                  className="border border-[#8c8f94] bg-white rounded-sm px-1 py-0.5 text-xs text-[#2c3338] outline-none text-right"
                                 >
-                                  <span className="w-4 h-4 bg-[#00a32a] text-white rounded-full flex items-center justify-center text-[9px] font-bold">✓</span>
-                                  {pageForm.published ? "Published" : "Draft"}
-                                </button>
+                                  <option value="published">Published</option>
+                                  <option value="draft">Draft</option>
+                                </select>
                               </div>
 
                               {/* Publish Date */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Publish</span>
-                                <span className="font-semibold text-[#2271b1] cursor-pointer">
-                                  {new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })} @ 9:20 pm UTC-0
-                                </span>
+                                <input
+                                  type="date"
+                                  value={pageForm.date ? pageForm.date.split("T")[0] : ""}
+                                  onChange={e => setPageForm(prev => ({ ...prev, date: e.target.value }))}
+                                  className="border border-[#8c8f94] bg-white rounded-sm px-1 py-0.5 text-xs text-[#2c3338] outline-none w-28 text-right"
+                                />
                               </div>
 
                               {/* Slug */}
@@ -1833,19 +1926,19 @@ export default function AdminDashboard() {
                               {/* Author */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Author</span>
-                                <span className="font-semibold text-[#2c3338]">admin</span>
+                                <select value={pageForm.author} onChange={e => setPageForm({...pageForm, author: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="admin">admin</option><option value="Travelluxx Editorial">Travelluxx Editorial</option></select>
                               </div>
 
                               {/* Template */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Template</span>
-                                <span className="font-semibold text-[#2271b1] cursor-pointer">Default Template</span>
+                                <select value={pageForm.template} onChange={e => setPageForm({...pageForm, template: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="Default Template">Default Template</option><option value="Full Width">Full Width</option><option value="Landing Page">Landing Page</option></select>
                               </div>
 
                               {/* Discussion */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Discussion</span>
-                                <span className="font-semibold text-[#2271b1] cursor-pointer">Closed</span>
+                                <select value={pageForm.discussion} onChange={e => setPageForm({...pageForm, discussion: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="Open">Open</option><option value="Closed">Closed</option></select>
                               </div>
                             </div>
                           </div>
@@ -2818,7 +2911,50 @@ export default function AdminDashboard() {
               {/* Media selection area (left) */}
               <div className="flex-1 p-5 overflow-y-auto bg-slate-50 border-r border-[#c3c4c7]">
                 <div className="flex items-center justify-between mb-4 border-b border-[#ddd] pb-2">
-                  <span className="font-semibold text-[#2c3338]">Media Library</span>
+                  <div className="flex items-center gap-3">
+                    <span className="font-semibold text-[#2c3338]">Media Library</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const fileInput = document.getElementById("modal-media-upload") as HTMLInputElement;
+                        fileInput?.click();
+                      }}
+                      className="border border-[#2271b1] text-[#2271b1] hover:bg-slate-50 bg-white px-2 py-1 rounded-sm text-xs font-semibold transition shadow-sm flex items-center gap-1"
+                    >
+                      <Upload className="w-3.5 h-3.5" /> Upload Files
+                    </button>
+                    <input
+                      id="modal-media-upload"
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          setUploading(true);
+                          for (const file of Array.from(e.target.files)) {
+                            try {
+                              const base64Data = await toBase64(file);
+                              const res = await fetch("/api/admin/upload", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ filename: file.name, data: base64Data })
+                              });
+                              const json = await res.json();
+                              if (json.url) {
+                                setMedia(prev => [json.url, ...prev]);
+                                setSelectedEditorMediaUrl(json.url);
+                              }
+                            } catch (err) {
+                              console.error("Modal upload failed:", err);
+                            }
+                          }
+                          setUploading(false);
+                          fetchMedia();
+                        }
+                      }}
+                    />
+                  </div>
                   <input type="text" placeholder="Search media..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
                     className="border border-[#c3c4c7] bg-white rounded-sm px-2 py-1 outline-none text-xs focus:border-[#2271b1]" />
                 </div>

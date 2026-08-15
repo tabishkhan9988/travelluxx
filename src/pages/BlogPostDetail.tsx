@@ -26,69 +26,145 @@ export default function BlogPostDetail() {
   }, [post]);
 
   return (
-    <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans">
-      <Navbar onScrollTo={() => {}} />
+    <div className="min-h-screen bg-[#faf9f6] text-[#1a1a1a] flex flex-col font-sans antialiased">
+      <Navbar onScrollTo={(id) => {
+        if (id === "hero" || !id) {
+          window.location.href = "/";
+        }
+      }} />
 
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full py-8 md:py-16">
         {loading ? (
-          <div className="text-center py-32 text-slate-400">Loading article...</div>
+          <div className="text-center py-32 text-slate-400 font-sans">Loading article...</div>
         ) : !post ? (
-          <div className="text-center py-32 text-slate-400">
-            <p className="text-2xl font-bold text-slate-600 mb-3">Article Not Found</p>
-            <Link to="/blog" className="text-emerald-600 hover:underline font-semibold text-sm">← Back to Blog</Link>
+          <div className="text-center py-32 max-w-md mx-auto px-6">
+            <p className="text-2xl font-serif text-slate-800 mb-4">Article Not Found</p>
+            <Link to="/blog" className="text-emerald-700 hover:text-emerald-800 underline font-semibold text-sm">← Back to Blog</Link>
           </div>
         ) : (
-          <>
-            {/* Hero image */}
+          <article className="w-full">
+            {/* Header Section */}
+            <div className="max-w-3xl mx-auto px-4 md:px-6 text-center mb-8 md:mb-12">
+              <div className="text-xs uppercase tracking-[0.2em] text-emerald-600 font-semibold mb-4">
+                {post.date ? new Date(post.date).toLocaleDateString("en-US", { month: 'long', day: 'numeric', year: 'numeric' }) : ""}
+              </div>
+              <h1 className="text-3xl md:text-5xl font-serif font-normal text-slate-900 leading-tight tracking-tight mb-6">
+                {post.title}
+              </h1>
+              <div className="flex items-center justify-center gap-2 text-xs text-slate-500 font-medium">
+                <span>By {post.author || "Travelluxx Editorial"}</span>
+                <span>•</span>
+                <span>Chauffeur &amp; Travel Guides</span>
+              </div>
+            </div>
+
+            {/* Featured Image */}
             {post.image && (
-              <div className="w-full h-72 md:h-96 overflow-hidden relative">
-                <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-6 left-0 right-0 max-w-4xl mx-auto px-6">
-                  <div className="flex items-center gap-3 text-xs text-white/80 font-mono mb-2">
-                    <span className="bg-emerald-600 text-white px-2.5 py-1 rounded font-bold">{post.date}</span>
-                    <span>By {post.author || "Travelluxx Editorial"}</span>
-                  </div>
-                  <h1 className="text-2xl md:text-4xl font-extrabold text-white leading-tight">{post.title}</h1>
+              <div className="max-w-4xl mx-auto px-4 md:px-6 mb-10 md:mb-14">
+                <div className="aspect-[21/9] w-full overflow-hidden rounded shadow-sm bg-slate-100">
+                  <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
                 </div>
               </div>
             )}
 
-            <div className="max-w-4xl mx-auto px-6 py-10 w-full">
-              {/* Breadcrumb */}
-              <Link to="/blog" className="text-xs text-emerald-600 hover:underline font-bold mb-6 inline-block">
-                ← Back to Articles
-              </Link>
-
-              {/* Title if no image */}
-              {!post.image && (
-                <header className="space-y-4 mb-8">
-                  <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
-                    <span className="bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded border border-emerald-200 font-bold">{post.date}</span>
-                    <span>By {post.author || "Travelluxx Editorial"}</span>
-                  </div>
-                  <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 leading-tight">{post.title}</h1>
-                </header>
-              )}
-
+            {/* Article Content */}
+            <div className="max-w-2xl mx-auto px-4 md:px-6">
               {/* Excerpt */}
               {post.excerpt && (
-                <p className="text-slate-500 text-base italic border-l-4 border-emerald-500 pl-4 mb-8 leading-relaxed">
+                <div className="text-slate-500 text-lg md:text-xl font-light italic leading-relaxed mb-8 border-l-2 border-emerald-600 pl-4">
                   {post.excerpt}
-                </p>
+                </div>
               )}
 
-              {/* Content */}
+              {/* Rich Body Content */}
               <div
-                className="prose prose-slate max-w-none text-slate-700 text-base leading-relaxed 
-                           prose-h2:text-slate-900 prose-h3:text-slate-800 prose-a:text-emerald-600
-                           prose-strong:text-slate-900 prose-li:text-slate-600"
+                className="article-body-content font-serif text-[17px] md:text-[19px] text-[#292929] leading-relaxed space-y-6"
+                style={{
+                  lineHeight: "1.8",
+                  letterSpacing: "-0.003em"
+                }}
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
+
+              {/* Back to Blog */}
+              <div className="mt-12 pt-8 border-t border-slate-200 text-center">
+                <Link to="/blog" className="inline-flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-bold text-sm transition">
+                  ← Back to Articles
+                </Link>
+              </div>
             </div>
-          </>
+          </article>
         )}
       </main>
+
+      {/* Inject custom global CSS to format all standard HTML elements from backend text editors */}
+      <style>{`
+        .article-body-content p {
+          margin-bottom: 1.5rem;
+        }
+        .article-body-content h2 {
+          font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #0f172a;
+          margin-top: 2rem;
+          margin-bottom: 1rem;
+          line-height: 1.3;
+        }
+        @media (min-width: 768px) {
+          .article-body-content h2 {
+            font-size: 1.8rem;
+          }
+        }
+        .article-body-content h3 {
+          font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+          font-size: 1.3rem;
+          font-weight: 600;
+          color: #1e293b;
+          margin-top: 1.75rem;
+          margin-bottom: 0.75rem;
+        }
+        @media (min-width: 768px) {
+          .article-body-content h3 {
+            font-size: 1.5rem;
+          }
+        }
+        .article-body-content ul {
+          list-style-type: disc;
+          padding-left: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+        .article-body-content ol {
+          list-style-type: decimal;
+          padding-left: 1.5rem;
+          margin-bottom: 1.5rem;
+        }
+        .article-body-content li {
+          margin-bottom: 0.5rem;
+        }
+        .article-body-content a {
+          color: #047857;
+          text-decoration: underline;
+        }
+        .article-body-content a:hover {
+          color: #065f46;
+        }
+        .article-body-content blockquote {
+          border-left: 3px solid #10b981;
+          padding-left: 1.25rem;
+          font-style: italic;
+          color: #4b5563;
+          margin: 1.5rem 0;
+        }
+        .article-body-content img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 4px;
+          margin: 2rem auto;
+          display: block;
+          box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+      `}</style>
 
       <Footer onScrollTo={() => {}} />
     </div>

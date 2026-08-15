@@ -48,7 +48,7 @@ var POSTS_PATH = import_path.default.join(process.cwd(), "posts.json");
 var ADMINS_PATH = import_path.default.join(process.cwd(), "admins.json");
 var PAGES_PATH = import_path.default.join(process.cwd(), "pages.json");
 var INQUIRIES_PATH = import_path.default.join(process.cwd(), "inquiries.json");
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://info_db_user:rexkTuz4elj0srRx@cluster0.utakxdh.mongodb.net/travelluxx";
+var MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://info_db_user:rexkTuz4elj0srRx@cluster0.utakxdh.mongodb.net/travelluxx?retryWrites=true&w=majority&appName=Cluster0";
 var BookingSchema = new import_mongoose.default.Schema({
   id: { type: String, required: true, unique: true },
   passengerName: String,
@@ -67,7 +67,7 @@ var BookingSchema = new import_mongoose.default.Schema({
   flightNumber: String,
   createdAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
-var BookingModel = import_mongoose.default.models.Booking || import_mongoose.default.model("Booking", BookingSchema);
+var BookingModel = import_mongoose.default.model("Booking", BookingSchema);
 var PostSchema = new import_mongoose.default.Schema({
   id: { type: String, required: true, unique: true },
   title: String,
@@ -82,7 +82,7 @@ var PostSchema = new import_mongoose.default.Schema({
   metaDescription: String,
   createdAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
-var PostModel = import_mongoose.default.models.Post || import_mongoose.default.model("Post", PostSchema);
+var PostModel = import_mongoose.default.model("Post", PostSchema);
 var PageSchema = new import_mongoose.default.Schema({
   id: { type: String, required: true, unique: true },
   title: String,
@@ -92,7 +92,7 @@ var PageSchema = new import_mongoose.default.Schema({
   metaDescription: String,
   updatedAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
-var PageModel = import_mongoose.default.models.Page || import_mongoose.default.model("Page", PageSchema);
+var PageModel = import_mongoose.default.model("Page", PageSchema);
 var InquirySchema = new import_mongoose.default.Schema({
   id: { type: String, required: true, unique: true },
   name: String,
@@ -103,18 +103,18 @@ var InquirySchema = new import_mongoose.default.Schema({
   status: { type: String, default: "Unread" },
   createdAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
-var InquiryModel = import_mongoose.default.models.Inquiry || import_mongoose.default.model("Inquiry", InquirySchema);
+var InquiryModel = import_mongoose.default.model("Inquiry", InquirySchema);
 var SettingSchema = new import_mongoose.default.Schema({
   key: { type: String, required: true, unique: true },
   value: import_mongoose.default.Schema.Types.Mixed
 });
-var SettingModel = import_mongoose.default.models.Setting || import_mongoose.default.model("Setting", SettingSchema);
+var SettingModel = import_mongoose.default.model("Setting", SettingSchema);
 var UploadSchema = new import_mongoose.default.Schema({
   filename: { type: String, required: true, unique: true },
   mimeType: String,
   data: Buffer
 });
-var UploadModel = import_mongoose.default.models.Upload || import_mongoose.default.model("Upload", UploadSchema);
+var UploadModel = import_mongoose.default.model("Upload", UploadSchema);
 var isConnected = false;
 async function runMigrations() {
   try {
@@ -477,7 +477,7 @@ Thank you for choosing ${ws.business_name}!`;
     }
   }
 }
-async function sendBookingEmails(booking, isConfirmedEmail = false) {
+async function sendBookingEmails(booking, isConfirmedEmail = false, isStatusChange = false) {
   const ws = getCurrentWebsiteSettings();
   const brandGreen = "#047857";
   const bgSlate = "#f8fafc";
@@ -515,6 +515,7 @@ async function sendBookingEmails(booking, isConfirmedEmail = false) {
       ` : ""}
       <tr style="border-bottom: 1px solid ${borderSlate};"><td style="padding: 10px 0; color: ${textMuted};">Total Price</td><td style="padding: 10px 0; color: ${brandGreen}; font-weight: 800; text-align: right; font-size: 18px;">\xA3${Number(booking.price).toFixed(2)}</td></tr>
       <tr style="border-bottom: 1px solid ${borderSlate};"><td style="padding: 10px 0; color: ${textMuted};">Payment</td><td style="padding: 10px 0; font-weight: 700; text-align: right;">${paymentDisplay}</td></tr>
+      <tr style="border-bottom: 1px solid ${borderSlate};"><td style="padding: 10px 0; color: ${textMuted};">Booking Status</td><td style="padding: 10px 0; font-weight: 700; text-align: right; color: ${booking.status === "Cancelled" ? "#d63638" : "#2271b1"}">${booking.status || "Pending"}</td></tr>
     </table>
   `;
   const commonEmailHtml = (title, subtitle) => `
@@ -539,8 +540,12 @@ async function sendBookingEmails(booking, isConfirmedEmail = false) {
       </div>
     </div>
   `;
-  const emailTitle = isConfirmedEmail ? "Booking Confirmed!" : "Booking Request Received";
-  const emailSubtitle = isConfirmedEmail ? `Hi <strong>${booking.passengerName}</strong>,<br>Great news! Your booking request has been confirmed. Below are your travel details and final fare summary:` : `Hi <strong>${booking.passengerName}</strong>,<br>We have received your private hire booking request. Our team is verifying vehicle availability, and we will email you a confirmation shortly. Details:`;
+  let emailTitle = isConfirmedEmail ? "Booking Confirmed!" : "Booking Request Received";
+  let emailSubtitle = isConfirmedEmail ? `Hi <strong>${booking.passengerName}</strong>,<br>Great news! Your booking request has been confirmed. Below are your travel details and final fare summary:` : `Hi <strong>${booking.passengerName}</strong>,<br>We have received your private hire booking request. Our team is verifying vehicle availability, and we will email you a confirmation shortly. Details:`;
+  if (isStatusChange) {
+    emailTitle = `Booking Status: ${booking.status}`;
+    emailSubtitle = `Hi <strong>${booking.passengerName}</strong>,<br>Your booking status has been updated to <strong>${booking.status}</strong>. Please see the updated summary below:`;
+  }
   const passengerHtml = commonEmailHtml(emailTitle, emailSubtitle);
   const operatorHtml = commonEmailHtml(
     `[NEW BOOKING REQUEST - ${booking.id}]`,
@@ -549,7 +554,10 @@ async function sendBookingEmails(booking, isConfirmedEmail = false) {
   const smtpSettings = readSmtpSettings();
   const fromAddress = `"${ws.business_name}" <${smtpSettings.senderAddress || smtpSettings.smtpUser || ws.business_email}>`;
   const passengerEmail = booking.passengerEmail || booking.email;
-  const subjectPrefix = isConfirmedEmail ? "Booking Confirmed" : "Booking Pending Confirmation";
+  let subjectPrefix = isConfirmedEmail ? "Booking Confirmed" : "Booking Pending Confirmation";
+  if (isStatusChange) {
+    subjectPrefix = `Booking Update: ${booking.status}`;
+  }
   if (passengerEmail) {
     await sendEmailSafely({
       from: fromAddress,
@@ -559,7 +567,20 @@ async function sendBookingEmails(booking, isConfirmedEmail = false) {
       html: passengerHtml
     });
   }
-  if (!isConfirmedEmail && ws.business_email) {
+  if (isStatusChange && ws.business_email) {
+    const operatorStatusHtml = commonEmailHtml(
+      `[STATUS UPDATE] Ref ${booking.id} - ${booking.status}`,
+      `The booking status for <strong>${booking.passengerName}</strong> has been updated to <strong>${booking.status}</strong>. Updated summary below:`
+    );
+    await sendEmailSafely({
+      from: fromAddress,
+      to: ws.business_email,
+      replyTo: passengerEmail || ws.business_email,
+      subject: `[Status Change] Ref ${booking.id} - ${booking.passengerName} is now ${booking.status}`,
+      html: operatorStatusHtml
+    });
+  }
+  if (!isConfirmedEmail && !isStatusChange && ws.business_email) {
     await sendEmailSafely({
       from: fromAddress,
       to: ws.business_email,
@@ -775,8 +796,9 @@ app.put("/api/admin/bookings/:id", async (req, res) => {
       if (status) bookings[index].status = status;
       if (paymentStatus) bookings[index].paymentStatus = paymentStatus;
       writeBookings(bookings);
-      if (status === "Confirmed" && oldBooking?.status !== "Confirmed") {
-        await sendBookingEmails(updatedBooking, true).catch((err) => console.error("Confirmed email error:", err));
+      const isStatusOrPaymentChanged = status && status !== oldBooking?.status || paymentStatus && paymentStatus !== oldBooking?.paymentStatus;
+      if (isStatusOrPaymentChanged) {
+        await sendBookingEmails(updatedBooking, status === "Confirmed", true).catch((err) => console.error("Status update email error:", err));
       }
       return res.json({ success: true, booking: bookings[index] });
     }
@@ -861,10 +883,14 @@ app.post("/api/admin/posts", async (req, res) => {
 });
 app.put("/api/admin/posts/:id", async (req, res) => {
   const { id } = req.params;
+  const updateData = { ...req.body };
+  delete updateData._id;
+  delete updateData.__v;
   try {
     await connectToDatabase();
-    await PostModel.findOneAndUpdate({ id }, { $set: req.body });
+    await PostModel.findOneAndUpdate({ id }, { $set: updateData });
   } catch (e) {
+    console.error("Error updating MongoDB post:", e);
   }
   const posts = readPosts();
   const index = posts.findIndex((p) => p.id === id);
@@ -887,7 +913,12 @@ app.delete("/api/admin/posts/:id", async (req, res) => {
   writePosts(posts);
   return res.json({ success: true });
 });
-app.get("/api/admin/settings", (req, res) => {
+app.get("/api/admin/settings", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {
+  }
   const settings = getCurrentWebsiteSettings();
   const mollieApiKey = process.env.MOLLIE_API_KEY || cachedMollieApiKey || settings?.mollie_api_key || "";
   return res.json({ ...settings, mollie_api_key: mollieApiKey });
@@ -987,10 +1018,14 @@ app.post("/api/admin/pages", async (req, res) => {
   }
 });
 app.put("/api/admin/pages/:id", async (req, res) => {
+  const updateData = { ...req.body };
+  delete updateData._id;
+  delete updateData.__v;
   try {
     await connectToDatabase();
-    await PageModel.findOneAndUpdate({ id: req.params.id }, { ...req.body, updatedAt: (/* @__PURE__ */ new Date()).toISOString() });
+    await PageModel.findOneAndUpdate({ id: req.params.id }, { ...updateData, updatedAt: (/* @__PURE__ */ new Date()).toISOString() });
   } catch (e) {
+    console.error("Error updating MongoDB page:", e);
   }
   const pages = readPages();
   const idx = pages.findIndex((p) => p.id === req.params.id);
@@ -1027,7 +1062,14 @@ function readMenu() {
   ];
   return cachedMenu;
 }
-app.get("/api/menu", (req, res) => res.json(readMenu()));
+app.get("/api/menu", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {
+  }
+  return res.json(readMenu());
+});
 app.post("/api/admin/menu", async (req, res) => {
   try {
     await connectToDatabase();
@@ -1072,6 +1114,43 @@ app.post("/api/admin/upload", async (req, res) => {
       import_fs.default.writeFileSync(import_path.default.join(distUploadDir, safeFilename), buffer);
     }
     return res.json({ success: true, url: `/uploads/${safeFilename}`, filename: safeFilename });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+app.get("/api/admin/media", async (req, res) => {
+  try {
+    await connectToDatabase();
+    if (import_mongoose.default.connection.readyState === 1) {
+      const uploads = await UploadModel.find({}, "filename");
+      const urls = uploads.map((u) => `/uploads/${u.filename}`);
+      return res.json(urls);
+    }
+  } catch (e) {
+    console.error("Error fetching media from DB:", e.message);
+  }
+  try {
+    const uploadDir = import_path.default.join(process.cwd(), "public", "uploads");
+    if (import_fs.default.existsSync(uploadDir)) {
+      const files = import_fs.default.readdirSync(uploadDir);
+      return res.json(files.map((f) => `/uploads/${f}`));
+    }
+  } catch (e) {
+  }
+  return res.json([]);
+});
+app.delete("/api/admin/media/:filename", async (req, res) => {
+  try {
+    await connectToDatabase();
+    const { filename } = req.params;
+    if (import_mongoose.default.connection.readyState === 1) {
+      await UploadModel.deleteOne({ filename });
+    }
+    const localPath = import_path.default.join(process.cwd(), "public", "uploads", filename);
+    if (import_fs.default.existsSync(localPath)) {
+      import_fs.default.unlinkSync(localPath);
+    }
+    return res.json({ success: true });
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
@@ -1270,10 +1349,20 @@ app.delete("/api/admin/inquiries/:id", async (req, res) => {
   writeInquiries(inquiries);
   return res.json({ success: true });
 });
-app.get("/api/pricing", (req, res) => {
+app.get("/api/pricing", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {
+  }
   res.json(getCurrentPricingSettings());
 });
-app.get("/api/settings", (req, res) => {
+app.get("/api/settings", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {
+  }
   res.json(getCurrentWebsiteSettings());
 });
 app.post("/api/settings", async (req, res) => {
@@ -1294,7 +1383,12 @@ app.post("/api/settings", async (req, res) => {
     res.status(500).json({ error: err.message || "Failed to update settings" });
   }
 });
-app.get("/api/smtp-settings", (req, res) => {
+app.get("/api/smtp-settings", async (req, res) => {
+  try {
+    await connectToDatabase();
+    await syncSettingsFromDb();
+  } catch (e) {
+  }
   const smtp = readSmtpSettings();
   res.json({
     smtpHost: smtp.smtpHost,
