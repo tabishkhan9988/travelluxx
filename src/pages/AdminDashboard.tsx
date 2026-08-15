@@ -52,6 +52,8 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
   const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
+  const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
+  const [mediaViewMode, setMediaViewMode] = useState<"grid" | "list">("grid");
   const [saveStatus, setSaveStatus] = useState("");
 
   // Post editor
@@ -557,144 +559,224 @@ export default function AdminDashboard() {
           {/* ─── POSTS ──────────────────────────────────────────── */}
           {activeTab === "posts" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-[#1d2327]">Posts (Blog)</h1>
+              <div className="flex items-baseline gap-4 mb-2">
+                <h1 className="text-2xl font-semibold text-[#23282d] font-serif">Posts</h1>
                 {editingPost === undefined && (
                   <button onClick={openNewPost}
-                    className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition">
-                    <Plus className="w-3.5 h-3.5" /> Add New Post
+                    className="border border-[#2271b1] text-[#2271b1] hover:bg-[#f0f6fa] hover:text-[#0a4b78] px-2.5 py-1 rounded text-xs font-semibold transition bg-white shadow-sm">
+                    Add New
                   </button>
                 )}
               </div>
 
               {editingPost !== undefined ? (
-                <div className="bg-white border border-[#c3c4c7] rounded shadow-sm p-6">
+                <div className="bg-white border border-[#c3c4c7] rounded-sm p-6">
                   <h2 className="font-bold text-[#1d2327] mb-4 pb-3 border-b border-[#f0f0f1]">
                     {editingPost ? "Edit Post" : "Add New Post"}
                   </h2>
-                  <form onSubmit={savePost} className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-[#1d2327] mb-1">Post Title *</label>
-                        <input type="text" value={postForm.title} onChange={e => setPostForm({ ...postForm, title: e.target.value })}
-                          className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" required />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-[#1d2327] mb-1">URL Slug</label>
-                        <input type="text" value={postForm.slug} onChange={e => setPostForm({ ...postForm, slug: e.target.value })}
-                          placeholder="auto-generated-if-empty"
-                          className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
-                      </div>
-                    </div>
+                  <form onSubmit={savePost} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    {/* Left Main Content (3 cols) */}
+                    <div className="lg:col-span-3 space-y-4">
+                      <input
+                        type="text"
+                        placeholder="Add Title"
+                        value={postForm.title}
+                        onChange={e => setPostForm({ ...postForm, title: e.target.value })}
+                        className="w-full border border-[#8c8f94] rounded-sm px-3 py-2.5 text-lg font-semibold focus:outline-none focus:border-[#2271b1] bg-white text-[#2c3338]"
+                        required
+                      />
 
-                    <div>
-                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Excerpt Summary</label>
-                      <textarea rows={2} value={postForm.excerpt} onChange={e => setPostForm({ ...postForm, excerpt: e.target.value })}
-                        className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Featured Image</label>
-                      <div className="flex gap-2">
-                        <input type="text" value={postForm.image} onChange={e => setPostForm({ ...postForm, image: e.target.value })}
-                          placeholder="https://... or upload a file"
-                          className="flex-1 border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
-                        <label className="bg-[#f0f0f1] hover:bg-[#dcdcde] text-[#50575e] border border-[#c3c4c7] px-3 py-2 rounded text-xs font-semibold cursor-pointer transition flex items-center">
-                          Upload File
-                          <input type="file" accept="image/*" onChange={async (e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const base64 = await toBase64(file);
-                              const res = await fetch("/api/admin/upload", {
-                                method: "POST",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ filename: file.name, data: base64 })
-                              });
-                              const json = await res.json();
-                              if (json.url) setPostForm(prev => ({ ...prev, image: json.url }));
-                            }
-                          }} className="hidden" />
-                        </label>
-                      </div>
-                      {postForm.image && (
-                        <img src={postForm.image} alt="preview" className="mt-2 h-24 rounded border border-[#c3c4c7] object-cover" />
+                      {postForm.slug && (
+                        <div className="text-xs text-[#646970]">
+                          <strong>Permalink:</strong> {window.location.origin}/blog/{postForm.slug}
+                        </div>
                       )}
-                    </div>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Content</label>
-                      <ReactQuill theme="snow" value={postForm.content} onChange={val => setPostForm({ ...postForm, content: val })} modules={quillModules} />
-                    </div>
-
-                    <div className="border-t border-[#f0f0f1] pt-4">
-                      <h3 className="font-bold text-[#1d2327] text-xs uppercase tracking-wide mb-3">🔍 SEO Settings</h3>
-                      <div className="grid md:grid-cols-2 gap-4">
+                      <div className="bg-white border border-[#c3c4c7] rounded-sm p-4 space-y-4">
                         <div>
-                          <label className="block text-xs font-semibold text-[#1d2327] mb-1">Meta Title</label>
-                          <input type="text" value={postForm.metaTitle} onChange={e => setPostForm({ ...postForm, metaTitle: e.target.value })}
-                            placeholder="Page title for Google..."
-                            className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
+                          <label className="block text-xs font-semibold text-[#1d2327] mb-2 uppercase tracking-wider text-[#646970]">Excerpt Summary</label>
+                          <textarea rows={2} value={postForm.excerpt} onChange={e => setPostForm({ ...postForm, excerpt: e.target.value })}
+                            className="w-full border border-[#8c8f94] rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1] text-[#2c3338]" />
                         </div>
+
                         <div>
-                          <label className="block text-xs font-semibold text-[#1d2327] mb-1">Meta Description</label>
-                          <textarea rows={2} value={postForm.metaDescription} onChange={e => setPostForm({ ...postForm, metaDescription: e.target.value })}
-                            placeholder="Search engine snippet..."
-                            className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
+                          <label className="block text-xs font-semibold text-[#1d2327] mb-2 uppercase tracking-wider text-[#646970]">Post Body</label>
+                          <ReactQuill theme="snow" value={postForm.content} onChange={val => setPostForm({ ...postForm, content: val })} modules={quillModules} />
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <input type="checkbox" id="pub" checked={postForm.published} onChange={e => setPostForm({ ...postForm, published: e.target.checked })}
-                        className="rounded border-[#8c8f94]" />
-                      <label htmlFor="pub" className="text-sm font-medium text-[#1d2327]">Publish (visible on blog)</label>
-                    </div>
+                    {/* Right Sidebar Content (1 col) */}
+                    <div className="space-y-4">
+                      {/* Publish Panel */}
+                      <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm">
+                        <div className="border-b border-[#f0f0f1] px-4 py-2.5 bg-[#f6f7f7]">
+                          <h3 className="font-semibold text-xs text-[#2c3338]">Publish</h3>
+                        </div>
+                        <div className="p-4 space-y-3 text-xs text-[#50575e]">
+                          <div className="flex items-center justify-between">
+                            <span>Status:</span>
+                            <span className="font-bold text-[#2c3338]">{postForm.published ? "Published" : "Draft"}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span>Visibility:</span>
+                            <span className="font-bold text-[#2c3338]">Public</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 pt-1">
+                            <input type="checkbox" id="pub" checked={postForm.published} onChange={e => setPostForm({ ...postForm, published: e.target.checked })}
+                              className="rounded border-[#8c8f94]" />
+                            <label htmlFor="pub" className="text-xs font-medium text-[#1d2327]">Publish (visible on blog)</label>
+                          </div>
+                        </div>
+                        <div className="bg-[#f6f7f7] border-t border-[#f0f0f1] px-4 py-3 flex justify-between items-center">
+                          <button type="button" onClick={() => setEditingPost(undefined)}
+                            className="text-[#b32d2e] hover:underline text-xs font-semibold">
+                            Cancel
+                          </button>
+                          <button type="submit" className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded text-xs font-semibold shadow-sm transition">
+                            {editingPost ? "Update Post" : "Publish Post"}
+                          </button>
+                        </div>
+                      </div>
 
-                    <div className="flex gap-2 pt-2">
-                      <button type="submit" className="bg-[#2271b1] hover:bg-[#135e96] text-white px-4 py-2 rounded text-sm font-semibold transition">
-                        {editingPost ? "Update Post" : "Publish Post"}
-                      </button>
-                      <button type="button" onClick={() => setEditingPost(undefined)}
-                        className="bg-[#f0f0f1] hover:bg-[#dcdcde] text-[#50575e] px-3 py-2 rounded text-sm font-semibold transition">
-                        Cancel
-                      </button>
+                      {/* Featured Image Panel */}
+                      <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm">
+                        <div className="border-b border-[#f0f0f1] px-4 py-2.5 bg-[#f6f7f7]">
+                          <h3 className="font-semibold text-xs text-[#2c3338]">Featured Image</h3>
+                        </div>
+                        <div className="p-4 space-y-3">
+                          <div className="flex gap-2">
+                            <input type="text" value={postForm.image} onChange={e => setPostForm({ ...postForm, image: e.target.value })}
+                              placeholder="Image URL"
+                              className="flex-1 border border-[#8c8f94] rounded-sm px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]" />
+                            <label className="bg-[#f0f0f1] hover:bg-[#dcdcde] text-[#50575e] border border-[#c3c4c7] px-2.5 py-1 rounded text-xs font-semibold cursor-pointer transition flex items-center shadow-sm">
+                              Upload
+                              <input type="file" accept="image/*" onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                  const base64 = await toBase64(file);
+                                  const res = await fetch("/api/admin/upload", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({ filename: file.name, data: base64 })
+                                  });
+                                  const json = await res.json();
+                                  if (json.url) setPostForm(prev => ({ ...prev, image: json.url }));
+                                }
+                              }} className="hidden" />
+                            </label>
+                          </div>
+                          {postForm.image && (
+                            <div className="relative group aspect-video rounded border border-[#c3c4c7] overflow-hidden bg-slate-50 flex items-center justify-center">
+                              <img src={postForm.image} alt="preview" className="max-w-full max-h-full object-cover" />
+                              <button type="button" onClick={() => setPostForm({ ...postForm, image: "" })}
+                                className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-700">
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* SEO Settings Panel */}
+                      <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm">
+                        <div className="border-b border-[#f0f0f1] px-4 py-2.5 bg-[#f6f7f7]">
+                          <h3 className="font-semibold text-xs text-[#2c3338]">SEO Settings</h3>
+                        </div>
+                        <div className="p-4 space-y-3 text-xs">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-[#646970] mb-1 uppercase tracking-wide">Meta Title</label>
+                            <input type="text" value={postForm.metaTitle} onChange={e => setPostForm({ ...postForm, metaTitle: e.target.value })}
+                              placeholder="Google title..."
+                              className="w-full border border-[#8c8f94] rounded-sm px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-[#646970] mb-1 uppercase tracking-wide">Meta Description</label>
+                            <textarea rows={3} value={postForm.metaDescription} onChange={e => setPostForm({ ...postForm, metaDescription: e.target.value })}
+                              placeholder="Snippet description..."
+                              className="w-full border border-[#8c8f94] rounded-sm px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]" />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </form>
                 </div>
               ) : (
-                <div className="bg-white border border-[#c3c4c7] rounded shadow-sm overflow-hidden">
-                  <table className="w-full text-xs">
-                    <thead className="bg-[#f0f0f1] text-[#646970] font-semibold uppercase text-[10px] tracking-wide border-b border-[#c3c4c7]">
-                      <tr>
-                        <th className="py-3 px-4 text-left">Title</th>
-                        <th className="py-3 px-4 text-left">Date</th>
-                        <th className="py-3 px-4 text-left">Status</th>
-                        <th className="py-3 px-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#f0f0f1]">
-                      {posts.length === 0 ? (
-                        <tr><td colSpan={4} className="text-center py-8 text-[#646970]">No posts yet. Add one above!</td></tr>
-                      ) : posts.map(p => (
-                        <tr key={p.id} className="hover:bg-[#f9f9f9] transition">
-                          <td className="py-3 px-4 font-semibold text-[#1d2327]">{p.title}</td>
-                          <td className="py-3 px-4 text-[#646970] font-mono">{p.date}</td>
-                          <td className="py-3 px-4">
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${p.published !== false ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-                              {p.published !== false ? "Published" : "Draft"}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4 text-right space-x-1.5">
-                            <button onClick={() => openEditPost(p)} className="text-[#2271b1] hover:underline font-semibold">Edit</button>
-                            <span className="text-[#c3c4c7]">|</span>
-                            <a href={`/blog/${p.slug}`} target="_blank" className="text-[#2271b1] hover:underline font-semibold">View</a>
-                            <span className="text-[#c3c4c7]">|</span>
-                            <button onClick={() => deletePost(p.id)} className="text-[#d63638] hover:underline font-semibold">Delete</button>
-                          </td>
+                <div className="space-y-2">
+                  <div className="text-xs text-[#50575e] space-x-1.5 mb-2">
+                    <span className="font-semibold text-[#000]">All ({posts.length})</span>
+                    <span className="text-[#c3c4c7]">|</span>
+                    <span className="text-[#2271b1] hover:underline cursor-pointer">Published ({posts.filter(p => p.published !== false).length})</span>
+                    <span className="text-[#c3c4c7]">|</span>
+                    <span className="text-[#2271b1] hover:underline cursor-pointer">Drafts ({posts.filter(p => p.published === false).length})</span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 items-center justify-between bg-transparent py-1 text-xs">
+                    <div className="flex gap-1.5 items-center">
+                      <select className="border border-[#8c8f94] bg-white rounded px-2.5 py-1 text-xs text-[#2c3338] outline-none">
+                        <option>Bulk Actions</option>
+                        <option>Delete</option>
+                      </select>
+                      <button className="border border-[#8c8f94] bg-[#f6f7f7] hover:bg-[#f0f0f1] text-[#2c3338] px-2.5 py-1 rounded text-xs font-semibold shadow-sm transition">
+                        Apply
+                      </button>
+
+                      <select className="border border-[#8c8f94] bg-white rounded px-2.5 py-1 text-xs text-[#2c3338] outline-none ml-2">
+                        <option>All dates</option>
+                      </select>
+                      <select className="border border-[#8c8f94] bg-white rounded px-2.5 py-1 text-xs text-[#2c3338] outline-none">
+                        <option>All categories</option>
+                      </select>
+                      <button className="border border-[#8c8f94] bg-[#f6f7f7] hover:bg-[#f0f0f1] text-[#2c3338] px-2.5 py-1 rounded text-xs font-semibold shadow-sm transition">
+                        Filter
+                      </button>
+                    </div>
+                    <div>
+                      <input type="text" placeholder="Search Posts" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                        className="border border-[#8c8f94] bg-white rounded px-2.5 py-1 text-xs outline-none focus:border-[#2271b1]" />
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm overflow-hidden">
+                    <table className="w-full text-[13px] border-collapse">
+                      <thead className="bg-white border-b border-[#c3c4c7] text-[#2c3338] font-semibold text-left">
+                        <tr>
+                          <th className="py-2.5 px-3 w-8 text-center"><input type="checkbox" className="rounded-sm border-[#8c8f94]" /></th>
+                          <th className="py-2.5 px-3">Title</th>
+                          <th className="py-2.5 px-3">Author</th>
+                          <th className="py-2.5 px-3">Categories</th>
+                          <th className="py-2.5 px-3">Tags</th>
+                          <th className="py-2.5 px-3">Date</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-[#f0f0f1] text-[#2c3338]">
+                        {posts.length === 0 ? (
+                          <tr><td colSpan={6} className="text-center py-8 text-[#646970]">No posts found.</td></tr>
+                        ) : posts.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase())).map(p => (
+                          <tr key={p.id} className="hover:bg-[#f6f7f7] transition group">
+                            <td className="py-3 px-3 text-center"><input type="checkbox" className="rounded-sm border-[#8c8f94]" /></td>
+                            <td className="py-3 px-3 font-semibold text-[#2271b1] max-w-xs">
+                              <span onClick={() => openEditPost(p)} className="hover:text-[#00a0d2] cursor-pointer text-sm block mb-1">{p.title}</span>
+                              <div className="hidden group-hover:flex items-center gap-1.5 text-xs font-normal text-[#555] select-none">
+                                <button onClick={() => openEditPost(p)} className="text-[#2271b1] hover:text-[#00a0d2]">Edit</button>
+                                <span className="text-[#ddd]">|</span>
+                                <button onClick={() => deletePost(p.id)} className="text-[#b32d2e] hover:text-[#d63638]">Trash</button>
+                                <span className="text-[#ddd]">|</span>
+                                <a href={`/blog/${p.slug}`} target="_blank" className="text-[#2271b1] hover:text-[#00a0d2]">View</a>
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 text-[#50575e]">Travelluxx Admin</td>
+                            <td className="py-3 px-3 text-[#2271b1] hover:underline cursor-pointer">Blog</td>
+                            <td className="py-3 px-3 text-[#50575e]">—</td>
+                            <td className="py-3 px-3 text-[#50575e]">
+                              <span className="font-semibold text-xs text-[#2c3338]">{p.published !== false ? "Published" : "Draft"}</span><br />
+                              {p.date || "N/A"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
@@ -703,96 +785,155 @@ export default function AdminDashboard() {
           {/* ─── PAGES ──────────────────────────────────────────── */}
           {activeTab === "pages" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-[#1d2327]">Pages</h1>
+              <div className="flex items-baseline gap-4 mb-2">
+                <h1 className="text-2xl font-semibold text-[#23282d] font-serif">Pages</h1>
                 {editingPage === undefined && (
                   <button onClick={openNewPage}
-                    className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 transition">
-                    <Plus className="w-3.5 h-3.5" /> Add New Page
+                    className="border border-[#2271b1] text-[#2271b1] hover:bg-[#f0f6fa] hover:text-[#0a4b78] px-2.5 py-1 rounded text-xs font-semibold transition bg-white shadow-sm">
+                    Add New
                   </button>
                 )}
               </div>
 
               {editingPage !== undefined ? (
-                <div className="bg-white border border-[#c3c4c7] rounded shadow-sm p-6">
+                <div className="bg-white border border-[#c3c4c7] rounded-sm p-6">
                   <h2 className="font-bold text-[#1d2327] mb-4 pb-3 border-b border-[#f0f0f1]">
                     {editingPage ? "Edit Page" : "Add New Page"}
                   </h2>
-                  <form onSubmit={savePage} className="space-y-4">
-                    <div className="grid md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-[#1d2327] mb-1">Page Title *</label>
-                        <input type="text" value={pageForm.title} onChange={e => setPageForm({ ...pageForm, title: e.target.value })}
-                          className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" required />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-[#1d2327] mb-1">URL Slug (e.g. privacy-policy)</label>
-                        <input type="text" value={pageForm.slug} onChange={e => setPageForm({ ...pageForm, slug: e.target.value })}
-                          placeholder="page-url-slug"
-                          className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
-                      </div>
-                    </div>
+                  <form onSubmit={savePage} className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    {/* Left Main Content (3 cols) */}
+                    <div className="lg:col-span-3 space-y-4">
+                      <input
+                        type="text"
+                        placeholder="Add Title"
+                        value={pageForm.title}
+                        onChange={e => setPageForm({ ...pageForm, title: e.target.value })}
+                        className="w-full border border-[#8c8f94] rounded-sm px-3 py-2.5 text-lg font-semibold focus:outline-none focus:border-[#2271b1] bg-white text-[#2c3338]"
+                        required
+                      />
 
-                    <div>
-                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Page Content</label>
-                      <ReactQuill theme="snow" value={pageForm.content} onChange={val => setPageForm({ ...pageForm, content: val })} modules={quillModules} />
-                    </div>
-
-                    <div className="border-t border-[#f0f0f1] pt-4">
-                      <h3 className="font-bold text-[#1d2327] text-xs uppercase tracking-wide mb-3">🔍 SEO Settings</h3>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-[#1d2327] mb-1">Meta Title</label>
-                          <input type="text" value={pageForm.metaTitle} onChange={e => setPageForm({ ...pageForm, metaTitle: e.target.value })}
-                            className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
+                      {pageForm.slug && (
+                        <div className="text-xs text-[#646970]">
+                          <strong>Permalink:</strong> {window.location.origin}/page/{pageForm.slug}
                         </div>
+                      )}
+
+                      <div className="bg-white border border-[#c3c4c7] rounded-sm p-4 space-y-4">
                         <div>
-                          <label className="block text-xs font-semibold text-[#1d2327] mb-1">Meta Description</label>
-                          <textarea rows={2} value={pageForm.metaDescription} onChange={e => setPageForm({ ...pageForm, metaDescription: e.target.value })}
-                            className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1]" />
+                          <label className="block text-xs font-semibold text-[#1d2327] mb-2 uppercase tracking-wider text-[#646970]">Page Content</label>
+                          <ReactQuill theme="snow" value={pageForm.content} onChange={val => setPageForm({ ...pageForm, content: val })} modules={quillModules} />
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex gap-2 pt-2">
-                      <button type="submit" className="bg-[#2271b1] hover:bg-[#135e96] text-white px-4 py-2 rounded text-sm font-semibold transition">
-                        {editingPage ? "Update Page" : "Publish Page"}
-                      </button>
-                      <button type="button" onClick={() => setEditingPage(undefined)}
-                        className="bg-[#f0f0f1] hover:bg-[#dcdcde] text-[#50575e] px-3 py-2 rounded text-sm font-semibold transition">
-                        Cancel
-                      </button>
+                    {/* Right Sidebar Content (1 col) */}
+                    <div className="space-y-4">
+                      {/* Publish Panel */}
+                      <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm">
+                        <div className="border-b border-[#f0f0f1] px-4 py-2.5 bg-[#f6f7f7]">
+                          <h3 className="font-semibold text-xs text-[#2c3338]">Publish</h3>
+                        </div>
+                        <div className="p-4 space-y-3 text-xs text-[#50575e]">
+                          <div className="flex items-center justify-between">
+                            <span>Status:</span>
+                            <span className="font-bold text-[#2c3338]">Published</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span>Visibility:</span>
+                            <span className="font-bold text-[#2c3338]">Public</span>
+                          </div>
+                        </div>
+                        <div className="bg-[#f6f7f7] border-t border-[#f0f0f1] px-4 py-3 flex justify-between items-center">
+                          <button type="button" onClick={() => setEditingPage(undefined)}
+                            className="text-[#b32d2e] hover:underline text-xs font-semibold">
+                            Cancel
+                          </button>
+                          <button type="submit" className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded text-xs font-semibold shadow-sm transition">
+                            {editingPage ? "Update Page" : "Publish Page"}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* SEO Settings Panel */}
+                      <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm">
+                        <div className="border-b border-[#f0f0f1] px-4 py-2.5 bg-[#f6f7f7]">
+                          <h3 className="font-semibold text-xs text-[#2c3338]">SEO Settings</h3>
+                        </div>
+                        <div className="p-4 space-y-3 text-xs">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-[#646970] mb-1 uppercase tracking-wide">Meta Title</label>
+                            <input type="text" value={pageForm.metaTitle} onChange={e => setPageForm({ ...pageForm, metaTitle: e.target.value })}
+                              placeholder="Google title..."
+                              className="w-full border border-[#8c8f94] rounded-sm px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-[#646970] mb-1 uppercase tracking-wide">Meta Description</label>
+                            <textarea rows={3} value={pageForm.metaDescription} onChange={e => setPageForm({ ...pageForm, metaDescription: e.target.value })}
+                              placeholder="Snippet description..."
+                              className="w-full border border-[#8c8f94] rounded-sm px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]" />
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </form>
                 </div>
               ) : (
-                <div className="bg-white border border-[#c3c4c7] rounded shadow-sm overflow-hidden">
-                  <table className="w-full text-xs">
-                    <thead className="bg-[#f0f0f1] text-[#646970] font-semibold uppercase text-[10px] tracking-wide border-b border-[#c3c4c7]">
-                      <tr>
-                        <th className="py-3 px-4 text-left">Title</th>
-                        <th className="py-3 px-4 text-left">Slug / URL</th>
-                        <th className="py-3 px-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#f0f0f1]">
-                      {pages.length === 0 ? (
-                        <tr><td colSpan={3} className="text-center py-8 text-[#646970]">No pages yet.</td></tr>
-                      ) : pages.map(p => (
-                        <tr key={p.id} className="hover:bg-[#f9f9f9] transition">
-                          <td className="py-3 px-4 font-semibold text-[#1d2327]">{p.title}</td>
-                          <td className="py-3 px-4 font-mono text-[#2271b1]">/page/{p.slug}</td>
-                          <td className="py-3 px-4 text-right space-x-1.5">
-                            <button onClick={() => openEditPage(p)} className="text-[#2271b1] hover:underline font-semibold">Edit</button>
-                            <span className="text-[#c3c4c7]">|</span>
-                            <a href={`/page/${p.slug}`} target="_blank" className="text-[#2271b1] hover:underline font-semibold">View</a>
-                            <span className="text-[#c3c4c7]">|</span>
-                            <button onClick={() => deletePage(p.id)} className="text-[#d63638] hover:underline font-semibold">Delete</button>
-                          </td>
+                <div className="space-y-2">
+                  <div className="text-xs text-[#50575e] space-x-1.5 mb-2">
+                    <span className="font-semibold text-[#000]">All ({pages.length})</span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 items-center justify-between bg-transparent py-1 text-xs">
+                    <div className="flex gap-1.5 items-center">
+                      <select className="border border-[#8c8f94] bg-white rounded px-2.5 py-1 text-xs text-[#2c3338] outline-none">
+                        <option>Bulk Actions</option>
+                        <option>Delete</option>
+                      </select>
+                      <button className="border border-[#8c8f94] bg-[#f6f7f7] hover:bg-[#f0f0f1] text-[#2c3338] px-2.5 py-1 rounded text-xs font-semibold shadow-sm transition">
+                        Apply
+                      </button>
+                    </div>
+                    <div>
+                      <input type="text" placeholder="Search Pages" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                        className="border border-[#8c8f94] bg-white rounded px-2.5 py-1 text-xs outline-none focus:border-[#2271b1]" />
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm overflow-hidden">
+                    <table className="w-full text-[13px] border-collapse">
+                      <thead className="bg-white border-b border-[#c3c4c7] text-[#2c3338] font-semibold text-left">
+                        <tr>
+                          <th className="py-2.5 px-3 w-8 text-center"><input type="checkbox" className="rounded-sm border-[#8c8f94]" /></th>
+                          <th className="py-2.5 px-3">Title</th>
+                          <th className="py-2.5 px-3">Slug / URL</th>
+                          <th className="py-2.5 px-3">Author</th>
+                          <th className="py-2.5 px-3">Date</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-[#f0f0f1] text-[#2c3338]">
+                        {pages.length === 0 ? (
+                          <tr><td colSpan={5} className="text-center py-8 text-[#646970]">No pages found.</td></tr>
+                        ) : pages.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase())).map(p => (
+                          <tr key={p.id} className="hover:bg-[#f6f7f7] transition group">
+                            <td className="py-3 px-3 text-center"><input type="checkbox" className="rounded-sm border-[#8c8f94]" /></td>
+                            <td className="py-3 px-3 font-semibold text-[#2271b1] max-w-xs">
+                              <span onClick={() => openEditPage(p)} className="hover:text-[#00a0d2] cursor-pointer text-sm block mb-1">{p.title}</span>
+                              <div className="hidden group-hover:flex items-center gap-1.5 text-xs font-normal text-[#555] select-none">
+                                <button onClick={() => openEditPage(p)} className="text-[#2271b1] hover:text-[#00a0d2]">Edit</button>
+                                <span className="text-[#ddd]">|</span>
+                                <button onClick={() => deletePage(p.id)} className="text-[#b32d2e] hover:text-[#d63638]">Trash</button>
+                                <span className="text-[#ddd]">|</span>
+                                <a href={`/page/${p.slug}`} target="_blank" className="text-[#2271b1] hover:text-[#00a0d2]">View</a>
+                              </div>
+                            </td>
+                            <td className="py-3 px-3 font-mono text-[#2271b1]">/page/{p.slug}</td>
+                            <td className="py-3 px-3 text-[#50575e]">Travelluxx Admin</td>
+                            <td className="py-3 px-3 text-[#50575e]">Published</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>
@@ -857,61 +998,116 @@ export default function AdminDashboard() {
           {/* ─── MEDIA ──────────────────────────────────────────── */}
           {activeTab === "media" && (
             <div className="space-y-4">
-              <h1 className="text-2xl font-bold text-[#1d2327]">Media Library</h1>
-
-              <div
-                className={`border-2 border-dashed rounded-lg p-10 text-center cursor-pointer transition ${uploading ? "border-[#2271b1] bg-blue-50" : "border-[#c3c4c7] hover:border-[#2271b1] bg-white"}`}
-                onClick={() => fileInputRef.current?.click()}
-                onDrop={e => { e.preventDefault(); handleFileUpload(e.dataTransfer.files); }}
-                onDragOver={e => e.preventDefault()}
-              >
-                <Upload className="w-10 h-10 mx-auto mb-3 text-[#8c8f94]" />
-                <p className="text-[#646970] font-medium text-sm">{uploading ? "Uploading..." : "Drag & drop images here, or click to select files"}</p>
-                <p className="text-[#8c8f94] text-xs mt-1">PNG, JPG, GIF, WEBP supported</p>
+              <div className="flex items-baseline gap-4 mb-2">
+                <h1 className="text-2xl font-semibold text-[#23282d] font-serif">Media Library</h1>
+                <button onClick={() => fileInputRef.current?.click()}
+                  className="border border-[#2271b1] text-[#2271b1] hover:bg-[#f0f6fa] hover:text-[#0a4b78] px-2.5 py-1 rounded text-xs font-semibold transition bg-white shadow-sm">
+                  Add New
+                </button>
                 <input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden"
                   onChange={e => handleFileUpload(e.target.files)} />
               </div>
 
-              {media.length > 0 ? (
+              {/* WordPress style filters and View Switcher */}
+              <div className="flex flex-wrap gap-2 items-center justify-between bg-transparent py-1 text-xs">
+                <div className="flex gap-2 items-center">
+                  {/* Grid view icon */}
+                  <button onClick={() => setMediaViewMode("grid")} className={`p-1.5 border rounded-sm ${mediaViewMode === "grid" ? "bg-[#e0e0e0] border-[#8c8f94]" : "bg-white border-[#c3c4c7]"} hover:bg-slate-50 transition`}>
+                    <svg className="w-3.5 h-3.5 text-[#2c3338]" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg>
+                  </button>
+                  {/* List view icon */}
+                  <button onClick={() => setMediaViewMode("list")} className={`p-1.5 border rounded-sm ${mediaViewMode === "list" ? "bg-[#e0e0e0] border-[#8c8f94]" : "bg-white border-[#c3c4c7]"} hover:bg-slate-50 transition`}>
+                    <svg className="w-3.5 h-3.5 text-[#2c3338]" fill="currentColor" viewBox="0 0 24 24"><path d="M4 4h16v2H4zm0 6h16v2H4zm0 6h16v2H4z"/></svg>
+                  </button>
+
+                  <select className="border border-[#8c8f94] bg-white rounded px-2.5 py-1 text-xs text-[#2c3338] outline-none ml-2">
+                    <option>All media items</option>
+                  </select>
+                  <select className="border border-[#8c8f94] bg-white rounded px-2.5 py-1 text-xs text-[#2c3338] outline-none">
+                    <option>All dates</option>
+                  </select>
+                </div>
                 <div>
-                  <h3 className="font-semibold text-[#1d2327] mb-3 text-sm">Uploaded Files</h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                    {media.map((url, i) => (
-                      <div key={i} className="bg-white border border-[#c3c4c7] rounded overflow-hidden shadow-sm group relative flex flex-col justify-between">
-                        <div className="relative aspect-square bg-[#f9f9f9] flex items-center justify-center overflow-hidden">
-                          <img src={url} alt={`upload-${i}`} className="w-full h-full object-cover transition duration-300 group-hover:scale-105" />
-                        </div>
-                        <div className="p-2 border-t border-[#f0f0f1] bg-[#fafafa] flex justify-between items-center gap-1">
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(window.location.origin + url);
-                              alert("Image URL copied to clipboard!");
-                            }}
-                            className="bg-[#2271b1] hover:bg-[#135e96] text-white px-2 py-1 rounded text-[10px] font-semibold transition flex-grow text-center"
-                          >
-                            Copy Link
-                          </button>
-                          <button
-                            onClick={() => deleteMedia(url)}
-                            className="bg-[#d63638] hover:bg-[#b32d2e] text-white p-1.5 rounded transition"
-                            title="Delete Image"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                  <input type="text" placeholder="Search media items" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                    className="border border-[#8c8f94] bg-white rounded px-2.5 py-1 text-xs outline-none focus:border-[#2271b1]" />
+                </div>
+              </div>
+
+              {/* Upload Dropzone */}
+              <div
+                className={`border-2 border-dashed rounded-sm p-8 text-center cursor-pointer transition ${uploading ? "border-[#2271b1] bg-blue-50" : "border-[#c3c4c7] hover:border-[#2271b1] bg-white"}`}
+                onClick={() => fileInputRef.current?.click()}
+                onDrop={e => { e.preventDefault(); handleFileUpload(e.dataTransfer.files); }}
+                onDragOver={e => e.preventDefault()}
+              >
+                <Upload className="w-8 h-8 mx-auto mb-2 text-[#8c8f94]" />
+                <p className="text-[#646970] font-medium text-xs">{uploading ? "Uploading files..." : "Drag & drop images here to upload, or click to browse"}</p>
+              </div>
+
+              {media.length > 0 ? (
+                mediaViewMode === "grid" ? (
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-8 gap-3 bg-white border border-[#c3c4c7] p-4 rounded-sm shadow-sm">
+                    {media.filter(url => url.toLowerCase().includes(searchQuery.toLowerCase())).map((url, i) => (
+                      <div key={i} onClick={() => setSelectedMedia(url)} className="aspect-square bg-slate-50 border border-[#c3c4c7] hover:border-[#2271b1] cursor-pointer relative overflow-hidden group shadow-sm">
+                        <img src={url} alt={`media-${i}`} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition" />
                       </div>
                     ))}
                   </div>
-                </div>
+                ) : (
+                  <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm overflow-hidden text-xs">
+                    <table className="w-full text-left border-collapse">
+                      <thead className="bg-[#f6f7f7] border-b border-[#c3c4c7] text-[#2c3338] font-semibold">
+                        <tr>
+                          <th className="py-2 px-3 w-16">File</th>
+                          <th className="py-2 px-3">Name / URL</th>
+                          <th className="py-2 px-3">Date</th>
+                          <th className="py-2 px-3 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#f0f0f1] text-[#50575e]">
+                        {media.filter(url => url.toLowerCase().includes(searchQuery.toLowerCase())).map((url, i) => {
+                          const filename = url.split("/").pop() || "";
+                          return (
+                            <tr key={i} className="hover:bg-[#f6f7f7] transition group">
+                              <td className="py-2 px-3">
+                                <img src={url} alt="" className="w-10 h-10 object-cover border border-[#c3c4c7] rounded-sm" />
+                              </td>
+                              <td className="py-2 px-3">
+                                <div className="font-semibold text-[#2c3338]">{filename}</div>
+                                <div className="font-mono text-[#2271b1] text-[10px] select-all">{window.location.origin + url}</div>
+                              </td>
+                              <td className="py-2 px-3 text-[#646970]">Uploaded</td>
+                              <td className="py-2 px-3 text-right space-x-2">
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(window.location.origin + url);
+                                    alert("Image URL copied!");
+                                  }}
+                                  className="text-[#2271b1] hover:underline"
+                                >
+                                  Copy Link
+                                </button>
+                                <span className="text-[#ddd]">|</span>
+                                <button
+                                  onClick={() => deleteMedia(url)}
+                                  className="text-[#b32d2e] hover:underline"
+                                >
+                                  Delete
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )
               ) : (
-                <div className="text-center py-10 bg-white border border-[#c3c4c7] rounded text-slate-400 text-xs">
+                <div className="text-center py-10 bg-white border border-[#c3c4c7] rounded-sm text-slate-400 text-xs shadow-sm">
                   No uploaded files found. Upload some images to display them here!
                 </div>
               )}
-
-              <div className="bg-[#fff3cd] border border-[#ffc107] text-[#664d03] p-4 rounded text-xs">
-                <strong>💡 Tip:</strong> After uploading, click "Copy URL" on any image to get its URL. Paste that URL into the "Featured Image URL" field when creating posts.
-              </div>
             </div>
           )}
 
@@ -1193,6 +1389,71 @@ export default function AdminDashboard() {
                 className="bg-[#f0f0f1] hover:bg-[#dcdcde] text-[#50575e] px-4 py-2 rounded text-sm font-semibold transition">
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedMedia && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white shadow-xl rounded-sm w-full max-w-3xl border border-[#c3c4c7] flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
+            {/* Left side preview */}
+            <div className="flex-1 bg-[#f1f1f1] flex items-center justify-center p-6 min-h-[300px] max-h-[500px]">
+              <img src={selectedMedia} alt="media preview" className="max-w-full max-h-full object-contain border border-[#c3c4c7] bg-white shadow-sm" />
+            </div>
+
+            {/* Right side metadata/actions */}
+            <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-[#c3c4c7] p-5 flex flex-col justify-between bg-[#f6f7f7] text-xs">
+              <div className="space-y-4">
+                <div className="flex justify-between items-start border-b border-[#ddd] pb-2">
+                  <h3 className="font-bold text-[#2c3338] text-sm">Attachment Details</h3>
+                  <button onClick={() => setSelectedMedia(null)} className="text-[#a7aaad] hover:text-[#2c3338] transition">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-2 text-[#50575e]">
+                  <div>
+                    <span className="font-semibold block text-[#2c3338]">File name:</span>
+                    <span className="break-all font-mono text-[11px]">{selectedMedia.split("/").pop()}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold block text-[#2c3338]">File type:</span>
+                    <span>image/jpeg</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold block text-[#2c3338]">URL:</span>
+                    <input
+                      type="text"
+                      readOnly
+                      value={window.location.origin + selectedMedia}
+                      onClick={e => (e.target as HTMLInputElement).select()}
+                      className="w-full border border-[#8c8f94] bg-white rounded-sm px-2 py-1.5 mt-1 font-mono text-[11px] outline-none text-[#2c3338]"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-t border-[#ddd] pt-4 mt-6 flex justify-between items-center gap-2">
+                <button
+                  onClick={async () => {
+                    await deleteMedia(selectedMedia);
+                    setSelectedMedia(null);
+                  }}
+                  className="text-[#b32d2e] hover:text-[#d63638] font-semibold hover:underline"
+                >
+                  Delete Permanently
+                </button>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.origin + selectedMedia);
+                    alert("Image URL copied!");
+                  }}
+                  className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded-sm text-xs font-semibold shadow-sm transition"
+                >
+                  Copy Link
+                </button>
+              </div>
             </div>
           </div>
         </div>
