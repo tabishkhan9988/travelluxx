@@ -68,3 +68,13 @@
   animation: dash 1.5s linear infinite;
 }
 
+/* Quill Editor Custom styling */
+.ql-container {
+  min-height: 250px;
+  font-family: inherit !important;
+}
+.ql-editor {
+  min-height: 250px;
+  font-size: 14px;
+}
+

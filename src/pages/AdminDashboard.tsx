@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Eye, EyeOff, LayoutDashboard, FileText, Newspaper, Menu, Image, Settings, BookOpen, LogOut, Plus, Trash2, Edit2, Save, X, Upload, ChevronUp, ChevronDown, ExternalLink, Users, MessageSquare } from "lucide-react";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Tab = "dashboard" | "leads" | "posts" | "pages" | "media" | "menus" | "settings" | "inquiries";
@@ -14,54 +16,7 @@ function toBase64(file: File): Promise<string> {
   });
 }
 
-const RichEditorToolbar = ({ textareaId, value, onChange }: { textareaId: string, value: string, onChange: (val: string) => void }) => {
-  const insertTag = (tag: string, type: 'wrap' | 'replace' | 'color' | 'link' | 'image') => {
-    const txt = document.getElementById(textareaId) as HTMLTextAreaElement;
-    if (!txt) return;
-    const start = txt.selectionStart;
-    const end = txt.selectionEnd;
-    const val = txt.value;
-    const selectedText = val.substring(start, end);
 
-    let replacement = "";
-    if (type === 'wrap') {
-      replacement = `<${tag}>${selectedText || 'Text'}</${tag}>`;
-    } else if (type === 'link') {
-      const url = prompt("Enter Link URL (e.g. https://google.com):");
-      if (!url) return;
-      replacement = `<a href="${url}" target="_blank" class="text-[#047857] underline font-semibold hover:text-[#065f46]">${selectedText || 'Link Text'}</a>`;
-    } else if (type === 'color') {
-      const color = prompt("Enter color name or hex (e.g. red, #047857):", "#047857");
-      if (!color) return;
-      replacement = `<span style="color: ${color};">${selectedText || 'colored text'}</span>`;
-    } else if (type === 'image') {
-      const url = prompt("Enter Image URL:");
-      if (!url) return;
-      replacement = `<img src="${url}" alt="image" class="w-full h-auto rounded-lg shadow-sm border border-[#e2e8f0] my-4" />`;
-    }
-
-    const newVal = val.substring(0, start) + replacement + val.substring(end);
-    onChange(newVal);
-    
-    setTimeout(() => {
-      txt.focus();
-      txt.setSelectionRange(start + replacement.length, start + replacement.length);
-    }, 50);
-  };
-
-  return (
-    <div className="flex flex-wrap gap-1.5 p-2 bg-[#f0f0f1] border border-b-0 border-[#8c8f94] rounded-t-sm">
-      <button type="button" onClick={() => insertTag('strong', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs font-bold text-[#1d2327]">B</button>
-      <button type="button" onClick={() => insertTag('em', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs italic text-[#1d2327]">I</button>
-      <button type="button" onClick={() => insertTag('h2', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs font-semibold text-[#1d2327]">H2</button>
-      <button type="button" onClick={() => insertTag('h3', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs font-semibold text-[#1d2327]">H3</button>
-      <button type="button" onClick={() => insertTag('p', 'wrap')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs text-[#1d2327]">Paragraph</button>
-      <button type="button" onClick={() => insertTag('a', 'link')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs text-[#2271b1] underline">Link</button>
-      <button type="button" onClick={() => insertTag('span', 'color')} className="px-2 py-1 bg-white border border-[#c3c4c7] hover:bg-[#f0f0f1] rounded text-xs text-[#d63638]">Color</button>
-      <button type="button" onClick={() => insertTag('img', 'image')} className="px-2 py-1 bg-[#2271b1] text-white border border-[#135e96] hover:bg-[#135e96] rounded text-xs">Insert Image</button>
-    </div>
-  );
-};
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminDashboard() {
@@ -88,14 +43,15 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedInquiry, setSelectedInquiry] = useState<any>(null);
   const [saveStatus, setSaveStatus] = useState("");
 
   // Post editor
-  const [editingPost, setEditingPost] = useState<any>(null);
+  const [editingPost, setEditingPost] = useState<any>(undefined);
   const [postForm, setPostForm] = useState({ title: "", slug: "", excerpt: "", content: "", image: "", published: true, metaTitle: "", metaDescription: "" });
 
   // Page editor
-  const [editingPage, setEditingPage] = useState<any>(null);
+  const [editingPage, setEditingPage] = useState<any>(undefined);
   const [pageForm, setPageForm] = useState({ title: "", slug: "", content: "", metaTitle: "", metaDescription: "" });
 
   // Media upload
@@ -112,7 +68,7 @@ export default function AdminDashboard() {
   }, [token]);
 
   const fetchAll = () => {
-    fetchBookings(); fetchPosts(); fetchPages(); fetchSettings(); fetchMenu(); fetchInquiries();
+    fetchBookings(); fetchPosts(); fetchPages(); fetchSettings(); fetchMenu(); fetchInquiries(); fetchMedia();
   };
 
   const fetchBookings = async () => {
@@ -137,6 +93,15 @@ export default function AdminDashboard() {
   };
   const fetchMenu = async () => {
     const r = await fetch("/api/menu"); setMenuItems(await r.json());
+  };
+  const fetchMedia = async () => {
+    const r = await fetch("/api/admin/media"); setMedia(await r.json());
+  };
+  const deleteMedia = async (url: string) => {
+    if (!confirm("Are you sure you want to delete this image?")) return;
+    const filename = url.split("/").pop();
+    const r = await fetch(`/api/admin/media/${filename}`, { method: "DELETE" });
+    if (r.ok) fetchMedia();
   };
 
   // ─── Auth ────────────────────────────────────────────────────────────────────
@@ -266,6 +231,7 @@ export default function AdminDashboard() {
       } catch (err) { console.error("Upload failed:", err); }
     }
     setUploading(false);
+    fetchMedia();
   };
 
   // ─── Menu ─────────────────────────────────────────────────────────────────────
@@ -648,10 +614,8 @@ export default function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Content (HTML)</label>
-                      <RichEditorToolbar textareaId="blog-content-editor" value={postForm.content} onChange={val => setPostForm({ ...postForm, content: val })} />
-                      <textarea id="blog-content-editor" rows={12} value={postForm.content} onChange={e => setPostForm({ ...postForm, content: e.target.value })}
-                        className="w-full border border-t-0 border-[#8c8f94] rounded-b-sm px-3 py-2 text-xs font-mono focus:outline-none focus:border-[#2271b1]" required />
+                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Content</label>
+                      <ReactQuill theme="snow" value={postForm.content} onChange={val => setPostForm({ ...postForm, content: val })} />
                     </div>
 
                     <div className="border-t border-[#f0f0f1] pt-4">
@@ -762,10 +726,8 @@ export default function AdminDashboard() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Page Content (HTML)</label>
-                      <RichEditorToolbar textareaId="page-content-editor" value={pageForm.content} onChange={val => setPageForm({ ...pageForm, content: val })} />
-                      <textarea id="page-content-editor" rows={12} value={pageForm.content} onChange={e => setPageForm({ ...pageForm, content: e.target.value })}
-                        className="w-full border border-t-0 border-[#8c8f94] rounded-b-sm px-3 py-2 text-xs font-mono focus:outline-none focus:border-[#2271b1]" required />
+                      <label className="block text-xs font-semibold text-[#1d2327] mb-1">Page Content</label>
+                      <ReactQuill theme="snow" value={pageForm.content} onChange={val => setPageForm({ ...pageForm, content: val })} />
                     </div>
 
                     <div className="border-t border-[#f0f0f1] pt-4">
@@ -835,7 +797,6 @@ export default function AdminDashboard() {
                 <h1 className="text-2xl font-bold text-[#1d2327]">Contact Inquiries</h1>
                 <span className="text-[#646970] text-xs">{inquiries.length} total inquiries</span>
               </div>
-
               <div className="bg-white border border-[#c3c4c7] rounded shadow-sm overflow-hidden">
                 <table className="w-full text-xs">
                   <thead className="bg-[#f0f0f1] text-[#646970] font-semibold uppercase text-[10px] tracking-wide border-b border-[#c3c4c7]">
@@ -867,7 +828,11 @@ export default function AdminDashboard() {
                           {i.createdAt ? new Date(i.createdAt).toLocaleDateString() : "N/A"}<br />
                           {i.createdAt ? new Date(i.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ""}
                         </td>
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-3 px-4 text-right space-x-1.5">
+                          <button onClick={() => setSelectedInquiry(i)}
+                            className="bg-[#2271b1] hover:bg-[#135e96] text-white px-2.5 py-1 rounded text-[10px] font-semibold transition">
+                            View
+                          </button>
                           <button onClick={() => deleteInquiry(i.id)}
                             className="bg-[#d63638] hover:bg-[#b32d2e] text-white px-2.5 py-1 rounded text-[10px] font-semibold transition">
                             Delete
@@ -899,21 +864,40 @@ export default function AdminDashboard() {
                   onChange={e => handleFileUpload(e.target.files)} />
               </div>
 
-              {media.length > 0 && (
+              {media.length > 0 ? (
                 <div>
-                  <h3 className="font-semibold text-[#1d2327] mb-3 text-sm">Uploaded Files (this session)</h3>
-                  <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+                  <h3 className="font-semibold text-[#1d2327] mb-3 text-sm">Uploaded Files</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                     {media.map((url, i) => (
-                      <div key={i} className="bg-white border border-[#c3c4c7] rounded overflow-hidden shadow-sm group relative">
-                        <img src={url} alt={`upload-${i}`} className="w-full h-20 object-cover" />
-                        <button
-                          onClick={() => { navigator.clipboard.writeText(url); }}
-                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[10px] font-bold transition">
-                          Copy URL
-                        </button>
+                      <div key={i} className="bg-white border border-[#c3c4c7] rounded overflow-hidden shadow-sm group relative flex flex-col justify-between">
+                        <div className="relative aspect-square bg-[#f9f9f9] flex items-center justify-center overflow-hidden">
+                          <img src={url} alt={`upload-${i}`} className="w-full h-full object-cover transition duration-300 group-hover:scale-105" />
+                        </div>
+                        <div className="p-2 border-t border-[#f0f0f1] bg-[#fafafa] flex justify-between items-center gap-1">
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(window.location.origin + url);
+                              alert("Image URL copied to clipboard!");
+                            }}
+                            className="bg-[#2271b1] hover:bg-[#135e96] text-white px-2 py-1 rounded text-[10px] font-semibold transition flex-grow text-center"
+                          >
+                            Copy Link
+                          </button>
+                          <button
+                            onClick={() => deleteMedia(url)}
+                            className="bg-[#d63638] hover:bg-[#b32d2e] text-white p-1.5 rounded transition"
+                            title="Delete Image"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
+                </div>
+              ) : (
+                <div className="text-center py-10 bg-white border border-[#c3c4c7] rounded text-slate-400 text-xs">
+                  No uploaded files found. Upload some images to display them here!
                 </div>
               )}
 
@@ -1142,6 +1126,62 @@ export default function AdminDashboard() {
             </div>
             <div className="p-4 border-t border-[#f0f0f1] flex justify-end">
               <button onClick={() => setSelectedBooking(null)}
+                className="bg-[#f0f0f1] hover:bg-[#dcdcde] text-[#50575e] px-4 py-2 rounded text-sm font-semibold transition">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedInquiry && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white shadow-xl rounded-sm w-full max-w-lg border border-[#c3c4c7]">
+            <div className="bg-[#1d2327] p-4 text-white flex justify-between items-center">
+              <h3 className="font-bold text-sm">Contact Inquiry Details</h3>
+              <button onClick={() => setSelectedInquiry(null)} className="text-[#a7aaad] hover:text-white transition">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-[#f9f9f9] p-3 rounded border border-[#f0f0f1]">
+                  <span className="text-[#646970] text-[10px] uppercase font-semibold block mb-1">Sender Name</span>
+                  <span className="text-[#1d2327] font-bold">{selectedInquiry.name}</span>
+                </div>
+                <div className="bg-[#f9f9f9] p-3 rounded border border-[#f0f0f1]">
+                  <span className="text-[#646970] text-[10px] uppercase font-semibold block mb-1">Phone Number</span>
+                  <span className="text-[#1d2327] font-bold">{selectedInquiry.phone || "N/A"}</span>
+                </div>
+                <div className="bg-[#f9f9f9] p-3 rounded border border-[#f0f0f1] col-span-2">
+                  <span className="text-[#646970] text-[10px] uppercase font-semibold block mb-1">Email Address</span>
+                  <span className="text-[#1d2327]">{selectedInquiry.email}</span>
+                </div>
+                <div className="bg-[#f9f9f9] p-3 rounded border border-[#f0f0f1]">
+                  <span className="text-[#646970] text-[10px] uppercase font-semibold block mb-1">Type / Subject</span>
+                  <span className="text-[#2271b1] font-semibold">{selectedInquiry.type || "General Inquiry"}</span>
+                </div>
+                <div className="bg-[#f9f9f9] p-3 rounded border border-[#f0f0f1]">
+                  <span className="text-[#646970] text-[10px] uppercase font-semibold block mb-1">Received At</span>
+                  <span className="text-[#1d2327]">{selectedInquiry.createdAt ? new Date(selectedInquiry.createdAt).toLocaleString() : "N/A"}</span>
+                </div>
+              </div>
+              <div className="bg-[#f9f9f9] p-4 rounded border border-[#f0f0f1]">
+                <span className="text-[#646970] text-[10px] uppercase font-semibold block mb-1">Message</span>
+                <p className="text-[#1d2327] whitespace-pre-wrap text-sm leading-relaxed">{selectedInquiry.message}</p>
+              </div>
+            </div>
+            <div className="p-4 border-t border-[#f0f0f1] flex justify-end gap-2">
+              <button
+                onClick={async () => {
+                  await deleteInquiry(selectedInquiry.id);
+                  setSelectedInquiry(null);
+                }}
+                className="bg-[#d63638] hover:bg-[#b32d2e] text-white px-4 py-2 rounded text-sm font-semibold transition"
+              >
+                Delete Inquiry
+              </button>
+              <button onClick={() => setSelectedInquiry(null)}
                 className="bg-[#f0f0f1] hover:bg-[#dcdcde] text-[#50575e] px-4 py-2 rounded text-sm font-semibold transition">
                 Close
               </button>

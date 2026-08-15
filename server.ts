@@ -504,7 +504,7 @@ Thank you for choosing ${ws.business_name}!`;
   }
 }
 
-async function sendBookingEmails(booking: any, isConfirmedEmail = false) {
+async function sendBookingEmails(booking: any, isConfirmedEmail = false, isStatusChange = false) {
   const ws = getCurrentWebsiteSettings();
   const brandGreen = "#047857";
   const bgSlate = "#f8fafc";
@@ -547,6 +547,7 @@ async function sendBookingEmails(booking: any, isConfirmedEmail = false) {
       ` : ""}
       <tr style="border-bottom: 1px solid ${borderSlate};"><td style="padding: 10px 0; color: ${textMuted};">Total Price</td><td style="padding: 10px 0; color: ${brandGreen}; font-weight: 800; text-align: right; font-size: 18px;">£${Number(booking.price).toFixed(2)}</td></tr>
       <tr style="border-bottom: 1px solid ${borderSlate};"><td style="padding: 10px 0; color: ${textMuted};">Payment</td><td style="padding: 10px 0; font-weight: 700; text-align: right;">${paymentDisplay}</td></tr>
+      <tr style="border-bottom: 1px solid ${borderSlate};"><td style="padding: 10px 0; color: ${textMuted};">Booking Status</td><td style="padding: 10px 0; font-weight: 700; text-align: right; color: ${booking.status === 'Cancelled' ? '#d63638' : '#2271b1'}">${booking.status || 'Pending'}</td></tr>
     </table>
   `;
 
@@ -573,10 +574,15 @@ async function sendBookingEmails(booking: any, isConfirmedEmail = false) {
     </div>
   `;
 
-  const emailTitle = isConfirmedEmail ? "Booking Confirmed!" : "Booking Request Received";
-  const emailSubtitle = isConfirmedEmail
+  let emailTitle = isConfirmedEmail ? "Booking Confirmed!" : "Booking Request Received";
+  let emailSubtitle = isConfirmedEmail
     ? `Hi <strong>${booking.passengerName}</strong>,<br>Great news! Your booking request has been confirmed. Below are your travel details and final fare summary:`
     : `Hi <strong>${booking.passengerName}</strong>,<br>We have received your private hire booking request. Our team is verifying vehicle availability, and we will email you a confirmation shortly. Details:`;
+
+  if (isStatusChange) {
+    emailTitle = `Booking Status: ${booking.status}`;
+    emailSubtitle = `Hi <strong>${booking.passengerName}</strong>,<br>Your booking status has been updated to <strong>${booking.status}</strong>. Please see the updated summary below:`;
+  }
 
   const passengerHtml = commonEmailHtml(emailTitle, emailSubtitle);
 
@@ -589,7 +595,10 @@ async function sendBookingEmails(booking: any, isConfirmedEmail = false) {
   const fromAddress = `"${ws.business_name}" <${smtpSettings.senderAddress || smtpSettings.smtpUser || ws.business_email}>`;
   const passengerEmail = booking.passengerEmail || booking.email;
 
-  const subjectPrefix = isConfirmedEmail ? "Booking Confirmed" : "Booking Pending Confirmation";
+  let subjectPrefix = isConfirmedEmail ? "Booking Confirmed" : "Booking Pending Confirmation";
+  if (isStatusChange) {
+    subjectPrefix = `Booking Update: ${booking.status}`;
+  }
 
   if (passengerEmail) {
     await sendEmailSafely({
@@ -601,8 +610,23 @@ async function sendBookingEmails(booking: any, isConfirmedEmail = false) {
     });
   }
 
+  // Send status change notification to operator
+  if (isStatusChange && ws.business_email) {
+    const operatorStatusHtml = commonEmailHtml(
+      `[STATUS UPDATE] Ref ${booking.id} - ${booking.status}`,
+      `The booking status for <strong>${booking.passengerName}</strong> has been updated to <strong>${booking.status}</strong>. Updated summary below:`
+    );
+    await sendEmailSafely({
+      from: fromAddress,
+      to: ws.business_email,
+      replyTo: passengerEmail || ws.business_email,
+      subject: `[Status Change] Ref ${booking.id} - ${booking.passengerName} is now ${booking.status}`,
+      html: operatorStatusHtml,
+    });
+  }
+
   // Only send notification to operator on initial creation (not on status change)
-  if (!isConfirmedEmail && ws.business_email) {
+  if (!isConfirmedEmail && !isStatusChange && ws.business_email) {
     await sendEmailSafely({
       from: fromAddress,
       to: ws.business_email,
@@ -864,9 +888,14 @@ app.put("/api/admin/bookings/:id", async (req, res) => {
       if (paymentStatus) bookings[index].paymentStatus = paymentStatus;
       writeBookings(bookings);
       
-      // If status changed to Confirmed, send confirmation email!
-      if (status === "Confirmed" && oldBooking?.status !== "Confirmed") {
-        await sendBookingEmails(updatedBooking, true).catch(err => console.error("Confirmed email error:", err));
+      // Send status change notification to both customer and operator on any change
+      const isStatusOrPaymentChanged = 
+        (status && status !== oldBooking?.status) || 
+        (paymentStatus && paymentStatus !== oldBooking?.paymentStatus);
+
+      if (isStatusOrPaymentChanged) {
+        await sendBookingEmails(updatedBooking, status === "Confirmed", true)
+          .catch(err => console.error("Status update email error:", err));
       }
 
       return res.json({ success: true, booking: bookings[index] });
@@ -1204,6 +1233,49 @@ app.post("/api/admin/upload", async (req, res) => {
     return res.status(500).json({ error: e.message });
   }
 });
+
+// GET all media URLs from MongoDB / local storage
+app.get("/api/admin/media", async (req, res) => {
+  try {
+    await connectToDatabase();
+    if (mongoose.connection.readyState === 1) {
+      const uploads = await UploadModel.find({}, "filename");
+      const urls = uploads.map(u => `/uploads/${u.filename}`);
+      return res.json(urls);
+    }
+  } catch (e: any) {
+    console.error("Error fetching media from DB:", e.message);
+  }
+  // Local fallback
+  try {
+    const uploadDir = path.join(process.cwd(), "public", "uploads");
+    if (fs.existsSync(uploadDir)) {
+      const files = fs.readdirSync(uploadDir);
+      return res.json(files.map(f => `/uploads/${f}`));
+    }
+  } catch (e) {}
+  return res.json([]);
+});
+
+// DELETE media file
+app.delete("/api/admin/media/:filename", async (req, res) => {
+  try {
+    await connectToDatabase();
+    const { filename } = req.params;
+    if (mongoose.connection.readyState === 1) {
+      await UploadModel.deleteOne({ filename });
+    }
+    // Delete local if exists
+    const localPath = path.join(process.cwd(), "public", "uploads", filename);
+    if (fs.existsSync(localPath)) {
+      fs.unlinkSync(localPath);
+    }
+    return res.json({ success: true });
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
 
 // Serve virtual uploads from MongoDB
 app.get("/uploads/:filename", async (req, res, next) => {
