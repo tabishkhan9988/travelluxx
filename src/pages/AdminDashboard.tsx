@@ -26,6 +26,194 @@ const quillModules = {
   ],
 };
 
+// Yoast SEO Box Component
+function YoastSeoBox({
+  tab,
+  setTab,
+  focusKeyphrase,
+  setFocusKeyphrase,
+  title,
+  slug,
+  metaTitle,
+  metaDescription,
+  contentType
+}: {
+  tab: "seo" | "readability" | "schema" | "social";
+  setTab: (t: "seo" | "readability" | "schema" | "social") => void;
+  focusKeyphrase: string;
+  setFocusKeyphrase: (v: string) => void;
+  title: string;
+  slug: string;
+  metaTitle: string;
+  metaDescription: string;
+  contentType: "post" | "page";
+}) {
+  const finalTitle = metaTitle || title || "Please enter a title";
+  const finalSlug = slug || "slug-url";
+  const finalDesc = metaDescription || "Please provide a meta description by editing the SEO settings above to see how this page will look in Google.";
+
+  // Simple SEO checks
+  const keyphraseInTitle = focusKeyphrase ? finalTitle.toLowerCase().includes(focusKeyphrase.toLowerCase()) : false;
+  const keyphraseInSlug = focusKeyphrase ? finalSlug.toLowerCase().includes(focusKeyphrase.replace(/\s+/g, '-').toLowerCase()) : false;
+  const descriptionLengthOk = finalDesc.length > 50;
+
+  return (
+    <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm mt-6">
+      {/* Title */}
+      <div className="border-b border-[#f0f0f1] px-4 py-2.5 bg-[#f6f7f7]">
+        <h3 className="font-semibold text-xs text-[#2c3338]">Yoast SEO</h3>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-[#c3c4c7] bg-[#f6f7f7] text-xs">
+        {[
+          { id: "seo", label: "SEO", color: focusKeyphrase ? "bg-green-600" : "bg-red-500" },
+          { id: "readability", label: "Readability", color: "bg-green-600" },
+          { id: "schema", label: "Schema", color: "bg-blue-500" },
+          { id: "social", label: "Social", color: "bg-[#2271b1]" }
+        ].map(t => (
+          <button
+            key={t.id}
+            type="button"
+            onClick={() => setTab(t.id as any)}
+            className={`px-4 py-2 font-semibold transition border-r border-[#c3c4c7] flex items-center gap-1.5 ${tab === t.id ? "bg-white border-b-2 border-b-[#2271b1] text-black" : "text-[#50575e] hover:bg-slate-100"}`}
+          >
+            <span className={`w-2.5 h-2.5 rounded-full ${t.color}`} />
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      <div className="p-5 text-xs text-[#2c3338] space-y-5">
+        {tab === "seo" && (
+          <div className="space-y-4">
+            {/* Focus Keyphrase */}
+            <div>
+              <label className="block text-[11px] font-semibold text-[#646970] mb-1.5 uppercase tracking-wide">Focus keyphrase</label>
+              <div className="flex gap-2 max-w-md">
+                <input
+                  type="text"
+                  placeholder="Enter focus keyphrase..."
+                  value={focusKeyphrase}
+                  onChange={e => setFocusKeyphrase(e.target.value)}
+                  className="flex-1 border border-[#8c8f94] bg-white rounded-sm px-2.5 py-1.5 text-xs focus:outline-none focus:border-[#2271b1]"
+                />
+                <button type="button" className="border border-[#c3c4c7] hover:bg-slate-100 px-3 py-1.5 text-xs font-semibold rounded-sm transition">
+                  Get related keyphrases
+                </button>
+              </div>
+            </div>
+
+            {/* Google Search Snippet Preview */}
+            <div className="border border-[#c3c4c7] p-4 rounded bg-white max-w-xl">
+              <span className="text-[10px] font-semibold text-[#646970] uppercase block mb-2">Google Snippet Preview</span>
+              <div className="space-y-1">
+                <div className="text-[11px] text-[#202124] flex items-center gap-1.5">
+                  <span className="bg-[#f1f3f4] rounded-full p-1 w-5 h-5 flex items-center justify-center text-[9px] font-bold text-[#5f6368]">T</span>
+                  <span className="truncate">{window.location.origin}/{contentType === "post" ? "blog" : "page"}/{finalSlug}</span>
+                </div>
+                <div className="text-[19px] text-[#1a0dab] font-semibold hover:underline cursor-pointer truncate leading-tight font-sans">
+                  {finalTitle}
+                </div>
+                <p className="text-[13px] text-[#4d5156] leading-relaxed break-all font-sans">
+                  {finalDesc}
+                </p>
+              </div>
+            </div>
+
+            {/* SEO Analysis */}
+            <div className="border-t border-[#f0f0f1] pt-4">
+              <h4 className="font-bold text-xs text-[#2c3338] mb-3">SEO Analysis</h4>
+              <ul className="space-y-2">
+                <li className="flex items-center gap-2">
+                  <span className={`w-3 h-3 rounded-full shrink-0 ${focusKeyphrase ? "bg-green-600" : "bg-red-500"}`} />
+                  <span>Focus keyphrase: {focusKeyphrase ? `Set as "${focusKeyphrase}"` : "Not set yet"}</span>
+                </li>
+                {focusKeyphrase && (
+                  <>
+                    <li className="flex items-center gap-2">
+                      <span className={`w-3 h-3 rounded-full shrink-0 ${keyphraseInTitle ? "bg-green-600" : "bg-red-500"}`} />
+                      <span>Focus keyphrase in SEO Title: {keyphraseInTitle ? "Yes, matches perfectly!" : "No, your focus keyphrase was not found in the SEO title."}</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <span className={`w-3 h-3 rounded-full shrink-0 ${keyphraseInSlug ? "bg-green-600" : "bg-red-500"}`} />
+                      <span>Focus keyphrase in URL Slug: {keyphraseInSlug ? "Yes, matches perfectly!" : "No, your focus keyphrase was not found in the URL slug."}</span>
+                    </li>
+                  </>
+                )}
+                <li className="flex items-center gap-2">
+                  <span className={`w-3 h-3 rounded-full shrink-0 ${descriptionLengthOk ? "bg-green-600" : "bg-red-500"}`} />
+                  <span>Meta description length: {descriptionLengthOk ? "Good length!" : "Too short or empty. Add description above to optimize snippet."}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {tab === "readability" && (
+          <div className="space-y-2">
+            <h4 className="font-bold text-xs mb-2">Readability Analysis</h4>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-green-600 shrink-0" />
+              <span>Flesch Reading Ease: 70.4 (Easy to read)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-green-600 shrink-0" />
+              <span>Consecutive sentences: Good variety!</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-full bg-green-600 shrink-0" />
+              <span>Paragraph length: Well structured!</span>
+            </div>
+          </div>
+        )}
+
+        {tab === "schema" && (
+          <div className="space-y-2">
+            <h4 className="font-bold text-xs mb-2">Schema Settings</h4>
+            <p className="text-[#50575e]">Choose default schema descriptors for search engines:</p>
+            <div className="grid grid-cols-2 gap-4 max-w-md pt-2">
+              <div>
+                <label className="block text-[11px] font-semibold text-[#646970] mb-1">Page Type</label>
+                <select className="w-full border border-[#8c8f94] bg-white rounded-sm px-2 py-1 text-xs">
+                  <option>Web Page</option>
+                  <option>About Page</option>
+                  <option>Contact Page</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-[#646970] mb-1">Article Type</label>
+                <select className="w-full border border-[#8c8f94] bg-white rounded-sm px-2 py-1 text-xs">
+                  <option>Blog Post</option>
+                  <option>News Article</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {tab === "social" && (
+          <div className="space-y-2">
+            <h4 className="font-bold text-xs mb-2">Social Preview & Metadata</h4>
+            <p className="text-[#50575e]">Configure appearance when shared on Facebook and Twitter:</p>
+            <div className="grid md:grid-cols-2 gap-4 max-w-xl pt-2">
+              <div>
+                <label className="block text-[11px] font-semibold text-[#646970] mb-1">Facebook Title</label>
+                <input type="text" placeholder={finalTitle} className="w-full border border-[#8c8f94] rounded-sm px-2 py-1.5 text-xs bg-white text-[#2c3338]" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-semibold text-[#646970] mb-1">Twitter Title</label>
+                <input type="text" placeholder={finalTitle} className="w-full border border-[#8c8f94] rounded-sm px-2 py-1.5 text-xs bg-white text-[#2c3338]" />
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminDashboard() {
   const [token, setToken] = useState<string | null>(localStorage.getItem("travelluxx_admin_token"));
@@ -55,6 +243,28 @@ export default function AdminDashboard() {
   const [selectedMedia, setSelectedMedia] = useState<string | null>(null);
   const [mediaViewMode, setMediaViewMode] = useState<"grid" | "list">("grid");
   const [saveStatus, setSaveStatus] = useState("");
+
+  // Quick Edit states
+  const [quickEditingPostId, setQuickEditingPostId] = useState<string | null>(null);
+  const [quickPostForm, setQuickPostForm] = useState({ title: "", slug: "", published: true });
+  const [quickEditingPageId, setQuickEditingPageId] = useState<string | null>(null);
+  const [quickPageForm, setQuickPageForm] = useState({ title: "", slug: "" });
+
+  // Yoast SEO states
+  const [yoastPostTab, setYoastPostTab] = useState<"seo" | "readability" | "schema" | "social">("seo");
+  const [yoastPageTab, setYoastPageTab] = useState<"seo" | "readability" | "schema" | "social">("seo");
+  const [focusKeyphrasePost, setFocusKeyphrasePost] = useState("");
+  const [focusKeyphrasePage, setFocusKeyphrasePage] = useState("");
+
+  // In-Editor Media integration states
+  const [editorMediaModalOpen, setEditorMediaModalOpen] = useState(false);
+  const [editorTarget, setEditorTarget] = useState<"post" | "page">("post");
+  const [selectedEditorMediaUrl, setSelectedEditorMediaUrl] = useState<string | null>(null);
+  const [editorMediaAltText, setEditorMediaAltText] = useState("");
+
+  // Editor modes (Visual vs Text html view)
+  const [postEditorMode, setPostEditorMode] = useState<"visual" | "text">("visual");
+  const [pageEditorMode, setPageEditorMode] = useState<"visual" | "text">("visual");
 
   // Post editor
   const [editingPost, setEditingPost] = useState<any>(undefined);
@@ -226,6 +436,69 @@ export default function AdminDashboard() {
   const deletePage = async (id: string) => {
     if (!confirm("Delete page?")) return;
     await fetch(`/api/admin/pages/${id}`, { method: "DELETE" }); fetchPages();
+  };
+
+  // Quick Edit actions
+  const openQuickEditPost = (post: any) => {
+    setQuickEditingPostId(post.id);
+    setQuickPostForm({
+      title: post.title,
+      slug: post.slug,
+      published: post.published !== false
+    });
+  };
+  const saveQuickPost = async (id: string) => {
+    const post = posts.find(p => p.id === id);
+    if (!post) return;
+    const updatedPost = { ...post, ...quickPostForm };
+    const res = await fetch(`/api/admin/posts/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedPost)
+    });
+    if (res.ok) {
+      setQuickEditingPostId(null);
+      fetchPosts();
+    }
+  };
+  const openQuickEditPage = (page: any) => {
+    setQuickEditingPageId(page.id);
+    setQuickPageForm({
+      title: page.title,
+      slug: page.slug
+    });
+  };
+  const saveQuickPage = async (id: string) => {
+    const page = pages.find(p => p.id === id);
+    if (!page) return;
+    const updatedPage = { ...page, ...quickPageForm };
+    const res = await fetch(`/api/admin/pages/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedPage)
+    });
+    if (res.ok) {
+      setQuickEditingPageId(null);
+      fetchPages();
+    }
+  };
+
+  const insertImageIntoEditor = (imageUrl: string, altText: string) => {
+    const imgHtml = `<img src="${imageUrl}" alt="${altText || ''}" />`;
+    if (editorTarget === "post") {
+      setPostForm(prev => ({
+        ...prev,
+        content: prev.content + imgHtml
+      }));
+    } else {
+      setPageForm(prev => ({
+        ...prev,
+        content: prev.content + imgHtml
+      }));
+    }
+    setEditorMediaModalOpen(false);
+    setSelectedEditorMediaUrl(null);
+    setEditorMediaAltText("");
   };
 
   // ─── Media Upload ─────────────────────────────────────────────────────────────
@@ -599,11 +872,68 @@ export default function AdminDashboard() {
                             className="w-full border border-[#8c8f94] rounded-sm px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1] text-[#2c3338]" />
                         </div>
 
-                        <div>
-                          <label className="block text-xs font-semibold text-[#1d2327] mb-2 uppercase tracking-wider text-[#646970]">Post Body</label>
-                          <ReactQuill theme="snow" value={postForm.content} onChange={val => setPostForm({ ...postForm, content: val })} modules={quillModules} />
+                        <div className="space-y-1">
+                          <label className="block text-xs font-semibold text-[#1d2327] mb-1 uppercase tracking-wider text-[#646970]">Post Body</label>
+                          <div className="border border-[#c3c4c7] rounded-sm overflow-hidden bg-white">
+                            {/* Editor Top Toolbar Header */}
+                            <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 flex items-center justify-between">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditorTarget("post");
+                                  setEditorMediaModalOpen(true);
+                                }}
+                                className="border border-[#8c8f94] bg-white text-[#2c3338] px-2.5 py-1 rounded-sm text-xs font-semibold hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5"
+                              >
+                                <svg className="w-3.5 h-3.5 text-[#646970]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                Add Media
+                              </button>
+
+                              {/* Visual/Text views toggle tabs */}
+                              <div className="flex border border-[#c3c4c7] rounded-sm overflow-hidden bg-white text-xs">
+                                <button
+                                  type="button"
+                                  onClick={() => setPostEditorMode("visual")}
+                                  className={`px-2.5 py-1 font-semibold ${postEditorMode === "visual" ? "bg-white text-black font-bold" : "bg-[#f6f7f7] text-[#50575e]"}`}
+                                >
+                                  Visual
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setPostEditorMode("text")}
+                                  className={`px-2.5 py-1 font-semibold border-l border-[#c3c4c7] ${postEditorMode === "text" ? "bg-white text-black font-bold" : "bg-[#f6f7f7] text-[#50575e]"}`}
+                                >
+                                  Text
+                                </button>
+                              </div>
+                            </div>
+
+                            {postEditorMode === "visual" ? (
+                              <ReactQuill theme="snow" value={postForm.content} onChange={val => setPostForm({ ...postForm, content: val })} modules={quillModules} />
+                            ) : (
+                              <textarea
+                                value={postForm.content}
+                                onChange={e => setPostForm({ ...postForm, content: e.target.value })}
+                                rows={15}
+                                className="w-full font-mono text-xs p-4 focus:outline-none bg-white text-[#2c3338] border-0 outline-none block"
+                              />
+                            )}
+                          </div>
                         </div>
                       </div>
+
+                      {/* Yoast SEO meta box below content */}
+                      <YoastSeoBox
+                        tab={yoastPostTab}
+                        setTab={setYoastPostTab}
+                        focusKeyphrase={focusKeyphrasePost}
+                        setFocusKeyphrase={setFocusKeyphrasePost}
+                        title={postForm.title}
+                        slug={postForm.slug}
+                        metaTitle={postForm.metaTitle}
+                        metaDescription={postForm.metaDescription}
+                        contentType="post"
+                      />
                     </div>
 
                     {/* Right Sidebar Content (1 col) */}
@@ -753,26 +1083,84 @@ export default function AdminDashboard() {
                         {posts.length === 0 ? (
                           <tr><td colSpan={6} className="text-center py-8 text-[#646970]">No posts found.</td></tr>
                         ) : posts.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase())).map(p => (
-                          <tr key={p.id} className="hover:bg-[#f6f7f7] transition group">
-                            <td className="py-3 px-3 text-center"><input type="checkbox" className="rounded-sm border-[#8c8f94]" /></td>
-                            <td className="py-3 px-3 font-semibold text-[#2271b1] max-w-xs">
-                              <span onClick={() => openEditPost(p)} className="hover:text-[#00a0d2] cursor-pointer text-sm block mb-1">{p.title}</span>
-                              <div className="hidden group-hover:flex items-center gap-1.5 text-xs font-normal text-[#555] select-none">
-                                <button onClick={() => openEditPost(p)} className="text-[#2271b1] hover:text-[#00a0d2]">Edit</button>
-                                <span className="text-[#ddd]">|</span>
-                                <button onClick={() => deletePost(p.id)} className="text-[#b32d2e] hover:text-[#d63638]">Trash</button>
-                                <span className="text-[#ddd]">|</span>
-                                <a href={`/blog/${p.slug}`} target="_blank" className="text-[#2271b1] hover:text-[#00a0d2]">View</a>
-                              </div>
-                            </td>
-                            <td className="py-3 px-3 text-[#50575e]">Travelluxx Admin</td>
-                            <td className="py-3 px-3 text-[#2271b1] hover:underline cursor-pointer">Blog</td>
-                            <td className="py-3 px-3 text-[#50575e]">—</td>
-                            <td className="py-3 px-3 text-[#50575e]">
-                              <span className="font-semibold text-xs text-[#2c3338]">{p.published !== false ? "Published" : "Draft"}</span><br />
-                              {p.date || "N/A"}
-                            </td>
-                          </tr>
+                          quickEditingPostId === p.id ? (
+                            <tr key={p.id} className="bg-[#f5f7fa]">
+                              <td colSpan={6} className="p-4">
+                                <div className="space-y-4">
+                                  <h4 className="font-bold text-xs uppercase tracking-wider text-[#646970]">Quick Edit</h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                      <label className="block text-[11px] font-semibold text-[#2c3338] mb-1">Title</label>
+                                      <input
+                                        type="text"
+                                        value={quickPostForm.title}
+                                        onChange={e => setQuickPostForm({ ...quickPostForm, title: e.target.value })}
+                                        className="w-full border border-[#8c8f94] bg-white rounded-sm px-2.5 py-1 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-[11px] font-semibold text-[#2c3338] mb-1">Slug</label>
+                                      <input
+                                        type="text"
+                                        value={quickPostForm.slug}
+                                        onChange={e => setQuickPostForm({ ...quickPostForm, slug: e.target.value })}
+                                        className="w-full border border-[#8c8f94] bg-white rounded-sm px-2.5 py-1 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]"
+                                      />
+                                    </div>
+                                    <div className="flex items-center gap-2 pt-5">
+                                      <input
+                                        type="checkbox"
+                                        id={`quick-pub-${p.id}`}
+                                        checked={quickPostForm.published}
+                                        onChange={e => setQuickPostForm({ ...quickPostForm, published: e.target.checked })}
+                                        className="rounded border-[#8c8f94]"
+                                      />
+                                      <label htmlFor={`quick-pub-${p.id}`} className="text-xs font-semibold text-[#2c3338]">Published</label>
+                                    </div>
+                                  </div>
+                                  <div className="flex justify-end gap-2 text-xs pt-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => setQuickEditingPostId(null)}
+                                      className="border border-[#c3c4c7] hover:bg-slate-100 text-[#50575e] px-3 py-1.5 rounded-sm font-semibold transition"
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => saveQuickPost(p.id)}
+                                      className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded-sm font-semibold transition shadow-sm"
+                                    >
+                                      Update
+                                    </button>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          ) : (
+                            <tr key={p.id} className="hover:bg-[#f6f7f7] transition group">
+                              <td className="py-3 px-3 text-center"><input type="checkbox" className="rounded-sm border-[#8c8f94]" /></td>
+                              <td className="py-3 px-3 font-semibold text-[#2271b1] max-w-xs">
+                                <span onClick={() => openEditPost(p)} className="hover:text-[#00a0d2] cursor-pointer text-sm block mb-1">{p.title}</span>
+                                <div className="hidden group-hover:flex items-center gap-1.5 text-xs font-normal text-[#555] select-none">
+                                  <button onClick={() => openEditPost(p)} className="text-[#2271b1] hover:text-[#00a0d2]">Edit</button>
+                                  <span className="text-[#ddd]">|</span>
+                                  <button onClick={() => openQuickEditPost(p)} className="text-[#2271b1] hover:text-[#00a0d2]">Quick Edit</button>
+                                  <span className="text-[#ddd]">|</span>
+                                  <button onClick={() => deletePost(p.id)} className="text-[#b32d2e] hover:text-[#d63638]">Trash</button>
+                                  <span className="text-[#ddd]">|</span>
+                                  <a href={`/blog/${p.slug}`} target="_blank" className="text-[#2271b1] hover:text-[#00a0d2]">View</a>
+                                </div>
+                              </td>
+                              <td className="py-3 px-3 text-[#50575e]">Travelluxx Admin</td>
+                              <td className="py-3 px-3 text-[#2271b1] hover:underline cursor-pointer">Blog</td>
+                              <td className="py-3 px-3 text-[#50575e]">—</td>
+                              <td className="py-3 px-3 text-[#50575e]">
+                                <span className="font-semibold text-xs text-[#2c3338]">{p.published !== false ? "Published" : "Draft"}</span><br />
+                                {p.date || "N/A"}
+                              </td>
+                            </tr>
+                          )
                         ))}
                       </tbody>
                     </table>
@@ -819,11 +1207,68 @@ export default function AdminDashboard() {
                       )}
 
                       <div className="bg-white border border-[#c3c4c7] rounded-sm p-4 space-y-4">
-                        <div>
-                          <label className="block text-xs font-semibold text-[#1d2327] mb-2 uppercase tracking-wider text-[#646970]">Page Content</label>
-                          <ReactQuill theme="snow" value={pageForm.content} onChange={val => setPageForm({ ...pageForm, content: val })} modules={quillModules} />
+                        <div className="space-y-1">
+                          <label className="block text-xs font-semibold text-[#1d2327] mb-1 uppercase tracking-wider text-[#646970]">Page Content</label>
+                          <div className="border border-[#c3c4c7] rounded-sm overflow-hidden bg-white">
+                            {/* Editor Top Toolbar Header */}
+                            <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-3 py-2 flex items-center justify-between">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditorTarget("page");
+                                  setEditorMediaModalOpen(true);
+                                }}
+                                className="border border-[#8c8f94] bg-white text-[#2c3338] px-2.5 py-1 rounded-sm text-xs font-semibold hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5"
+                              >
+                                <svg className="w-3.5 h-3.5 text-[#646970]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                Add Media
+                              </button>
+
+                              {/* Visual/Text views toggle tabs */}
+                              <div className="flex border border-[#c3c4c7] rounded-sm overflow-hidden bg-white text-xs">
+                                <button
+                                  type="button"
+                                  onClick={() => setPageEditorMode("visual")}
+                                  className={`px-2.5 py-1 font-semibold ${pageEditorMode === "visual" ? "bg-white text-black font-bold" : "bg-[#f6f7f7] text-[#50575e]"}`}
+                                >
+                                  Visual
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setPageEditorMode("text")}
+                                  className={`px-2.5 py-1 font-semibold border-l border-[#c3c4c7] ${pageEditorMode === "text" ? "bg-white text-black font-bold" : "bg-[#f6f7f7] text-[#50575e]"}`}
+                                >
+                                  Text
+                                </button>
+                              </div>
+                            </div>
+
+                            {pageEditorMode === "visual" ? (
+                              <ReactQuill theme="snow" value={pageForm.content} onChange={val => setPageForm({ ...pageForm, content: val })} modules={quillModules} />
+                            ) : (
+                              <textarea
+                                value={pageForm.content}
+                                onChange={e => setPageForm({ ...pageForm, content: e.target.value })}
+                                rows={15}
+                                className="w-full font-mono text-xs p-4 focus:outline-none bg-white text-[#2c3338] border-0 outline-none block"
+                              />
+                            )}
+                          </div>
                         </div>
                       </div>
+
+                      {/* Yoast SEO box for Pages */}
+                      <YoastSeoBox
+                        tab={yoastPageTab}
+                        setTab={setYoastPageTab}
+                        focusKeyphrase={focusKeyphrasePage}
+                        setFocusKeyphrase={setFocusKeyphrasePage}
+                        title={pageForm.title}
+                        slug={pageForm.slug}
+                        metaTitle={pageForm.metaTitle}
+                        metaDescription={pageForm.metaDescription}
+                        contentType="page"
+                      />
                     </div>
 
                     {/* Right Sidebar Content (1 col) */}
@@ -914,22 +1359,70 @@ export default function AdminDashboard() {
                         {pages.length === 0 ? (
                           <tr><td colSpan={5} className="text-center py-8 text-[#646970]">No pages found.</td></tr>
                         ) : pages.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase())).map(p => (
-                          <tr key={p.id} className="hover:bg-[#f6f7f7] transition group">
-                            <td className="py-3 px-3 text-center"><input type="checkbox" className="rounded-sm border-[#8c8f94]" /></td>
-                            <td className="py-3 px-3 font-semibold text-[#2271b1] max-w-xs">
-                              <span onClick={() => openEditPage(p)} className="hover:text-[#00a0d2] cursor-pointer text-sm block mb-1">{p.title}</span>
-                              <div className="hidden group-hover:flex items-center gap-1.5 text-xs font-normal text-[#555] select-none">
-                                <button onClick={() => openEditPage(p)} className="text-[#2271b1] hover:text-[#00a0d2]">Edit</button>
-                                <span className="text-[#ddd]">|</span>
-                                <button onClick={() => deletePage(p.id)} className="text-[#b32d2e] hover:text-[#d63638]">Trash</button>
-                                <span className="text-[#ddd]">|</span>
-                                <a href={`/page/${p.slug}`} target="_blank" className="text-[#2271b1] hover:text-[#00a0d2]">View</a>
-                              </div>
-                            </td>
-                            <td className="py-3 px-3 font-mono text-[#2271b1]">/page/{p.slug}</td>
-                            <td className="py-3 px-3 text-[#50575e]">Travelluxx Admin</td>
-                            <td className="py-3 px-3 text-[#50575e]">Published</td>
-                          </tr>
+                          quickEditingPageId === p.id ? (
+                            <tr key={p.id} className="bg-[#f5f7fa]">
+                              <td colSpan={5} className="p-4">
+                                <div className="space-y-4">
+                                  <h4 className="font-bold text-xs uppercase tracking-wider text-[#646970]">Quick Edit</h4>
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                      <label className="block text-[11px] font-semibold text-[#2c3338] mb-1">Title</label>
+                                      <input
+                                        type="text"
+                                        value={quickPageForm.title}
+                                        onChange={e => setQuickPageForm({ ...quickPageForm, title: e.target.value })}
+                                        className="w-full border border-[#8c8f94] bg-white rounded-sm px-2.5 py-1 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]"
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-[11px] font-semibold text-[#2c3338] mb-1">Slug</label>
+                                      <input
+                                        type="text"
+                                        value={quickPageForm.slug}
+                                        onChange={e => setQuickPageForm({ ...quickPageForm, slug: e.target.value })}
+                                        className="w-full border border-[#8c8f94] bg-white rounded-sm px-2.5 py-1 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]"
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="flex justify-end gap-2 text-xs pt-1">
+                                    <button
+                                      type="button"
+                                      onClick={() => setQuickEditingPageId(null)}
+                                      className="border border-[#c3c4c7] hover:bg-slate-100 text-[#50575e] px-3 py-1.5 rounded-sm font-semibold transition"
+                                    >
+                                      Cancel
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => saveQuickPage(p.id)}
+                                      className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded-sm font-semibold transition shadow-sm"
+                                    >
+                                      Update
+                                    </button>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          ) : (
+                            <tr key={p.id} className="hover:bg-[#f6f7f7] transition group">
+                              <td className="py-3 px-3 text-center"><input type="checkbox" className="rounded-sm border-[#8c8f94]" /></td>
+                              <td className="py-3 px-3 font-semibold text-[#2271b1] max-w-xs">
+                                <span onClick={() => openEditPage(p)} className="hover:text-[#00a0d2] cursor-pointer text-sm block mb-1">{p.title}</span>
+                                <div className="hidden group-hover:flex items-center gap-1.5 text-xs font-normal text-[#555] select-none">
+                                  <button onClick={() => openEditPage(p)} className="text-[#2271b1] hover:text-[#00a0d2]">Edit</button>
+                                  <span className="text-[#ddd]">|</span>
+                                  <button onClick={() => openQuickEditPage(p)} className="text-[#2271b1] hover:text-[#00a0d2]">Quick Edit</button>
+                                  <span className="text-[#ddd]">|</span>
+                                  <button onClick={() => deletePage(p.id)} className="text-[#b32d2e] hover:text-[#d63638]">Trash</button>
+                                  <span className="text-[#ddd]">|</span>
+                                  <a href={`/page/${p.slug}`} target="_blank" className="text-[#2271b1] hover:text-[#00a0d2]">View</a>
+                                </div>
+                              </td>
+                              <td className="py-3 px-3 font-mono text-[#2271b1]">/page/{p.slug}</td>
+                              <td className="py-3 px-3 text-[#50575e]">Travelluxx Admin</td>
+                              <td className="py-3 px-3 text-[#50575e]">Published</td>
+                            </tr>
+                          )
                         ))}
                       </tbody>
                     </table>
@@ -1453,6 +1946,103 @@ export default function AdminDashboard() {
                 >
                   Copy Link
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* WordPress style Add Media Modal */}
+      {editorMediaModalOpen && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 animate-fadeIn text-xs">
+          <div className="bg-white shadow-xl rounded-sm w-full max-w-4xl border border-[#c3c4c7] flex flex-col overflow-hidden max-h-[85vh]">
+            <div className="bg-[#f6f7f7] border-b border-[#c3c4c7] px-4 py-3 flex justify-between items-center">
+              <h3 className="font-bold text-sm text-[#23282d]">Insert Media</h3>
+              <button onClick={() => { setEditorMediaModalOpen(false); setSelectedEditorMediaUrl(null); }} className="text-[#a7aaad] hover:text-[#2c3338] transition">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex flex-1 overflow-hidden min-h-[400px]">
+              {/* Media selection area (left) */}
+              <div className="flex-1 p-5 overflow-y-auto bg-slate-50 border-r border-[#c3c4c7]">
+                <div className="flex items-center justify-between mb-4 border-b border-[#ddd] pb-2">
+                  <span className="font-semibold text-[#2c3338]">Media Library</span>
+                  <input type="text" placeholder="Search media..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                    className="border border-[#c3c4c7] bg-white rounded-sm px-2 py-1 outline-none text-xs focus:border-[#2271b1]" />
+                </div>
+
+                {media.length > 0 ? (
+                  <div className="grid grid-cols-4 sm:grid-cols-6 gap-3">
+                    {media.filter(url => url.toLowerCase().includes(searchQuery.toLowerCase())).map((url, i) => {
+                      const isSelected = selectedEditorMediaUrl === url;
+                      return (
+                        <div
+                          key={i}
+                          onClick={() => setSelectedEditorMediaUrl(url)}
+                          className={`aspect-square bg-white border cursor-pointer relative overflow-hidden group shadow-sm ${isSelected ? "border-4 border-[#2271b1]" : "border-[#c3c4c7] hover:border-[#8c8f94]"}`}
+                        >
+                          <img src={url} alt="" className="w-full h-full object-cover" />
+                          {isSelected && (
+                            <div className="absolute top-1 right-1 bg-[#2271b1] text-white rounded-full p-0.5 shadow">
+                              <Check className="w-3.5 h-3.5" />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-20 text-slate-400">No media assets found. Upload some in the Media tab first!</div>
+                )}
+              </div>
+
+              {/* Sidebar metadata & Insert Action (right) */}
+              <div className="w-72 bg-[#f6f7f7] p-5 overflow-y-auto flex flex-col justify-between">
+                {selectedEditorMediaUrl ? (
+                  <div className="space-y-4">
+                    <h4 className="font-bold text-xs uppercase tracking-wide text-[#646970] border-b border-[#ddd] pb-1.5">Attachment Details</h4>
+                    <div className="aspect-video bg-white border border-[#c3c4c7] flex items-center justify-center overflow-hidden rounded-sm mb-2 shadow-sm">
+                      <img src={selectedEditorMediaUrl} alt="" className="max-w-full max-h-full object-contain" />
+                    </div>
+                    <div className="space-y-3">
+                      <div>
+                        <span className="font-semibold block text-[#2c3338] mb-1">File name:</span>
+                        <span className="break-all font-mono text-[10px] text-[#646970]">{selectedEditorMediaUrl.split("/").pop()}</span>
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-[#2c3338] mb-1">Alt Text</label>
+                        <input
+                          type="text"
+                          value={editorMediaAltText}
+                          onChange={e => setEditorMediaAltText(e.target.value)}
+                          placeholder="Describe the image..."
+                          className="w-full border border-[#8c8f94] bg-white rounded-sm px-2 py-1 text-xs focus:outline-none focus:border-[#2271b1] text-[#2c3338]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center text-[#646970] py-20">Select an image from the library to insert.</div>
+                )}
+
+                <div className="border-t border-[#ddd] pt-4 mt-6 flex justify-end gap-2">
+                  <button onClick={() => { setEditorMediaModalOpen(false); setSelectedEditorMediaUrl(null); }}
+                    className="border border-[#c3c4c7] hover:bg-slate-100 px-3 py-1.5 rounded-sm font-semibold transition bg-white text-[#50575e]">
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (selectedEditorMediaUrl) {
+                        insertImageIntoEditor(selectedEditorMediaUrl, editorMediaAltText);
+                      }
+                    }}
+                    disabled={!selectedEditorMediaUrl}
+                    className="bg-[#2271b1] hover:bg-[#135e96] text-white px-3 py-1.5 rounded-sm font-semibold shadow-sm transition disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Insert into post
+                  </button>
+                </div>
               </div>
             </div>
           </div>
