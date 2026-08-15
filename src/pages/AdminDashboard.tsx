@@ -16,7 +16,15 @@ function toBase64(file: File): Promise<string> {
   });
 }
 
-
+const quillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{'list': 'ordered'}, {'list': 'bullet'}],
+    ['link', 'image'],
+    ['clean']
+  ],
+};
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminDashboard() {
@@ -615,7 +623,7 @@ export default function AdminDashboard() {
 
                     <div>
                       <label className="block text-xs font-semibold text-[#1d2327] mb-1">Content</label>
-                      <ReactQuill theme="snow" value={postForm.content} onChange={val => setPostForm({ ...postForm, content: val })} />
+                      <ReactQuill theme="snow" value={postForm.content} onChange={val => setPostForm({ ...postForm, content: val })} modules={quillModules} />
                     </div>
 
                     <div className="border-t border-[#f0f0f1] pt-4">
@@ -727,7 +735,7 @@ export default function AdminDashboard() {
 
                     <div>
                       <label className="block text-xs font-semibold text-[#1d2327] mb-1">Page Content</label>
-                      <ReactQuill theme="snow" value={pageForm.content} onChange={val => setPageForm({ ...pageForm, content: val })} />
+                      <ReactQuill theme="snow" value={pageForm.content} onChange={val => setPageForm({ ...pageForm, content: val })} modules={quillModules} />
                     </div>
 
                     <div className="border-t border-[#f0f0f1] pt-4">
