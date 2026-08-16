@@ -38,6 +38,8 @@ function YoastSeoBox({
   metaTitle,
   metaDescription,
   contentType,
+  image,
+  excerpt,
   onMetaTitleChange,
   onSlugChange,
   onMetaDescriptionChange
@@ -51,6 +53,8 @@ function YoastSeoBox({
   metaTitle: string;
   metaDescription: string;
   contentType: "post" | "page";
+  image?: string;
+  excerpt?: string;
   onMetaTitleChange: (v: string) => void;
   onSlugChange: (v: string) => void;
   onMetaDescriptionChange: (v: string) => void;
@@ -275,11 +279,24 @@ function YoastSeoBox({
                 {/* Social Share Preview Box */}
                 <div>
                   <span className="block text-[11px] font-semibold text-[#646970] uppercase mb-1.5 tracking-wide">Social share preview</span>
-                  <div className="border border-[#c3c4c7] rounded-sm aspect-[1.91/1] bg-slate-50 relative flex items-center justify-center overflow-hidden max-w-lg">
-                    <div className="text-center p-4">
-                      <button type="button" className="bg-[#f0b01c] hover:bg-[#e0a010] text-[#1d2327] px-4 py-2 rounded-sm font-semibold flex items-center gap-2 shadow-sm transition">
-                        <span>🔒</span> Unlock with Yoast SEO Premium
-                      </button>
+                  <div className="border border-[#c3c4c7] rounded-sm bg-white overflow-hidden max-w-lg shadow-sm">
+                    {image ? (
+                      <div className="aspect-[1.91/1] w-full overflow-hidden bg-slate-100 border-b border-[#e5e7eb]">
+                        <img src={image} alt="Social preview" className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="aspect-[1.91/1] w-full bg-[#f3f4f6] border-b border-[#e5e7eb] flex items-center justify-center text-slate-400">
+                        No image set
+                      </div>
+                    )}
+                    <div className="p-3 bg-[#f2f3f5] font-sans text-xs">
+                      <div className="text-[10px] text-[#606770] uppercase tracking-wide">travelluxx.co.uk</div>
+                      <div className="font-semibold text-[#1d2129] mt-1 text-sm line-clamp-1">
+                        {title || (contentType === "post" ? "Post Title" : "Page Title")}
+                      </div>
+                      <div className="text-[#606770] mt-0.5 line-clamp-2 leading-relaxed">
+                        {excerpt || (contentType === "post" ? "Post excerpt..." : "Page description...")}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -410,6 +427,12 @@ export default function AdminDashboard() {
   const [posts, setPosts] = useState<any[]>([]);
   const [pages, setPages] = useState<any[]>([]);
   const [inquiries, setInquiries] = useState<any[]>([]);
+  const [bookingsLoading, setBookingsLoading] = useState(false);
+  const [postsLoading, setPostsLoading] = useState(false);
+  const [pagesLoading, setPagesLoading] = useState(false);
+  const [inquiriesLoading, setInquiriesLoading] = useState(false);
+  const [selectedBookingIds, setSelectedBookingIds] = useState<string[]>([]);
+  const [selectedInquiryIds, setSelectedInquiryIds] = useState<string[]>([]);
   const [media, setMedia] = useState<string[]>([]);
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [settings, setSettings] = useState<any>({});
@@ -439,7 +462,7 @@ export default function AdminDashboard() {
 
   // In-Editor Media integration states
   const [editorMediaModalOpen, setEditorMediaModalOpen] = useState(false);
-  const [editorTarget, setEditorTarget] = useState<"post" | "page" | "post-featured" | "page-featured" | "yoast-post-social" | "yoast-page-social" | "yoast-post-x" | "yoast-page-x">("post");
+  const [editorTarget, setEditorTarget] = useState<"post" | "page" | "post-featured" | "page-featured" | "yoast-post-social" | "yoast-page-social" | "yoast-post-x" | "yoast-page-x" | "settings-logo">("post");
   const [selectedEditorMediaUrl, setSelectedEditorMediaUrl] = useState<string | null>(null);
   const [editorMediaAltText, setEditorMediaAltText] = useState("");
   const [editorMediaTitleText, setEditorMediaTitleText] = useState("");
@@ -545,21 +568,54 @@ export default function AdminDashboard() {
   };
 
   const fetchBookings = async () => {
-    const r = await fetch("/api/admin/bookings"); setBookings(await r.json());
+    setBookingsLoading(true);
+    setBookings([]);
+    try {
+      const r = await fetch("/api/admin/bookings");
+      setBookings(await r.json());
+    } catch (err) {}
+    setBookingsLoading(false);
   };
   const fetchPosts = async () => {
-    const r = await fetch("/api/admin/posts"); setPosts(await r.json());
+    setPostsLoading(true);
+    setPosts([]);
+    try {
+      const r = await fetch("/api/admin/posts");
+      setPosts(await r.json());
+    } catch (err) {}
+    setPostsLoading(false);
   };
   const fetchPages = async () => {
-    const r = await fetch("/api/admin/pages"); setPages(await r.json());
+    setPagesLoading(true);
+    setPages([]);
+    try {
+      const r = await fetch("/api/admin/pages");
+      setPages(await r.json());
+    } catch (err) {}
+    setPagesLoading(false);
   };
   const fetchInquiries = async () => {
-    const r = await fetch("/api/admin/inquiries"); setInquiries(await r.json());
+    setInquiriesLoading(true);
+    setInquiries([]);
+    try {
+      const r = await fetch("/api/admin/inquiries");
+      setInquiries(await r.json());
+    } catch (err) {}
+    setInquiriesLoading(false);
   };
   const deleteInquiry = async (id: string) => {
     if (!confirm("Are you sure you want to delete this inquiry?")) return;
     const r = await fetch(`/api/admin/inquiries/${id}`, { method: "DELETE" });
-    if (r.ok) fetchInquiries();
+    if (r.ok) window.location.reload();
+  };
+  const deleteSelectedInquiries = async () => {
+    if (selectedInquiryIds.length === 0) return;
+    if (!confirm(`Are you sure you want to delete the ${selectedInquiryIds.length} selected inquiries?`)) return;
+    for (const id of selectedInquiryIds) {
+      await fetch(`/api/admin/inquiries/${id}`, { method: "DELETE" });
+    }
+    setSelectedInquiryIds([]);
+    window.location.reload();
   };
   const fetchSettings = async () => {
     const r = await fetch("/api/admin/settings"); setSettings(await r.json());
@@ -610,13 +666,23 @@ export default function AdminDashboard() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status: newStatus })
     });
-    if (res.ok) fetchBookings();
+    if (res.ok) window.location.reload();
   };
 
   const deleteBooking = async (id: string) => {
     if (!confirm("Are you sure you want to delete this booking?")) return;
     const res = await fetch(`/api/admin/bookings/${id}`, { method: "DELETE" });
-    if (res.ok) fetchBookings();
+    if (res.ok) window.location.reload();
+  };
+
+  const deleteSelectedBookings = async () => {
+    if (selectedBookingIds.length === 0) return;
+    if (!confirm(`Are you sure you want to delete the ${selectedBookingIds.length} selected bookings?`)) return;
+    for (const id of selectedBookingIds) {
+      await fetch(`/api/admin/bookings/${id}`, { method: "DELETE" });
+    }
+    setSelectedBookingIds([]);
+    window.location.reload();
   };
 
   const filteredBookings = bookings.filter(b => {
@@ -682,7 +748,7 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         setEditingPost(undefined);
-        fetchPosts();
+        window.location.reload();
       }
     } catch (err) {
       console.error(err);
@@ -693,7 +759,7 @@ export default function AdminDashboard() {
   const deletePost = async (id: string) => {
     if (!confirm("Are you sure?")) return;
     const res = await fetch(`/api/admin/posts/${id}`, { method: "DELETE" });
-    if (res.ok) fetchPosts();
+    if (res.ok) window.location.reload();
   };
 
   // ─── Pages ───────────────────────────────────────────────────────────────────
@@ -741,8 +807,11 @@ export default function AdminDashboard() {
     try {
       const url = editingPage ? `/api/admin/pages/${editingPage.id}` : "/api/admin/pages";
       const method = editingPage ? "PUT" : "POST";
-      await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(pageForm) });
-      fetchPages(); setEditingPage(undefined);
+      const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(pageForm) });
+      if (res.ok) {
+        setEditingPage(undefined);
+        window.location.reload();
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -751,7 +820,8 @@ export default function AdminDashboard() {
   };
   const deletePage = async (id: string) => {
     if (!confirm("Delete page?")) return;
-    await fetch(`/api/admin/pages/${id}`, { method: "DELETE" }); fetchPages();
+    const res = await fetch(`/api/admin/pages/${id}`, { method: "DELETE" });
+    if (res.ok) window.location.reload();
   };
 
   // Quick Edit actions
@@ -776,7 +846,7 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         setQuickEditingPostId(null);
-        fetchPosts();
+        window.location.reload();
       }
     } catch (err) {
       console.error(err);
@@ -805,7 +875,7 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         setQuickEditingPageId(null);
-        fetchPages();
+        window.location.reload();
       }
     } catch (err) {
       console.error(err);
@@ -833,6 +903,8 @@ export default function AdminDashboard() {
       setPostForm(prev => ({ ...prev, xImage: imageUrl }));
     } else if (editorTarget === "yoast-page-x") {
       setPageForm(prev => ({ ...prev, xImage: imageUrl }));
+    } else if (editorTarget === "settings-logo") {
+      setSettings((prev: any) => ({ ...prev, logo_url: imageUrl }));
     }
     setEditorMediaModalOpen(false);
     setSelectedEditorMediaUrl(null);
@@ -1115,7 +1187,7 @@ export default function AdminDashboard() {
                 <span className="text-[#646970] text-xs">{filteredBookings.length} of {bookings.length}</span>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <input type="text" placeholder="Search by name, ref, location..." value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   className="border border-[#8c8f94] rounded px-3 py-1.5 text-sm w-64 focus:outline-none focus:border-[#2271b1]" />
@@ -1124,12 +1196,35 @@ export default function AdminDashboard() {
                   <option value="All">All Statuses</option>
                   {["Pending", "Confirmed", "Completed", "Cancelled"].map(s => <option key={s}>{s}</option>)}
                 </select>
+                {selectedBookingIds.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={deleteSelectedBookings}
+                    className="bg-[#d63638] hover:bg-[#b32d2e] text-white px-3 py-1.5 rounded text-xs font-semibold transition"
+                  >
+                    Delete Selected ({selectedBookingIds.length})
+                  </button>
+                )}
               </div>
 
               <div className="bg-white border border-[#c3c4c7] rounded shadow-sm overflow-hidden">
                 <table className="w-full text-xs">
                   <thead className="bg-[#f0f0f1] text-[#646970] font-semibold uppercase text-[10px] tracking-wide border-b border-[#c3c4c7]">
                     <tr>
+                      <th className="py-3 px-4 text-left w-10">
+                        <input
+                          type="checkbox"
+                          checked={filteredBookings.length > 0 && selectedBookingIds.length === filteredBookings.length}
+                          onChange={e => {
+                            if (e.target.checked) {
+                              setSelectedBookingIds(filteredBookings.map(b => b.id));
+                            } else {
+                              setSelectedBookingIds([]);
+                            }
+                          }}
+                          className="rounded-sm border-[#c3c4c7]"
+                        />
+                      </th>
                       <th className="py-3 px-4 text-left">Ref #</th>
                       <th className="py-3 px-4 text-left">Passenger</th>
                       <th className="py-3 px-4 text-left">Date / Time</th>
@@ -1141,10 +1236,26 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#f0f0f1]">
-                    {filteredBookings.length === 0 ? (
-                      <tr><td colSpan={8} className="text-center py-10 text-[#646970]">No leads found.</td></tr>
+                    {bookingsLoading ? (
+                      <tr><td colSpan={10} className="text-center py-10 text-[#646970] font-semibold">⚙ Loading Bookings...</td></tr>
+                    ) : filteredBookings.length === 0 ? (
+                      <tr><td colSpan={10} className="text-center py-10 text-[#646970]">No leads found.</td></tr>
                     ) : filteredBookings.map(b => (
-                      <tr key={b.id} className="hover:bg-[#f9f9f9] transition">
+                      <tr key={b.id} className={`hover:bg-[#f9f9f9] transition ${selectedBookingIds.includes(b.id) ? "bg-[#f4f8fa]" : ""}`}>
+                        <td className="py-3 px-4 text-left">
+                          <input
+                            type="checkbox"
+                            checked={selectedBookingIds.includes(b.id)}
+                            onChange={e => {
+                              if (e.target.checked) {
+                                setSelectedBookingIds([...selectedBookingIds, b.id]);
+                              } else {
+                                setSelectedBookingIds(selectedBookingIds.filter(id => id !== b.id));
+                              }
+                            }}
+                            className="rounded-sm border-[#8c8f94]"
+                          />
+                        </td>
                         <td className="py-3 px-4 font-mono font-bold text-[#2271b1]">{b.id}</td>
                         <td className="py-3 px-4">
                           <div className="font-semibold text-[#1d2327]">{b.passengerName}</div>
@@ -1215,24 +1326,8 @@ export default function AdminDashboard() {
                       <a href={`/blog/${postForm.slug}`} target="_blank" rel="noreferrer" className="p-1.5 hover:bg-slate-100 rounded text-[#2c3338]" title="View post">
                         <ExternalLink className="w-4 h-4" />
                       </a>
-                      
-                      {/* Device preview */}
-                      <button type="button" className="p-1.5 hover:bg-slate-100 rounded text-[#2c3338]" title="Desktop view">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                      </button>
-
-                      <a href={`/blog/${postForm.slug}`} target="_blank" rel="noreferrer" className="text-[#2271b1] hover:underline font-semibold mr-1">Preview</a>
-
                       <button type="button" onClick={() => savePost()} className="border border-[#2271b1] text-[#2271b1] hover:bg-slate-50 bg-white px-3 py-1.5 rounded-sm font-semibold transition">
                         Copy this
-                      </button>
-
-                      <button type="button" className="p-1.5 hover:bg-slate-100 rounded text-[#2c3338]" title="Settings sidebar toggle">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                      </button>
-
-                      <button type="button" className="text-[#f0b01c] font-black text-sm px-1.5" title="Yoast Settings">
-                        Y
                       </button>
 
                       <button
@@ -1338,6 +1433,8 @@ export default function AdminDashboard() {
                           metaTitle={postForm.metaTitle}
                           metaDescription={postForm.metaDescription}
                           contentType="post"
+                          image={postForm.image}
+                          excerpt={postForm.excerpt}
                           onMetaTitleChange={v => setPostForm(prev => ({ ...prev, metaTitle: v }))}
                           onSlugChange={v => setPostForm(prev => ({ ...prev, slug: v }))}
                           onMetaDescriptionChange={v => setPostForm(prev => ({ ...prev, metaDescription: v }))}
@@ -1413,8 +1510,7 @@ export default function AdminDashboard() {
                         <div>
                           {/* Sidebar Tabs */}
                           <div className="flex border-b border-[#c3c4c7] text-xs font-semibold text-[#646970] bg-[#f6f7f7]">
-                            <button type="button" className="flex-1 py-2 text-center bg-white border-r border-[#c3c4c7] text-[#2c3338] border-b-2 border-b-[#2271b1]">Post</button>
-                            <button type="button" className="flex-1 py-2 text-center bg-[#f6f7f7] hover:bg-slate-100 transition">Block</button>
+                            <button type="button" className="flex-1 py-2 text-center bg-white text-[#2c3338] border-b-2 border-b-[#2271b1]">Post</button>
                           </div>
 
                           <div className="p-4 space-y-5 text-xs text-[#2c3338]">
@@ -1496,11 +1592,7 @@ export default function AdminDashboard() {
                                 />
                               </div>
 
-                              {/* Author */}
-                              <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
-                                <span className="text-[#646970]">Author</span>
-                                <select value={postForm.author} onChange={e => setPostForm({...postForm, author: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="admin">admin</option><option value="Travelluxx Editorial">Travelluxx Editorial</option></select>
-                              </div>
+
 
                               {/* Template */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
@@ -1916,9 +2008,11 @@ export default function AdminDashboard() {
                           metaTitle={pageForm.metaTitle}
                           metaDescription={pageForm.metaDescription}
                           contentType="page"
+                          image={pageForm.image}
+                          excerpt=""
                           onMetaTitleChange={v => setPageForm(prev => ({ ...prev, metaTitle: v }))}
                           onSlugChange={v => setPageForm(prev => ({ ...prev, slug: v }))}
-                                          onMetaDescriptionChange={v => setPageForm(prev => ({ ...prev, metaDescription: v }))}
+                          onMetaDescriptionChange={v => setPageForm(prev => ({ ...prev, metaDescription: v }))}
                         />
                       </div>
 
@@ -1927,8 +2021,7 @@ export default function AdminDashboard() {
                         <div>
                           {/* Sidebar Tabs */}
                           <div className="flex border-b border-[#c3c4c7] text-xs font-semibold text-[#646970] bg-[#f6f7f7]">
-                            <button type="button" className="flex-1 py-2 text-center bg-white border-r border-[#c3c4c7] text-[#2c3338] border-b-2 border-b-[#2271b1]">Page</button>
-                            <button type="button" className="flex-1 py-2 text-center bg-[#f6f7f7] hover:bg-slate-100 transition">Block</button>
+                            <button type="button" className="flex-1 py-2 text-center bg-white text-[#2c3338] border-b-2 border-b-[#2271b1]">Page</button>
                           </div>
 
                           <div className="p-4 space-y-5 text-xs text-[#2c3338]">
@@ -2005,11 +2098,7 @@ export default function AdminDashboard() {
                                 />
                               </div>
 
-                              {/* Author */}
-                              <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
-                                <span className="text-[#646970]">Author</span>
-                                <select value={pageForm.author} onChange={e => setPageForm({...pageForm, author: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="admin">admin</option><option value="Travelluxx Editorial">Travelluxx Editorial</option></select>
-                              </div>
+
 
                               {/* Template */}
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
@@ -2253,13 +2342,38 @@ export default function AdminDashboard() {
           {activeTab === "inquiries" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-[#1d2327]">Contact Inquiries</h1>
+                <div className="flex items-center gap-4">
+                  <h1 className="text-2xl font-bold text-[#1d2327]">Contact Inquiries</h1>
+                  {selectedInquiryIds.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={deleteSelectedInquiries}
+                      className="bg-[#d63638] hover:bg-[#b32d2e] text-white px-3 py-1.5 rounded text-xs font-semibold transition"
+                    >
+                      Delete Selected ({selectedInquiryIds.length})
+                    </button>
+                  )}
+                </div>
                 <span className="text-[#646970] text-xs">{inquiries.length} total inquiries</span>
               </div>
               <div className="bg-white border border-[#c3c4c7] rounded shadow-sm overflow-hidden">
                 <table className="w-full text-xs">
                   <thead className="bg-[#f0f0f1] text-[#646970] font-semibold uppercase text-[10px] tracking-wide border-b border-[#c3c4c7]">
                     <tr>
+                      <th className="py-3 px-4 text-left w-10">
+                        <input
+                          type="checkbox"
+                          checked={inquiries.length > 0 && selectedInquiryIds.length === inquiries.length}
+                          onChange={e => {
+                            if (e.target.checked) {
+                              setSelectedInquiryIds(inquiries.map(i => i.id));
+                            } else {
+                              setSelectedInquiryIds([]);
+                            }
+                          }}
+                          className="rounded-sm border-[#c3c4c7]"
+                        />
+                      </th>
                       <th className="py-3 px-4 text-left">Sender Details</th>
                       <th className="py-3 px-4 text-left">Message</th>
                       <th className="py-3 px-4 text-left">Type / Subject</th>
@@ -2268,10 +2382,26 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#f0f0f1]">
-                    {inquiries.length === 0 ? (
-                      <tr><td colSpan={5} className="text-center py-10 text-[#646970]">No contact inquiries found.</td></tr>
+                    {inquiriesLoading ? (
+                      <tr><td colSpan={7} className="text-center py-10 text-[#646970] font-semibold">⚙ Loading Inquiries...</td></tr>
+                    ) : inquiries.length === 0 ? (
+                      <tr><td colSpan={7} className="text-center py-10 text-[#646970]">No contact inquiries found.</td></tr>
                     ) : inquiries.map(i => (
-                      <tr key={i.id} className="hover:bg-[#f9f9f9] transition">
+                      <tr key={i.id} className={`hover:bg-[#f9f9f9] transition ${selectedInquiryIds.includes(i.id) ? "bg-[#f4f8fa]" : ""}`}>
+                        <td className="py-3 px-4 text-left">
+                          <input
+                            type="checkbox"
+                            checked={selectedInquiryIds.includes(i.id)}
+                            onChange={e => {
+                              if (e.target.checked) {
+                                setSelectedInquiryIds([...selectedInquiryIds, i.id]);
+                              } else {
+                                setSelectedInquiryIds(selectedInquiryIds.filter(id => id !== i.id));
+                              }
+                            }}
+                            className="rounded-sm border-[#8c8f94]"
+                          />
+                        </td>
                         <td className="py-3 px-4">
                           <div className="font-semibold text-[#1d2327]">{i.name}</div>
                           <div className="text-[#646970] font-mono">{i.email}</div>
@@ -2579,6 +2709,48 @@ export default function AdminDashboard() {
                               placeholder="© 2026 Travelluxx. All rights reserved."
                               className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1] bg-white text-black" />
                             <p className="text-[#646970] text-[10px] mt-1">This text displays in the website footer.</p>
+                          </div>
+
+                          {/* Logo Management */}
+                          <div className="md:col-span-2 border-t border-[#f0f0f1] pt-4">
+                            <h2 className="font-bold text-[#1d2327] text-sm mb-4">
+                              🎨 Logo Management
+                            </h2>
+                            <label className="block text-xs font-semibold text-[#1d2327] mb-2">Site Logo</label>
+                            
+                            <div className="flex items-start gap-4">
+                              <div className="w-40 h-24 bg-[#f0f0f1] border border-[#c3c4c7] rounded-sm flex items-center justify-center overflow-hidden">
+                                {settings.logo_url ? (
+                                  <img src={settings.logo_url} alt="Site Logo" className="max-w-full max-h-full object-contain" />
+                                ) : (
+                                  <span className="text-[#646970] text-xs">No Logo</span>
+                                )}
+                              </div>
+                              <div className="space-y-2">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditorTarget("settings-logo");
+                                    setEditorMediaModalOpen(true);
+                                  }}
+                                  className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] px-3 py-1.5 rounded-sm text-xs font-semibold transition"
+                                >
+                                  {settings.logo_url ? "Replace Image" : "Select Image"}
+                                </button>
+                                {settings.logo_url && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setSettings({ ...settings, logo_url: "" })}
+                                    className="block text-[#d63638] hover:text-[#b32d2e] text-xs underline"
+                                  >
+                                    Remove Logo
+                                  </button>
+                                )}
+                                <p className="text-[#646970] text-[10px] max-w-xs">
+                                  Upload a high-resolution logo. Transparent PNG or SVG is recommended.
+                                </p>
+                              </div>
+                            </div>
                           </div>
 
                           {/* Search engine visibility */}

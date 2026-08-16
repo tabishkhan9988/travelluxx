@@ -526,7 +526,7 @@ export default function BookingCalculator({ initialPickup = "", initialDropoff =
     }
 
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=6&addressdetails=1`, {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=gb,pk&limit=6&addressdetails=1`, {
         headers: { 'Accept-Language': 'en' }
       });
       if (res.ok) {
@@ -897,22 +897,34 @@ export default function BookingCalculator({ initialPickup = "", initialDropoff =
     let precalculated: any = null;
 
     try {
-      // 1. Resolve coordinates on client-side if missing
+      // 1. Resolve coordinates on client-side if missing or 0,0
       let pCoords = customPickupCoords;
-      if (!pCoords) {
-        const resolved = await fetchSuggestions(pick);
-        if (resolved && resolved.length > 0) {
-          pCoords = { lat: resolved[0].lat, lng: resolved[0].lng };
+      if (!pCoords || (pCoords.lat === 0 && pCoords.lng === 0)) {
+        const resolved = await geocodeAddress(pick);
+        if (resolved) {
+          pCoords = resolved;
           setCustomPickupCoords(pCoords);
+        } else {
+          const resolvedSug = await fetchSuggestions(pick);
+          if (resolvedSug && resolvedSug.length > 0 && resolvedSug[0].lat !== 0) {
+            pCoords = { lat: resolvedSug[0].lat, lng: resolvedSug[0].lng };
+            setCustomPickupCoords(pCoords);
+          }
         }
       }
 
       let dCoords = customDropoffCoords;
-      if (!dCoords) {
-        const resolved = await fetchSuggestions(drop);
-        if (resolved && resolved.length > 0) {
-          dCoords = { lat: resolved[0].lat, lng: resolved[0].lng };
+      if (!dCoords || (dCoords.lat === 0 && dCoords.lng === 0)) {
+        const resolved = await geocodeAddress(drop);
+        if (resolved) {
+          dCoords = resolved;
           setCustomDropoffCoords(dCoords);
+        } else {
+          const resolvedSug = await fetchSuggestions(drop);
+          if (resolvedSug && resolvedSug.length > 0 && resolvedSug[0].lat !== 0) {
+            dCoords = { lat: resolvedSug[0].lat, lng: resolvedSug[0].lng };
+            setCustomDropoffCoords(dCoords);
+          }
         }
       }
 
@@ -1052,18 +1064,15 @@ export default function BookingCalculator({ initialPickup = "", initialDropoff =
       if (res.ok) {
         const data = await res.json();
         setDistanceResult(data);
-        setSelectedVehicle("Luxury");
       } else {
         console.warn("Server distance check failed. Proceeding with client-side estimation fallback.");
         const fallbackData = getClientSideFallbackRoute(pick, drop, precalculated);
         setDistanceResult(fallbackData);
-        setSelectedVehicle("Luxury");
       }
     } catch (err) {
       console.warn("Error calculating route. Proceeding with client-side estimation fallback.", err);
       const fallbackData = getClientSideFallbackRoute(pick, drop, precalculated);
       setDistanceResult(fallbackData);
-      setSelectedVehicle("Luxury");
     } finally {
       setLoadingRoute(false);
     }

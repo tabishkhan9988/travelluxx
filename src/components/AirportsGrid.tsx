@@ -114,17 +114,16 @@ export default function AirportsGrid({ onSelectTransfer }: AirportsGridProps) {
           {services.map((service) => (
             <div
               key={service.title}
-              onClick={() => onSelectTransfer(service.pickup, service.dropoff)}
-              className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col group cursor-pointer"
+              className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm flex flex-col"
             >
               {/* Image box */}
-              <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 group/img">
+              <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
                 <img
                   src={service.image}
                   alt={service.title}
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     const target = e.currentTarget;
@@ -140,16 +139,12 @@ export default function AirportsGrid({ onSelectTransfer }: AirportsGridProps) {
               {/* Text content */}
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
-                  <h3 className="font-bold text-slate-900 text-base mb-2 group-hover:text-emerald-700 transition-colors">
+                  <h3 className="font-bold text-slate-900 text-base mb-2">
                     {service.title}
                   </h3>
                   <p className="text-slate-500 text-xs leading-relaxed">
                     {service.description}
                   </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-slate-50 flex items-center text-emerald-700 font-semibold text-[11px] font-sans group-hover:translate-x-1 transition-transform">
-                  <span>Get Quote</span>
-                  <span className="ml-1">→</span>
                 </div>
               </div>
             </div>

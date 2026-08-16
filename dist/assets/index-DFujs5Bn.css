@@ -1403,6 +1403,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
     overflow: hidden;
   }
 
+  .line-clamp-2 {
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+
   .line-clamp-3 {
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -1520,6 +1527,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .h-20 {
     height: calc(var(--spacing) * 20);
+  }
+
+  .h-24 {
+    height: calc(var(--spacing) * 24);
   }
 
   .h-48 {
@@ -1660,6 +1671,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .w-32 {
     width: calc(var(--spacing) * 32);
+  }
+
+  .w-40 {
+    width: calc(var(--spacing) * 40);
   }
 
   .w-44 {
@@ -2173,6 +2188,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
     border-color: #ddd;
   }
 
+  .border-\[\#e5e7eb\] {
+    border-color: #e5e7eb;
+  }
+
   .border-\[\#f0f0f1\] {
     border-color: #f0f0f1;
   }
@@ -2445,6 +2464,18 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .bg-\[\#f1f3f4\] {
     background-color: #f1f3f4;
+  }
+
+  .bg-\[\#f2f3f5\] {
+    background-color: #f2f3f5;
+  }
+
+  .bg-\[\#f3f4f6\] {
+    background-color: #f3f4f6;
+  }
+
+  .bg-\[\#f4f8fa\] {
+    background-color: #f4f8fa;
   }
 
   .bg-\[\#f5f7fa\] {
@@ -3380,6 +3411,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
     color: #1a1a1a;
   }
 
+  .text-\[\#1d2129\] {
+    color: #1d2129;
+  }
+
   .text-\[\#1d2327\] {
     color: #1d2327;
   }
@@ -3430,6 +3465,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .text-\[\#292929\] {
     color: #292929;
+  }
+
+  .text-\[\#606770\] {
+    color: #606770;
   }
 
   .text-\[\#646970\] {
@@ -3932,6 +3971,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
       border-color: #2271b1;
     }
 
+    .hover\:border-emerald-200:hover {
+      border-color: var(--color-emerald-200);
+    }
+
     .hover\:border-emerald-400:hover {
       border-color: var(--color-emerald-400);
     }
@@ -4116,6 +4159,16 @@ svg.leaflet-image-layer.leaflet-interactive path {
     .hover\:shadow-md:hover {
       --tw-shadow: 0 4px 6px -1px var(--tw-shadow-color, #0000001a), 0 2px 4px -2px var(--tw-shadow-color, #0000001a);
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    }
+
+    .hover\:shadow-emerald-600\/5:hover {
+      --tw-shadow-color: #0097670d;
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .hover\:shadow-emerald-600\/5:hover {
+        --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-emerald-600) 5%, transparent) var(--tw-shadow-alpha), transparent);
+      }
     }
 
     .hover\:shadow-emerald-600\/25:hover {

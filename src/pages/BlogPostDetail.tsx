@@ -169,10 +169,13 @@ export default function BlogPostDetail() {
               {post.faqs && post.faqs.length > 0 && (
                 <div className="mt-12 pt-8 border-t border-slate-200">
                   <h3 className="font-serif text-2xl font-semibold mb-6 text-slate-900">Frequently Asked Questions</h3>
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     {post.faqs.map((faq: any, idx: number) => (
-                      <div key={idx} className="border-b border-slate-100 pb-4 last:border-0">
-                        <h4 className="font-sans text-base font-semibold text-slate-800 mb-1.5">{faq.question}</h4>
+                      <div 
+                        key={idx} 
+                        className="bg-white border border-slate-200/60 hover:border-emerald-200 p-5 rounded-xl transition duration-300 hover:shadow-md hover:shadow-emerald-600/5 group"
+                      >
+                        <h4 className="font-sans text-base font-semibold text-slate-800 group-hover:text-emerald-700 transition duration-300 mb-2">{faq.question}</h4>
                         <p className="font-serif text-slate-600 text-sm md:text-base leading-relaxed">{faq.answer}</p>
                       </div>
                     ))}
