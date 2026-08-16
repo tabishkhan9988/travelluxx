@@ -3858,6 +3858,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
       scale: var(--tw-scale-x) var(--tw-scale-y);
     }
 
+    .group-hover\:scale-110:is(:where(.group):hover *) {
+      --tw-scale-x: 110%;
+      --tw-scale-y: 110%;
+      --tw-scale-z: 110%;
+      scale: var(--tw-scale-x) var(--tw-scale-y);
+    }
+
     .group-hover\:rotate-12:is(:where(.group):hover *) {
       rotate: 12deg;
     }

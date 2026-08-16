@@ -88,23 +88,22 @@ export default function AirportsGrid({ onSelectTransfer }: AirportsGridProps) {
         <div className="border border-slate-200 rounded-xl bg-white overflow-hidden shadow-sm mb-16">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 divide-x divide-y lg:divide-y-0 divide-slate-200">
             {airports.map((airport, idx) => (
-              <button
+              <div
                 key={airport.code}
-                onClick={() => onSelectTransfer("Shirley, Solihull B90", airport.fullName)}
-                className={`py-8 px-4 text-center group hover:bg-slate-50/50 transition-all cursor-pointer focus:outline-none ${
+                className={`py-8 px-4 text-center ${
                   idx >= 3 ? "sm:border-t-0" : ""
                 }`}
               >
                 <div className="mb-3 flex justify-center">
-                  <Plane className="w-6 h-6 text-slate-700 group-hover:text-emerald-700 group-hover:rotate-12 transition-all duration-300" />
+                  <Plane className="w-6 h-6 text-slate-700" />
                 </div>
-                <div className="font-bold text-slate-900 text-sm group-hover:text-emerald-700 transition-colors">
+                <div className="font-bold text-slate-900 text-sm">
                   {airport.name}
                 </div>
                 <div className="text-[11px] text-slate-400 font-medium mt-0.5">
                   Airport Taxi
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         </div>
@@ -114,7 +113,7 @@ export default function AirportsGrid({ onSelectTransfer }: AirportsGridProps) {
           {services.map((service) => (
             <div
               key={service.title}
-              className="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm flex flex-col"
+              className="group bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-sm flex flex-col"
             >
               {/* Image box */}
               <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
@@ -123,7 +122,7 @@ export default function AirportsGrid({ onSelectTransfer }: AirportsGridProps) {
                   alt={service.title}
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     const target = e.currentTarget;
