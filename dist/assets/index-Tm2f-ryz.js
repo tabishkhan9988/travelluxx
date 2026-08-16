@@ -6,7 +6,7 @@ var __commonJS = (cb, mod) => function __require() {
 };
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 var require_index_001 = __commonJS({
-  "assets/index-CgmbPFUp.js"(exports, module) {
+  "assets/index-Tm2f-ryz.js"(exports, module) {
     function _mergeNamespaces(n, m) {
       for (var i = 0; i < m.length; i++) {
         const e = m[i];
@@ -15876,7 +15876,8 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
           }
         }).catch((err) => console.error("Failed to load menu:", err));
       }, []);
-      return /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-sm", children: [
+      const isRenax = (settings == null ? void 0 : settings.active_theme) === "renax";
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: `sticky top-0 z-50 backdrop-blur-md transition-all duration-300 ${isRenax ? "bg-[#0c0d12]/95 border-b border-slate-800/80 shadow-md text-white font-['Outfit']" : "bg-white/95 border-b border-slate-200/80 shadow-sm font-sans"}`, children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between h-20", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2 sm:space-x-2.5 group/logo relative", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative flex items-center justify-center shrink-0 cursor-pointer", onClick: () => onScrollTo("hero"), children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -15897,8 +15898,8 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
               }
             ) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col justify-center select-none cursor-pointer", onClick: () => onScrollTo("hero"), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-sans font-extrabold text-2xl sm:text-[28px] tracking-tight text-slate-900 block leading-tight", children: brandName }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-sans text-[11px] sm:text-[12px] tracking-[0.18em] text-emerald-600 block font-bold uppercase mt-0.5 leading-none", children: "- PRIVATE HIRE -" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `font-extrabold text-2xl sm:text-[28px] tracking-tight block leading-tight ${isRenax ? "text-white font-bold" : "text-slate-900 font-sans"}`, children: brandName }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[11px] sm:text-[12px] tracking-[0.18em] block font-bold uppercase mt-0.5 leading-none ${isRenax ? "text-emerald-400" : "text-emerald-600 font-sans"}`, children: "- PRIVATE HIRE -" })
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "hidden md:flex items-center space-x-8 text-sm font-bold", children: menuItems.map((item) => {
@@ -15909,7 +15910,7 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
                 "button",
                 {
                   onClick: () => onScrollTo(sectionId),
-                  className: "text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide",
+                  className: `transition cursor-pointer font-bold tracking-wide ${isRenax ? "text-slate-200 hover:text-emerald-400" : "text-slate-700 hover:text-emerald-600"}`,
                   children: item.label
                 },
                 item.id
@@ -15920,7 +15921,7 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
               {
                 href: item.href,
                 target: item.target || "_self",
-                className: "text-slate-700 hover:text-emerald-600 transition cursor-pointer font-bold tracking-wide",
+                className: `transition cursor-pointer font-bold tracking-wide ${isRenax ? "text-slate-200 hover:text-emerald-400" : "text-slate-700 hover:text-emerald-600"}`,
                 children: item.label
               },
               item.id
@@ -15930,12 +15931,12 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
             "button",
             {
               onClick: () => setIsOpen(!isOpen),
-              className: "p-2 text-slate-800 hover:text-emerald-600 transition focus:outline-none",
+              className: `p-2 transition focus:outline-none ${isRenax ? "text-white hover:text-emerald-400" : "text-slate-800 hover:text-emerald-600"}`,
               children: isOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-6 h-6" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Menu, { className: "w-6 h-6" })
             }
           ) })
         ] }) }),
-        isOpen && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "md:hidden bg-white border-t border-slate-150 py-4 px-6 shadow-lg", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col space-y-3", children: menuItems.map((item) => {
+        isOpen && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `md:hidden border-t py-4 px-6 shadow-lg ${isRenax ? "bg-[#12141c] border-slate-800 text-white font-['Outfit']" : "bg-white border-slate-150 text-slate-800"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col space-y-3", children: menuItems.map((item) => {
           const isAnchor = item.href.startsWith("/#") || item.href.startsWith("#");
           const sectionId = isAnchor ? item.href.split("#")[1] : "";
           if (isAnchor && sectionId) {
@@ -15946,7 +15947,7 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
                   onScrollTo(sectionId);
                   setIsOpen(false);
                 },
-                className: "text-left text-slate-800 hover:text-emerald-600 font-bold py-2 transition cursor-pointer text-sm",
+                className: `text-left font-bold py-2 transition cursor-pointer text-sm ${isRenax ? "text-slate-200 hover:text-emerald-400" : "text-slate-800 hover:text-emerald-600"}`,
                 children: item.label
               },
               item.id
@@ -15957,7 +15958,7 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
             {
               href: item.href,
               target: item.target || "_self",
-              className: "text-left text-slate-800 hover:text-emerald-600 font-bold py-2 transition cursor-pointer text-sm",
+              className: `text-left font-bold py-2 transition cursor-pointer text-sm ${isRenax ? "text-slate-200 hover:text-emerald-400" : "text-slate-800 hover:text-emerald-600"}`,
               children: item.label
             },
             item.id
@@ -29156,7 +29157,7 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
     const stationTransfersImg = "/assets/transfer_station_1786403548164-CFCuDDFB.jpg";
     const popularCitiesImg = "/assets/transfer_city_1786403562698-CTOpR5C2.jpg";
     const businessTravelImg = "/assets/transfer_business_1786403576291-d6AxRFiS.jpg";
-    function AirportsGrid({ onSelectTransfer }) {
+    function AirportsGrid$1({ onSelectTransfer }) {
       const [, setRefreshKey] = reactExports.useState(0);
       reactExports.useEffect(() => {
         const handleUpdate = () => setRefreshKey((prev) => prev + 1);
@@ -29437,8 +29438,9 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       const brandName = (settings == null ? void 0 : settings.business_name) || (settings == null ? void 0 : settings.businessName) || "Travelluxx";
       const whatsappNum = (settings == null ? void 0 : settings.whatsapp_number) || "441217140876";
       (settings == null ? void 0 : settings.footer_info) || (settings == null ? void 0 : settings.footerInfo) || `© ${(/* @__PURE__ */ new Date()).getFullYear()} ${brandName}. All rights reserved.`;
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: "bg-slate-950 border-t border-slate-900 pt-16 pb-8 text-slate-300", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 sm:p-8 mb-12 flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl relative overflow-hidden group", children: [
+      const isRenax = (settings == null ? void 0 : settings.active_theme) === "renax";
+      return /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: `pt-16 pb-8 text-slate-400 ${isRenax ? "bg-[#08080a] border-t border-slate-900 font-['Outfit']" : "bg-slate-950 border-t border-slate-900 font-sans"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `rounded-3xl p-6 sm:p-8 mb-12 flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl relative overflow-hidden group ${isRenax ? "bg-[#0e0f16] border border-slate-800/60" : "bg-slate-900/60 border border-slate-800/80"}`, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors duration-500" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-center md:text-left relative z-10", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-display font-bold text-lg md:text-xl text-white tracking-tight", children: "Are You a Professional Driver?" }),
@@ -29455,7 +29457,7 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-8 border-t border-slate-900 flex justify-center items-center text-xs text-slate-500 font-medium text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `pt-8 border-t flex justify-center items-center text-xs font-medium text-center ${isRenax ? "border-slate-900 text-slate-500" : "border-slate-900 text-slate-500"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { children: [
           "© 2026 Travelluxx. All rights reserved - Develop & Managed By",
           " ",
           /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -44118,18 +44120,145 @@ ${escapeText(this.code(index, length))}
       handleSelectTransferPreset,
       handleSelectClassPreset
     }) {
-      return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen bg-[#0c0d12] text-slate-100 flex flex-col selection:bg-emerald-600 selection:text-white font-sans antialiased", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("main", { className: "flex-grow", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          HeroSection,
-          {
-            onScrollToCalculator: () => handleScrollTo("calculator"),
-            settings
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { id: "calculator-section", className: "relative z-20 -mt-16 max-w-6xl mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#12141c] border border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-10", children: [
+      var _a, _b, _c;
+      (settings == null ? void 0 : settings.business_name) || (settings == null ? void 0 : settings.businessName) || "Travelluxx";
+      const whatsappNum = (settings == null ? void 0 : settings.whatsapp_number) || "441217140876";
+      const emailAddr = (settings == null ? void 0 : settings.business_email) || "info@travelluxx.co.uk";
+      const officeAddr = (settings == null ? void 0 : settings.office_address) || "Shirley B90 Shirley, Solihull, West Midlands, UK";
+      const [pricing, setPricing] = reactExports.useState(null);
+      const [activeFleetTab, setActiveFleetTab] = reactExports.useState("Luxury");
+      const [bgImage, setBgImage] = reactExports.useState(() => {
+        const customSetting = (settings == null ? void 0 : settings.hero_image) || (settings == null ? void 0 : settings.heroImage);
+        return customSetting && typeof customSetting === "string" && customSetting.trim() !== "" ? customSetting : heroImg;
+      });
+      reactExports.useEffect(() => {
+        fetch("/api/pricing").then((res) => res.json()).then((data) => setPricing(data)).catch((err) => console.error("Failed to fetch fleet pricing:", err));
+      }, []);
+      const formattedPhone = whatsappNum.startsWith("44") ? `+44 ${whatsappNum.substring(2, 6)} ${whatsappNum.substring(6)}` : whatsappNum;
+      const fleet = {
+        Economy: {
+          name: "Business Economy Class",
+          tagline: "Elegant, clean, and highly efficient travel.",
+          image: getCustomImage("fleet_Economy", mercedesEconomyImg),
+          rate: ((_a = pricing == null ? void 0 : pricing.Economy) == null ? void 0 : _a.perMile) !== void 0 ? `£${Number(pricing.Economy.perMile).toFixed(2)}` : "£1.50",
+          description: "Perfect for business commuters, solo travellers, or quick transfers. Featuring modern executive comfort with absolute fuel efficiency.",
+          cars: ["Tesla Model 3", "Audi A4 Executive", "Mercedes C-Class"],
+          features: ["Complimentary 4G Wi-Fi", "Dual-zone Climate Control", "USB Charging Ports", "Bottle Holders & Newspapers"],
+          passengers: 4,
+          luggage: 2,
+          transmission: "Auto"
+        },
+        Luxury: {
+          name: "First Chauffeur Class",
+          tagline: "The pinnacle of executive comfort and style.",
+          image: getCustomImage("fleet_Luxury", mercedesLuxuryImg),
+          rate: ((_b = pricing == null ? void 0 : pricing.Luxury) == null ? void 0 : _b.perMile) !== void 0 ? `£${Number(pricing.Luxury.perMile).toFixed(2)}` : "£2.00",
+          description: "Experience VIP travel. Whether it's high-profile business meetings, weddings, or an ultra-comfort ride to Heathrow. Settle into reclining leather chairs.",
+          cars: ["Mercedes-Benz S-Class", "Audi A8 L", "Jaguar XJ Luxury"],
+          features: ["Premium Leather Reclining Seats", "Complimentary Bottled Water", "Ambient Lighting Controls", "Rear Seat Entertainment Systems", "Quiet Acoustic Cabins"],
+          passengers: 4,
+          luggage: 3,
+          transmission: "Auto"
+        },
+        Family: {
+          name: "Family & Executive MPV",
+          tagline: "Generous space for luggage and loved ones.",
+          image: getCustomImage("fleet_Family", mercedesFamilyImg),
+          rate: ((_c = pricing == null ? void 0 : pricing.Family) == null ? void 0 : _c.perMile) !== void 0 ? `£${Number(pricing.Family.perMile).toFixed(2)}` : "£2.50",
+          description: "Ideal for family vacations, groups, or high-volume luggage transfers. Spacious seating configuration ensures passengers can converse in absolute comfort.",
+          cars: ["Mercedes-Benz V-Class", "Audi Q7 S-Line", "Volkswagen Caravelle Executive"],
+          features: ["Conference Seating Options", "Massive Boot Capacity", "Automatic Sliding Doors", "Privacy Glass", "Individual Air-Con Units", "Child Seats Available (On Request)"],
+          passengers: 7,
+          luggage: 6,
+          transmission: "Auto"
+        }
+      };
+      const getAmenityIcon = (feature) => {
+        const f = feature.toLowerCase();
+        if (f.includes("wi-fi") || f.includes("wifi")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Wifi, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("climate") || f.includes("air-con") || f.includes("air conditioning")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Wind, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("charging") || f.includes("usb")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Smartphone, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("water") || f.includes("bottle")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Droplet, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("entertainment") || f.includes("tv")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Tv, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("quiet") || f.includes("acoustic")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Volume2, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("leather") || f.includes("seat") || f.includes("reclining")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("newspaper") || f.includes("book")) return /* @__PURE__ */ jsxRuntimeExports.jsx(BookOpen, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("privacy") || f.includes("glass")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("boot") || f.includes("capacity")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        if (f.includes("door")) return /* @__PURE__ */ jsxRuntimeExports.jsx(Layers, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+        return /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-3.5 h-3.5 text-emerald-400 shrink-0" });
+      };
+      const selectedFleet = fleet[activeFleetTab];
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#08090d] text-slate-100 font-['Outfit'] antialiased selection:bg-emerald-600 selection:text-white", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("section", { id: "hero", className: "relative min-h-[95vh] flex items-center justify-center pt-32 pb-24 overflow-hidden bg-black", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 w-full h-full pointer-events-none z-0", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: bgImage,
+                alt: "Luxury Banner",
+                className: "w-full h-full object-cover opacity-35 scale-105 transition-all duration-700"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-b from-[#08090d]/80 via-[#08090d]/40 to-[#08090d]" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center space-y-8", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-full text-xs font-semibold text-emerald-400 tracking-widest uppercase", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-3 h-3 text-emerald-400 animate-pulse" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Premium Chauffeur Service" })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-4xl sm:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-none uppercase", children: [
+                "Nationwide Airport ",
+                /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400", children: "Transfers & Private Chauffeur" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-sm sm:text-base lg:text-lg max-w-xl mx-auto leading-relaxed font-light", children: "Experience the pinnacle of luxury private hire. Highly maintained Mercedes-Benz & Audi fleets for your comfort with guaranteed fixed rates." })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap justify-center items-center gap-6 sm:gap-10 text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto pt-6 border-t border-slate-900", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-4 h-4 text-emerald-400" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Licensed Operators" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Compass, { className: "w-4 h-4 text-emerald-400" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Nationwide Coverage" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-4 h-4 text-emerald-400" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Zero Surge Pricing" })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row justify-center items-center gap-4 pt-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  onClick: () => handleScrollTo("calculator-section"),
+                  className: "bg-emerald-600 hover:bg-emerald-500 text-white font-semibold tracking-wide px-8 py-4 rounded-xl text-sm transition-all duration-300 flex items-center justify-center space-x-2 cursor-pointer shadow-lg shadow-emerald-600/10 hover:shadow-emerald-600/30 w-full sm:w-auto",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Book Chauffeur Now" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "w-4 h-4" })
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "a",
+                {
+                  href: `tel:${whatsappNum}`,
+                  className: "flex items-center justify-center space-x-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold tracking-wide px-8 py-4 rounded-xl text-sm transition-all duration-300 w-full sm:w-auto",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "w-4 h-4 text-emerald-400 fill-current" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: formattedPhone })
+                  ]
+                }
+              )
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "calculator-section", className: "relative z-20 -mt-20 max-w-6xl mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#0e1017] border border-slate-800/80 rounded-[28px] shadow-2xl p-6 sm:p-10", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center mb-8", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 font-sans text-xs tracking-widest uppercase font-bold", children: "Luxury Ride" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl sm:text-3xl font-bold font-serif text-white tracking-tight mt-1", children: "Book Your Chauffeur Transfer" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1", children: "Book Your Chauffeur Transfer" })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             BookingCalculator,
@@ -44140,17 +44269,120 @@ ${escapeText(this.code(index, length))}
             }
           )
         ] }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-[#0c0d12] pt-20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(FleetCatalog, { onSelectClass: handleSelectClassPreset }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-[#0a0b0e] py-20 border-t border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsx(AirportsGrid, { onSelectTransfer: handleSelectTransferPreset }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-[#12141c] py-20 border-t border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-4xl mx-auto px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ContactForm, { settings }) }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          Footer,
-          {
-            onScrollTo: handleScrollTo,
-            settings
-          }
-        )
-      ] }) });
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "fleet", className: "py-24 bg-[#08090d] border-t border-slate-900/60", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center max-w-3xl mx-auto mb-16", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold", children: "Our Premium Fleet" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4 uppercase", children: "Explore Our Luxury Vehicles" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-sm leading-relaxed", children: "Curated luxury fleets of state-of-the-art Mercedes-Benz and Audi models. Meticulously clean, safe, and chauffeured to your location." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center mb-12", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-[#0e1017] border border-slate-800/80 p-1.5 rounded-2xl flex space-x-1 sm:space-x-2", children: Object.keys(fleet).map((tab) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => setActiveFleetTab(tab),
+              className: `px-5 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all cursor-pointer ${activeFleetTab === tab ? "bg-emerald-600 text-white font-bold shadow-md shadow-emerald-600/10" : "text-slate-400 hover:text-white"}`,
+              children: tab === "Family" ? "Family / MPV" : tab
+            },
+            tab
+          )) }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-[#0e1017] border border-slate-800/60 p-6 sm:p-10 rounded-[28px] shadow-lg", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-7 relative rounded-2xl overflow-hidden aspect-video lg:aspect-[4/3] group border border-slate-800/40 shadow-sm bg-slate-950", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "img",
+                {
+                  src: selectedFleet.image,
+                  alt: selectedFleet.name,
+                  className: "w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute top-4 left-4 bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md", children: [
+                "From ",
+                selectedFleet.rate,
+                " / mile"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "lg:col-span-5 space-y-6", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl sm:text-3xl font-bold text-white uppercase tracking-wide", children: selectedFleet.name }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-emerald-400 text-xs sm:text-sm font-semibold tracking-wider", children: selectedFleet.tagline })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-sm sm:text-base leading-relaxed font-light", children: selectedFleet.description }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-3 gap-4 py-4 border-t border-b border-slate-800/60", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center p-2.5 bg-slate-900/40 rounded-xl border border-slate-800/40", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { className: "w-5 h-5 text-emerald-400 mb-1" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-slate-400", children: "PASSENGERS" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-white mt-0.5", children: selectedFleet.passengers })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center p-2.5 bg-slate-900/40 rounded-xl border border-slate-800/40", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Briefcase, { className: "w-5 h-5 text-emerald-400 mb-1" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-slate-400", children: "LUGGAGE" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-bold text-white mt-0.5", children: [
+                    selectedFleet.luggage,
+                    " Slots"
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center p-2.5 bg-slate-900/40 rounded-xl border border-slate-800/40", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Compass, { className: "w-5 h-5 text-emerald-400 mb-1" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-slate-400", children: "TRANSMISSION" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-white mt-0.5", children: selectedFleet.transmission })
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-[10px] text-slate-400 uppercase tracking-widest font-bold", children: "Included Amenities:" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-2 gap-2 text-xs text-slate-300", children: selectedFleet.features.map((feat, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-2", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center shrink-0", children: getAmenityIcon(feat) }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "truncate", children: feat })
+                ] }, idx)) })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  onClick: () => handleScrollTo("calculator-section"),
+                  className: "w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-4 rounded-xl text-sm transition-all duration-300 shadow-md shadow-emerald-700/10 cursor-pointer flex justify-center items-center space-x-2",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Select vehicle class" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "w-4 h-4" })
+                  ]
+                }
+              ) })
+            ] })
+          ] })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-24 bg-[#0a0b0e] border-t border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center max-w-2xl mx-auto mb-16", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold", children: "Fixed Presets" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-white uppercase", children: "Popular Transfer Routes" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AirportsGrid, { onSelectTransfer: handleSelectTransferPreset })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-24 bg-[#0e1017] border-t border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-4xl mx-auto px-4 sm:px-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center mb-16", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold font-sans", children: "Get In Touch" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-white uppercase", children: "Contact Our Desk" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed", children: "Have unique requirements or need a dedicated luxury chauffeur contract? Fill out our contact form below." })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#08090d] border border-slate-800/60 p-6 sm:p-10 rounded-[28px] shadow-lg", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-center text-xs", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-[#0e1017] border border-slate-800/40 rounded-2xl", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "w-5 h-5 text-emerald-400 mx-auto mb-2" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400", children: "Call / WhatsApp" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white font-bold mt-1", children: formattedPhone })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-[#0e1017] border border-slate-800/40 rounded-2xl", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "w-5 h-5 text-emerald-400 mx-auto mb-2" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400", children: "Email Address" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white font-bold mt-1 truncate", children: emailAddr })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-[#0e1017] border border-slate-800/40 rounded-2xl", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(MapPin, { className: "w-5 h-5 text-emerald-400 mx-auto mb-2" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400", children: "Head Office" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white font-bold mt-1 line-clamp-1", children: officeAddr.split(",")[0] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-slate-300", children: /* @__PURE__ */ jsxRuntimeExports.jsx("form", { className: "space-y-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-slate-300 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs", children: "Please use the contact form details below to query custom routes." }) }) }) }) })
+          ] })
+        ] }) })
+      ] });
     }
     function PublicLandingPage() {
       const [calculatorPickup, setCalculatorPickup] = reactExports.useState("");
@@ -44286,7 +44518,7 @@ ${escapeText(this.code(index, length))}
             }
           ) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(FleetCatalog, { onSelectClass: handleSelectClassPreset }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AirportsGrid, { onSelectTransfer: handleSelectTransferPreset }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AirportsGrid$1, { onSelectTransfer: handleSelectTransferPreset }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(ContactForm, { settings }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Footer,
