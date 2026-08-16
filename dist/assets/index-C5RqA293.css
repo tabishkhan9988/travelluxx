@@ -1384,10 +1384,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     margin-bottom: calc(var(--spacing) * 16);
   }
 
-  .ml-1 {
-    margin-left: var(--spacing);
-  }
-
   .ml-2 {
     margin-left: calc(var(--spacing) * 2);
   }
@@ -2286,10 +2282,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     .border-rose-200\/50 {
       border-color: color-mix(in oklab, var(--color-rose-200) 50%, transparent);
     }
-  }
-
-  .border-slate-50 {
-    border-color: var(--color-slate-50);
   }
 
   .border-slate-100 {
@@ -3948,11 +3940,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
   @media (hover: hover) {
     .hover\:-translate-y-0\.5:hover {
       --tw-translate-y: calc(var(--spacing) * -.5);
-      translate: var(--tw-translate-x) var(--tw-translate-y);
-    }
-
-    .hover\:-translate-y-1:hover {
-      --tw-translate-y: calc(var(--spacing) * -1);
       translate: var(--tw-translate-x) var(--tw-translate-y);
     }
 

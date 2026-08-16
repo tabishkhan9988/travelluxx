@@ -17,7 +17,7 @@ export default function Navbar({ onScrollTo, onAdminClick, settings }: NavbarPro
   const brandName = settings?.business_name || settings?.businessName || "Travelluxx";
 
   const getInitialLogo = () => {
-    const customSetting = settings?.logo_image || settings?.logoImage;
+    const customSetting = settings?.logo_url || settings?.logo_image || settings?.logoImage;
     const defaultImg = (customSetting && typeof customSetting === "string" && customSetting.trim() !== "") ? customSetting : travelluxxLogo;
     return getCustomImage("logo", defaultImg);
   };
@@ -26,7 +26,7 @@ export default function Navbar({ onScrollTo, onAdminClick, settings }: NavbarPro
 
   useEffect(() => {
     const handleUpdate = () => {
-      const customSetting = settings?.logo_image || settings?.logoImage;
+      const customSetting = settings?.logo_url || settings?.logo_image || settings?.logoImage;
       const defaultImg = (customSetting && typeof customSetting === "string" && customSetting.trim() !== "") ? customSetting : travelluxxLogo;
       setBrandLogo(getCustomImage("logo", defaultImg));
     };

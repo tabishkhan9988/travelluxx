@@ -6,7 +6,7 @@ var __commonJS = (cb, mod) => function __require() {
 };
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 var require_index_001 = __commonJS({
-  "assets/index-inJlfClf.js"(exports, module) {
+  "assets/index-BOtwGpvd.js"(exports, module) {
     function _mergeNamespaces(n, m) {
       for (var i = 0; i < m.length; i++) {
         const e = m[i];
@@ -15882,14 +15882,14 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       const [isOpen, setIsOpen] = reactExports.useState(false);
       const brandName = (settings == null ? void 0 : settings.business_name) || (settings == null ? void 0 : settings.businessName) || "Travelluxx";
       const getInitialLogo = () => {
-        const customSetting = (settings == null ? void 0 : settings.logo_image) || (settings == null ? void 0 : settings.logoImage);
+        const customSetting = (settings == null ? void 0 : settings.logo_url) || (settings == null ? void 0 : settings.logo_image) || (settings == null ? void 0 : settings.logoImage);
         const defaultImg = customSetting && typeof customSetting === "string" && customSetting.trim() !== "" ? customSetting : travelluxxLogo;
         return getCustomImage("logo", defaultImg);
       };
       const [brandLogo, setBrandLogo] = reactExports.useState(getInitialLogo);
       reactExports.useEffect(() => {
         const handleUpdate = () => {
-          const customSetting = (settings == null ? void 0 : settings.logo_image) || (settings == null ? void 0 : settings.logoImage);
+          const customSetting = (settings == null ? void 0 : settings.logo_url) || (settings == null ? void 0 : settings.logo_image) || (settings == null ? void 0 : settings.logoImage);
           const defaultImg = customSetting && typeof customSetting === "string" && customSetting.trim() !== "" ? customSetting : travelluxxLogo;
           setBrandLogo(getCustomImage("logo", defaultImg));
         };
