@@ -1,4 +1,5 @@
 import React from "react";
+import { Phone, Mail, MapPin } from "lucide-react";
 
 interface FooterProps {
   onScrollTo: (elementId: string) => void;
@@ -9,15 +10,54 @@ interface FooterProps {
 export default function Footer({ onScrollTo, onAdminClick, settings }: FooterProps) {
   const brandName = settings?.business_name || settings?.businessName || "Travelluxx";
   const whatsappNum = settings?.whatsapp_number || "441217140876";
+  const emailAddr = settings?.business_email || "info@travelluxx.co.uk";
+  const officeAddr = settings?.office_address || "Shirley B90 Shirley, Solihull, West Midlands, UK";
   const footerText = settings?.footer_info || settings?.footerInfo || `© ${new Date().getFullYear()} ${brandName}. All rights reserved.`;
 
   const isRenax = settings?.active_theme === "renax";
+
+  const formattedPhone = whatsappNum.startsWith("44") 
+    ? `+44 ${whatsappNum.substring(2, 6)} ${whatsappNum.substring(6)}` 
+    : whatsappNum;
 
   return (
     <footer className={`pt-16 pb-8 text-slate-400 ${
       isRenax ? "bg-[#08080a] border-t border-slate-900 font-['Outfit']" : "bg-slate-950 border-t border-slate-900 font-sans"
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Top Highlights Box for Renax */}
+        {isRenax && (
+          <div className="bg-[#0e1017] border border-slate-800/60 rounded-2xl p-6 mb-10 grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+            <div className="flex items-center space-x-4 justify-center md:justify-start">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                <Phone className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Call Us</p>
+                <p className="text-sm font-bold text-white mt-0.5">{formattedPhone}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4 justify-center md:justify-start border-t border-b md:border-t-0 md:border-b-0 border-slate-800/60 py-4 md:py-0 md:px-6">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                <Mail className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div className="truncate">
+                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Write to Us</p>
+                <p className="text-sm font-bold text-white mt-0.5 truncate">{emailAddr}</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4 justify-center md:justify-start md:pl-6">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                <MapPin className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Address</p>
+                <p className="text-sm font-bold text-white mt-0.5 line-clamp-1">{officeAddr}</p>
+              </div>
+            </div>
+          </div>
+        )}
         
         {/* Elite Driver Recruitment Banner */}
         <div className={`rounded-3xl p-6 sm:p-8 mb-12 flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl relative overflow-hidden group ${

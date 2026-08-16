@@ -20,15 +20,19 @@ import {
   Shield,
   Layers,
   ChevronRight,
-  Info
+  Info,
+  Calendar,
+  Clock,
+  ThumbsUp,
+  Star
 } from "lucide-react";
 import BookingCalculator from "./BookingCalculator";
-import AirportsGrid from "./AirportsGrid";
 
 import mercedesEconomyImg from "../assets/images/fleet_economy_1786403470397.jpg";
 import mercedesLuxuryImg from "../assets/images/fleet_luxury_1786403483244.jpg";
 import mercedesFamilyImg from "../assets/images/fleet_family_1786403496325.jpg";
 import heroImg from "../assets/images/hero_background_1786403449488.jpg";
+import transferPortImg from "../assets/images/transfer_port_1786403532912.jpg";
 import { getCustomImage } from "../utils/customImages";
 
 interface RenaxLayoutProps {
@@ -137,7 +141,6 @@ export default function RenaxLayout({
       
       {/* 1. RENAX LUXURY HERO */}
       <section id="hero" className="relative min-h-[95vh] flex items-center justify-center pt-32 pb-24 overflow-hidden bg-black">
-        {/* Background Image & Overlay */}
         <div className="absolute inset-0 w-full h-full pointer-events-none z-0">
           <img
             src={bgImage}
@@ -148,7 +151,6 @@ export default function RenaxLayout({
         </div>
 
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center space-y-8">
-          {/* Subtitle Badge */}
           <div className="flex justify-center">
             <div className="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2 rounded-full text-xs font-semibold text-emerald-400 tracking-widest uppercase">
               <Sparkles className="w-3 h-3 text-emerald-400 animate-pulse" />
@@ -156,7 +158,6 @@ export default function RenaxLayout({
             </div>
           </div>
 
-          {/* Luxury Main Heading */}
           <div className="space-y-4">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-none uppercase">
               Nationwide Airport <br />
@@ -169,7 +170,6 @@ export default function RenaxLayout({
             </p>
           </div>
 
-          {/* Metrics */}
           <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10 text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto pt-6 border-t border-slate-900">
             <div className="flex items-center space-x-2">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
@@ -185,7 +185,6 @@ export default function RenaxLayout({
             </div>
           </div>
 
-          {/* CTA Group */}
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
             <button
               onClick={() => handleScrollTo("calculator-section")}
@@ -213,7 +212,6 @@ export default function RenaxLayout({
             <span className="text-emerald-400 font-sans text-xs tracking-widest uppercase font-bold">Luxury Ride</span>
             <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight mt-1">Book Your Chauffeur Transfer</h2>
           </div>
-          {/* We inject the BookingCalculator. In custom CSS/Vite config, inputs are styled dark */}
           <BookingCalculator
             initialPickup={calculatorPickup}
             initialDropoff={calculatorDropoff}
@@ -222,11 +220,85 @@ export default function RenaxLayout({
         </div>
       </section>
 
-      {/* 3. RENAX FLEET SHOWCASE */}
-      <section id="fleet" className="py-24 bg-[#08090d] border-t border-slate-900/60">
+      {/* III. ABOUT COMPANY SECTION (RENAX DEMO 12 ACCURATE STYLE) */}
+      <section id="about" className="py-24 bg-[#08090d] border-t border-slate-900/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          {/* Header */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Left Block - Copy */}
+            <div className="space-y-6">
+              <span className="text-emerald-400 text-xs tracking-widest uppercase font-bold block">About Travelluxx</span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white uppercase tracking-tight leading-tight">
+                We Are More Than <br />
+                <span className="text-emerald-400">A Private Hire Company</span>
+              </h2>
+              <p className="text-slate-400 text-sm leading-relaxed font-light">
+                At {brandName}, we provide a first-class private hire and airport chauffeur service across the United Kingdom. With absolute luxury and punctuality, our services are customized for executive corporate transfers, weddings, and premium airport pickups.
+              </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  </div>
+                  <span className="text-xs sm:text-sm font-semibold text-slate-200">Sports & Luxury Cars</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  </div>
+                  <span className="text-xs sm:text-sm font-semibold text-slate-200">Executive Economy Cars</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  </div>
+                  <span className="text-xs sm:text-sm font-semibold text-slate-200">High Capacity MPVs</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                  </div>
+                  <span className="text-xs sm:text-sm font-semibold text-slate-200">24/7 Flight Monitoring</span>
+                </div>
+              </div>
+
+              <div className="pt-6">
+                <button
+                  onClick={() => handleScrollTo("contact")}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-emerald-700/10"
+                >
+                  Read More ↗
+                </button>
+              </div>
+            </div>
+
+            {/* Right Block - Graphic Image Representation */}
+            <div className="relative rounded-3xl overflow-hidden aspect-square lg:aspect-[4/3] border border-slate-800/40 bg-slate-950">
+              <img
+                src={getCustomImage("about_showcase", transferPortImg)}
+                alt="Travelluxx Luxury Chauffeur"
+                className="w-full h-full object-cover opacity-75"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
+              
+              {/* Play Overlay Box */}
+              <div className="absolute bottom-6 left-6 flex items-center space-x-4 bg-emerald-950/80 border border-emerald-500/20 px-4 py-3 rounded-2xl backdrop-blur-sm">
+                <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-emerald-400 font-bold uppercase tracking-widest leading-none">Chauffeur Certified</p>
+                  <p className="text-xs text-white font-bold mt-1 leading-none">Safe & Professional Travels</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. RENAX FLEET SHOWCASE */}
+      <section id="fleet" className="py-24 bg-[#0a0b0e] border-t border-slate-900/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold">Our Premium Fleet</span>
             <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4 uppercase">
@@ -256,10 +328,8 @@ export default function RenaxLayout({
             </div>
           </div>
 
-          {/* Car Card Panel (Renax-inspired symmetrical grid card) */}
+          {/* Car Card Panel (Renax-inspired card with specs) */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center bg-[#0e1017] border border-slate-800/60 p-6 sm:p-10 rounded-[28px] shadow-lg">
-            
-            {/* Left Block - Image */}
             <div className="lg:col-span-7 relative rounded-2xl overflow-hidden aspect-video lg:aspect-[4/3] group border border-slate-800/40 shadow-sm bg-slate-950">
               <img
                 src={selectedFleet.image}
@@ -268,13 +338,11 @@ export default function RenaxLayout({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
               
-              {/* Rate Tag Overlay */}
               <div className="absolute top-4 left-4 bg-emerald-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md">
                 From {selectedFleet.rate} / mile
               </div>
             </div>
 
-            {/* Right Block - Features & Specifications */}
             <div className="lg:col-span-5 space-y-6">
               <div className="space-y-1">
                 <h3 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-wide">
@@ -287,7 +355,6 @@ export default function RenaxLayout({
                 {selectedFleet.description}
               </p>
 
-              {/* Spec Icons Grid */}
               <div className="grid grid-cols-3 gap-4 py-4 border-t border-b border-slate-800/60">
                 <div className="flex flex-col items-center justify-center p-2.5 bg-slate-900/40 rounded-xl border border-slate-800/40">
                   <Users className="w-5 h-5 text-emerald-400 mb-1" />
@@ -306,7 +373,6 @@ export default function RenaxLayout({
                 </div>
               </div>
 
-              {/* Amenities List */}
               <div className="space-y-3">
                 <h4 className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Included Amenities:</h4>
                 <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
@@ -321,7 +387,6 @@ export default function RenaxLayout({
                 </div>
               </div>
 
-              {/* CTA Booking Class */}
               <div className="pt-4">
                 <button
                   onClick={() => handleScrollTo("calculator-section")}
@@ -332,14 +397,142 @@ export default function RenaxLayout({
                 </button>
               </div>
             </div>
-
           </div>
-
         </div>
       </section>
 
-      {/* 4. AIRPORT TRANSFER CARDS */}
+      {/* VII. CAR RENTAL PROCESS / STEPS (RENAX DEMO 12 ACCURATE STYLE) */}
+      <section className="py-24 bg-[#08090d] border-t border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold">How It Works</span>
+            <h2 className="text-3xl font-bold text-white uppercase">3 Easy Steps to Rent</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Step 1 */}
+            <div className="bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden group shadow-lg">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
+                <Calendar className="w-6 h-6 text-emerald-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">1. Choose A Class</h3>
+              <p className="text-slate-400 text-xs sm:text-sm leading-relaxed font-light">
+                Select your preferred luxury class—Economy, Chauffeur First Class, or high capacity Family MPVs according to requirements.
+              </p>
+              {/* Circular bottom-left mask element representation */}
+              <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-[#08090d] rounded-full flex items-center justify-center font-bold text-xs text-slate-500 select-none group-hover:text-emerald-400 transition-colors duration-300 border border-slate-900">
+                01
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden group shadow-lg">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
+                <Clock className="w-6 h-6 text-emerald-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">2. Book Chauffeur</h3>
+              <p className="text-slate-400 text-xs sm:text-sm leading-relaxed font-light">
+                Enter your locations, date, and pickup times in our fixed rates calculator. Confirm pricing and chauffeur details.
+              </p>
+              <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-[#08090d] rounded-full flex items-center justify-center font-bold text-xs text-slate-500 select-none group-hover:text-emerald-400 transition-colors duration-300 border border-slate-900">
+                02
+              </div>
+            </div>
+
+            {/* Step 3 */}
+            <div className="bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden group shadow-lg">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
+                <ThumbsUp className="w-6 h-6 text-emerald-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">3. Enjoy Journey</h3>
+              <p className="text-slate-400 text-xs sm:text-sm leading-relaxed font-light">
+                Our professionally dressed licensed chauffeur arrives on-time in a pristine vehicle to complete your nationwide transfer.
+              </p>
+              <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-[#08090d] rounded-full flex items-center justify-center font-bold text-xs text-slate-500 select-none group-hover:text-emerald-400 transition-colors duration-300 border border-slate-900">
+                03
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* IX. TESTIMONIALS / WHAT CLIENTS SAY (RENAX DEMO 12 ACCURATE STYLE) */}
       <section className="py-24 bg-[#0a0b0e] border-t border-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold">Testimonials</span>
+            <h2 className="text-3xl font-bold text-white uppercase">What Clients Say</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Review 1 */}
+            <div className="bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden shadow-lg space-y-6">
+              <span className="text-emerald-400 font-serif text-5xl leading-none block select-none">“</span>
+              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-light italic">
+                "Outstanding service from Heathrow. The Mercedes S-class was immaculate and the driver was prompt, professional, and took care of all our luggage. Highly recommended for corporate transfers."
+              </p>
+              <div className="border-t border-slate-850 pt-4 flex justify-between items-center">
+                <div>
+                  <h4 className="text-sm font-bold text-white">David Miller</h4>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Corporate Client</p>
+                </div>
+                <div className="flex space-x-0.5 text-emerald-400 shrink-0">
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                </div>
+              </div>
+            </div>
+
+            {/* Review 2 */}
+            <div className="bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden shadow-lg space-y-6">
+              <span className="text-emerald-400 font-serif text-5xl leading-none block select-none">“</span>
+              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-light italic">
+                "Booked the MPV class for our family vacation to Gatwick. Plenty of space for 6 suitcases and our children. The driver was extremely polite and monitored our flights for our return."
+              </p>
+              <div className="border-t border-slate-850 pt-4 flex justify-between items-center">
+                <div>
+                  <h4 className="text-sm font-bold text-white">Sarah Jenkins</h4>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Family Transfer</p>
+                </div>
+                <div className="flex space-x-0.5 text-emerald-400 shrink-0">
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                </div>
+              </div>
+            </div>
+
+            {/* Review 3 */}
+            <div className="bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden shadow-lg space-y-6">
+              <span className="text-emerald-400 font-serif text-5xl leading-none block select-none">“</span>
+              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed font-light italic">
+                "The fixed price booking was exactly as quoted, without any hidden charges. The best chauffeur service in Solihull. Will certainly use Travelluxx for all my executive trips."
+              </p>
+              <div className="border-t border-slate-850 pt-4 flex justify-between items-center">
+                <div>
+                  <h4 className="text-sm font-bold text-white">James Sterling</h4>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-0.5">Executive Commuter</p>
+                </div>
+                <div className="flex space-x-0.5 text-emerald-400 shrink-0">
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. AIRPORT TRANSFER CARDS */}
+      <section className="py-24 bg-[#08090d] border-t border-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold">Fixed Presets</span>
@@ -349,12 +542,12 @@ export default function RenaxLayout({
         </div>
       </section>
 
-      {/* 5. CONTACT SEGMENT */}
-      <section className="py-24 bg-[#0e1017] border-t border-slate-900">
+      {/* 6. CONTACT SEGMENT */}
+      <section id="contact" className="py-24 bg-[#0e1017] border-t border-slate-900">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <div className="text-center mb-16">
             <span className="text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold font-sans">Get In Touch</span>
-            <h2 className="text-3xl font-bold text-white uppercase">Contact Our Desk</h2>
+            <h2 className="text-3xl font-bold text-white uppercase font-sans">Contact Our Desk</h2>
             <p className="text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed">
               Have unique requirements or need a dedicated luxury chauffeur contract? Fill out our contact form below.
             </p>
@@ -378,12 +571,9 @@ export default function RenaxLayout({
               </div>
             </div>
             
-            {/* Embedded standard contact form (Vite styles make form inputs dark inside dark wrapper) */}
             <div className="p-2">
               <div className="text-slate-300">
-                {/* Dynamically styled inside index.css rules or defaults */}
                 <form className="space-y-4">
-                  {/* Since ContactForm is rendered globally, we can use the default or style it */}
                   <div className="text-slate-300 text-center">
                     <p className="text-xs">Please use the contact form details below to query custom routes.</p>
                   </div>

@@ -6,7 +6,7 @@ var __commonJS = (cb, mod) => function __require() {
 };
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 var require_index_001 = __commonJS({
-  "assets/index-B085b-R5.js"(exports, module) {
+  "assets/index-DPbG_HKP.js"(exports, module) {
     function _mergeNamespaces(n, m) {
       for (var i = 0; i < m.length; i++) {
         const e = m[i];
@@ -15148,18 +15148,18 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$J = [
+    const __iconNode$L = [
       ["path", { d: "M5 12h14", key: "1ays0h" }],
       ["path", { d: "m12 5 7 7-7 7", key: "xquz4c" }]
     ];
-    const ArrowRight = createLucideIcon("arrow-right", __iconNode$J);
+    const ArrowRight = createLucideIcon("arrow-right", __iconNode$L);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$I = [
+    const __iconNode$K = [
       ["path", { d: "M12 7v14", key: "1akyts" }],
       [
         "path",
@@ -15169,55 +15169,78 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
         }
       ]
     ];
-    const BookOpen = createLucideIcon("book-open", __iconNode$I);
+    const BookOpen = createLucideIcon("book-open", __iconNode$K);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$H = [
+    const __iconNode$J = [
       ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
       ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }]
     ];
-    const Briefcase = createLucideIcon("briefcase", __iconNode$H);
+    const Briefcase = createLucideIcon("briefcase", __iconNode$J);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$G = [
+    const __iconNode$I = [
       ["path", { d: "M8 2v4", key: "1cmpym" }],
       ["path", { d: "M16 2v4", key: "4m81vk" }],
       ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
       ["path", { d: "M3 10h18", key: "8toen8" }]
     ];
-    const Calendar = createLucideIcon("calendar", __iconNode$G);
+    const Calendar = createLucideIcon("calendar", __iconNode$I);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$F = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
-    const Check = createLucideIcon("check", __iconNode$F);
+    const __iconNode$H = [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]];
+    const Check = createLucideIcon("check", __iconNode$H);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$E = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
-    const ChevronDown = createLucideIcon("chevron-down", __iconNode$E);
+    const __iconNode$G = [["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]];
+    const ChevronDown = createLucideIcon("chevron-down", __iconNode$G);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$D = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
-    const ChevronUp = createLucideIcon("chevron-up", __iconNode$D);
+    const __iconNode$F = [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]];
+    const ChevronUp = createLucideIcon("chevron-up", __iconNode$F);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$E = [
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+      ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
+      ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
+    ];
+    const CircleAlert = createLucideIcon("circle-alert", __iconNode$E);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$D = [
+      ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
+      ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+    ];
+    const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$D);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15226,10 +15249,9 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      */
     const __iconNode$C = [
       ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-      ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
-      ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
+      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
     ];
-    const CircleAlert = createLucideIcon("circle-alert", __iconNode$C);
+    const CircleCheck = createLucideIcon("circle-check", __iconNode$C);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15237,10 +15259,11 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$B = [
-      ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
-      ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+      ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
+      ["path", { d: "M12 17h.01", key: "p32p05" }]
     ];
-    const CircleCheckBig = createLucideIcon("circle-check-big", __iconNode$B);
+    const CircleQuestionMark = createLucideIcon("circle-question-mark", __iconNode$B);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15248,10 +15271,10 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$A = [
-      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+      ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
+      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
     ];
-    const CircleCheck = createLucideIcon("circle-check", __iconNode$A);
+    const Clock = createLucideIcon("clock", __iconNode$A);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15259,11 +15282,12 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$z = [
-      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
-      ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
-      ["path", { d: "M12 17h.01", key: "p32p05" }]
+      ["circle", { cx: "8", cy: "8", r: "6", key: "3yglwk" }],
+      ["path", { d: "M18.09 10.37A6 6 0 1 1 10.34 18", key: "t5s6rm" }],
+      ["path", { d: "M7 6h1v4", key: "1obek4" }],
+      ["path", { d: "m16.71 13.88.7.71-2.82 2.82", key: "1rbuyh" }]
     ];
-    const CircleQuestionMark = createLucideIcon("circle-question-mark", __iconNode$z);
+    const Coins = createLucideIcon("coins", __iconNode$z);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15271,30 +15295,6 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$y = [
-      ["path", { d: "M12 6v6l4 2", key: "mmk7yg" }],
-      ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
-    ];
-    const Clock = createLucideIcon("clock", __iconNode$y);
-    /**
-     * @license lucide-react v0.546.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$x = [
-      ["circle", { cx: "8", cy: "8", r: "6", key: "3yglwk" }],
-      ["path", { d: "M18.09 10.37A6 6 0 1 1 10.34 18", key: "t5s6rm" }],
-      ["path", { d: "M7 6h1v4", key: "1obek4" }],
-      ["path", { d: "m16.71 13.88.7.71-2.82 2.82", key: "1rbuyh" }]
-    ];
-    const Coins = createLucideIcon("coins", __iconNode$x);
-    /**
-     * @license lucide-react v0.546.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$w = [
       [
         "path",
         {
@@ -15304,14 +15304,14 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       ],
       ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }]
     ];
-    const Compass = createLucideIcon("compass", __iconNode$w);
+    const Compass = createLucideIcon("compass", __iconNode$y);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$v = [
+    const __iconNode$x = [
       [
         "path",
         {
@@ -15320,26 +15320,26 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
         }
       ]
     ];
-    const Droplet = createLucideIcon("droplet", __iconNode$v);
+    const Droplet = createLucideIcon("droplet", __iconNode$x);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$u = [
+    const __iconNode$w = [
       ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
       ["path", { d: "M10 14 21 3", key: "gplh6r" }],
       ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6", key: "a6xqqp" }]
     ];
-    const ExternalLink = createLucideIcon("external-link", __iconNode$u);
+    const ExternalLink = createLucideIcon("external-link", __iconNode$w);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$t = [
+    const __iconNode$v = [
       [
         "path",
         {
@@ -15357,14 +15357,14 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       ],
       ["path", { d: "m2 2 20 20", key: "1ooewy" }]
     ];
-    const EyeOff = createLucideIcon("eye-off", __iconNode$t);
+    const EyeOff = createLucideIcon("eye-off", __iconNode$v);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$s = [
+    const __iconNode$u = [
       [
         "path",
         {
@@ -15374,7 +15374,33 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       ],
       ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
     ];
-    const Eye = createLucideIcon("eye", __iconNode$s);
+    const Eye = createLucideIcon("eye", __iconNode$u);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$t = [
+      ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
+      ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
+      ["path", { d: "M10 9H8", key: "b1mrlr" }],
+      ["path", { d: "M16 13H8", key: "t4e002" }],
+      ["path", { d: "M16 17H8", key: "z1uh3a" }]
+    ];
+    const FileText = createLucideIcon("file-text", __iconNode$t);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$s = [
+      ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
+      ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
+      ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+    ];
+    const Image$1 = createLucideIcon("image", __iconNode$s);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15382,32 +15408,6 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$r = [
-      ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
-      ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
-      ["path", { d: "M10 9H8", key: "b1mrlr" }],
-      ["path", { d: "M16 13H8", key: "t4e002" }],
-      ["path", { d: "M16 17H8", key: "z1uh3a" }]
-    ];
-    const FileText = createLucideIcon("file-text", __iconNode$r);
-    /**
-     * @license lucide-react v0.546.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$q = [
-      ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
-      ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
-      ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
-    ];
-    const Image$1 = createLucideIcon("image", __iconNode$q);
-    /**
-     * @license lucide-react v0.546.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$p = [
       [
         "path",
         {
@@ -15430,7 +15430,32 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
         }
       ]
     ];
-    const Layers = createLucideIcon("layers", __iconNode$p);
+    const Layers = createLucideIcon("layers", __iconNode$r);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$q = [
+      ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
+      ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
+      ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
+      ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
+    ];
+    const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$q);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$p = [
+      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
+      ["path", { d: "M21 12H9", key: "dn1m92" }],
+      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+    ];
+    const LogOut = createLucideIcon("log-out", __iconNode$p);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15438,12 +15463,10 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$o = [
-      ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
-      ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
-      ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
-      ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
+      ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
+      ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
     ];
-    const LayoutDashboard = createLucideIcon("layout-dashboard", __iconNode$o);
+    const Mail = createLucideIcon("mail", __iconNode$o);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15451,11 +15474,16 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$n = [
-      ["path", { d: "m16 17 5-5-5-5", key: "1bji2h" }],
-      ["path", { d: "M21 12H9", key: "dn1m92" }],
-      ["path", { d: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4", key: "1uf3rs" }]
+      [
+        "path",
+        {
+          d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0",
+          key: "1r0f0z"
+        }
+      ],
+      ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
     ];
-    const LogOut = createLucideIcon("log-out", __iconNode$n);
+    const MapPin = createLucideIcon("map-pin", __iconNode$n);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15463,10 +15491,11 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$m = [
-      ["path", { d: "m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7", key: "132q7q" }],
-      ["rect", { x: "2", y: "4", width: "20", height: "16", rx: "2", key: "izxlao" }]
+      ["path", { d: "M4 5h16", key: "1tepv9" }],
+      ["path", { d: "M4 12h16", key: "1lakjw" }],
+      ["path", { d: "M4 19h16", key: "1djgab" }]
     ];
-    const Mail = createLucideIcon("mail", __iconNode$m);
+    const Menu = createLucideIcon("menu", __iconNode$m);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15477,13 +15506,12 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       [
         "path",
         {
-          d: "M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0",
-          key: "1r0f0z"
+          d: "M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z",
+          key: "18887p"
         }
-      ],
-      ["circle", { cx: "12", cy: "10", r: "3", key: "ilqhr7" }]
+      ]
     ];
-    const MapPin = createLucideIcon("map-pin", __iconNode$l);
+    const MessageSquare = createLucideIcon("message-square", __iconNode$l);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15491,34 +15519,6 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$k = [
-      ["path", { d: "M4 5h16", key: "1tepv9" }],
-      ["path", { d: "M4 12h16", key: "1lakjw" }],
-      ["path", { d: "M4 19h16", key: "1djgab" }]
-    ];
-    const Menu = createLucideIcon("menu", __iconNode$k);
-    /**
-     * @license lucide-react v0.546.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$j = [
-      [
-        "path",
-        {
-          d: "M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z",
-          key: "18887p"
-        }
-      ]
-    ];
-    const MessageSquare = createLucideIcon("message-square", __iconNode$j);
-    /**
-     * @license lucide-react v0.546.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$i = [
       ["path", { d: "M15 18h-5", key: "95g1m2" }],
       ["path", { d: "M18 14h-8", key: "sponae" }],
       [
@@ -15530,14 +15530,14 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       ],
       ["rect", { width: "8", height: "4", x: "10", y: "6", rx: "1", key: "aywv1n" }]
     ];
-    const Newspaper = createLucideIcon("newspaper", __iconNode$i);
+    const Newspaper = createLucideIcon("newspaper", __iconNode$k);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
      * This source code is licensed under the ISC license.
      * See the LICENSE file in the root directory of this source tree.
      */
-    const __iconNode$h = [
+    const __iconNode$j = [
       [
         "path",
         {
@@ -15546,7 +15546,34 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
         }
       ]
     ];
-    const Phone = createLucideIcon("phone", __iconNode$h);
+    const Phone = createLucideIcon("phone", __iconNode$j);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$i = [
+      [
+        "path",
+        {
+          d: "M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z",
+          key: "1v9wt8"
+        }
+      ]
+    ];
+    const Plane = createLucideIcon("plane", __iconNode$i);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$h = [
+      ["path", { d: "M5 12h14", key: "1ays0h" }],
+      ["path", { d: "M12 5v14", key: "s699le" }]
+    ];
+    const Plus = createLucideIcon("plus", __iconNode$h);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15557,12 +15584,14 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       [
         "path",
         {
-          d: "M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z",
-          key: "1v9wt8"
+          d: "M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
+          key: "1c8476"
         }
-      ]
+      ],
+      ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
+      ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
     ];
-    const Plane = createLucideIcon("plane", __iconNode$g);
+    const Save = createLucideIcon("save", __iconNode$g);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15570,10 +15599,16 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$f = [
-      ["path", { d: "M5 12h14", key: "1ays0h" }],
-      ["path", { d: "M12 5v14", key: "s699le" }]
+      [
+        "path",
+        {
+          d: "M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z",
+          key: "1ffxy3"
+        }
+      ],
+      ["path", { d: "m21.854 2.147-10.94 10.939", key: "12cjpa" }]
     ];
-    const Plus = createLucideIcon("plus", __iconNode$f);
+    const Send = createLucideIcon("send", __iconNode$f);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15584,14 +15619,13 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       [
         "path",
         {
-          d: "M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z",
-          key: "1c8476"
+          d: "M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915",
+          key: "1i5ecw"
         }
       ],
-      ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
-      ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
+      ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
     ];
-    const Save = createLucideIcon("save", __iconNode$e);
+    const Settings = createLucideIcon("settings", __iconNode$e);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15602,13 +15636,13 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       [
         "path",
         {
-          d: "M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z",
-          key: "1ffxy3"
+          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+          key: "oel41y"
         }
       ],
-      ["path", { d: "m21.854 2.147-10.94 10.939", key: "12cjpa" }]
+      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
     ];
-    const Send = createLucideIcon("send", __iconNode$d);
+    const ShieldCheck = createLucideIcon("shield-check", __iconNode$d);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15619,13 +15653,12 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       [
         "path",
         {
-          d: "M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915",
-          key: "1i5ecw"
+          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
+          key: "oel41y"
         }
-      ],
-      ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+      ]
     ];
-    const Settings = createLucideIcon("settings", __iconNode$c);
+    const Shield = createLucideIcon("shield", __iconNode$c);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15633,16 +15666,10 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$b = [
-      [
-        "path",
-        {
-          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-          key: "oel41y"
-        }
-      ],
-      ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
+      ["rect", { width: "14", height: "20", x: "5", y: "2", rx: "2", ry: "2", key: "1yt0o3" }],
+      ["path", { d: "M12 18h.01", key: "mhygvu" }]
     ];
-    const ShieldCheck = createLucideIcon("shield-check", __iconNode$b);
+    const Smartphone = createLucideIcon("smartphone", __iconNode$b);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -15650,33 +15677,6 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
      * See the LICENSE file in the root directory of this source tree.
      */
     const __iconNode$a = [
-      [
-        "path",
-        {
-          d: "M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z",
-          key: "oel41y"
-        }
-      ]
-    ];
-    const Shield = createLucideIcon("shield", __iconNode$a);
-    /**
-     * @license lucide-react v0.546.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$9 = [
-      ["rect", { width: "14", height: "20", x: "5", y: "2", rx: "2", ry: "2", key: "1yt0o3" }],
-      ["path", { d: "M12 18h.01", key: "mhygvu" }]
-    ];
-    const Smartphone = createLucideIcon("smartphone", __iconNode$9);
-    /**
-     * @license lucide-react v0.546.0 - ISC
-     *
-     * This source code is licensed under the ISC license.
-     * See the LICENSE file in the root directory of this source tree.
-     */
-    const __iconNode$8 = [
       [
         "path",
         {
@@ -15688,7 +15688,40 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       ["path", { d: "M22 4h-4", key: "gwowj6" }],
       ["circle", { cx: "4", cy: "20", r: "2", key: "6kqj1y" }]
     ];
-    const Sparkles = createLucideIcon("sparkles", __iconNode$8);
+    const Sparkles = createLucideIcon("sparkles", __iconNode$a);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$9 = [
+      [
+        "path",
+        {
+          d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z",
+          key: "r04s7s"
+        }
+      ]
+    ];
+    const Star = createLucideIcon("star", __iconNode$9);
+    /**
+     * @license lucide-react v0.546.0 - ISC
+     *
+     * This source code is licensed under the ISC license.
+     * See the LICENSE file in the root directory of this source tree.
+     */
+    const __iconNode$8 = [
+      ["path", { d: "M7 10v12", key: "1qc93n" }],
+      [
+        "path",
+        {
+          d: "M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z",
+          key: "emmmcr"
+        }
+      ]
+    ];
+    const ThumbsUp = createLucideIcon("thumbs-up", __iconNode$8);
     /**
      * @license lucide-react v0.546.0 - ISC
      *
@@ -29153,11 +29186,11 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
       ] }) });
     }
     const airportTransfersImg = "/assets/transfer_airport_1786403518712-Ba3Ypp9F.jpg";
-    const portTransfersImg = "/assets/transfer_port_1786403532912-C3iKAel7.jpg";
+    const transferPortImg = "/assets/transfer_port_1786403532912-C3iKAel7.jpg";
     const stationTransfersImg = "/assets/transfer_station_1786403548164-CFCuDDFB.jpg";
     const popularCitiesImg = "/assets/transfer_city_1786403562698-CTOpR5C2.jpg";
     const businessTravelImg = "/assets/transfer_business_1786403576291-d6AxRFiS.jpg";
-    function AirportsGrid({ onSelectTransfer }) {
+    function AirportsGrid$1({ onSelectTransfer }) {
       const [, setRefreshKey] = reactExports.useState(0);
       reactExports.useEffect(() => {
         const handleUpdate = () => setRefreshKey((prev) => prev + 1);
@@ -29185,7 +29218,7 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
           id: "port",
           title: "Port Transfers",
           description: "Reliable transfers to and from all major UK ports and cruise terminals.",
-          image: getCustomImage("transfer_port", portTransfersImg),
+          image: getCustomImage("transfer_port", transferPortImg),
           pickup: "Shirley, Solihull B90",
           dropoff: "Southampton Cruise Port"
         },
@@ -29437,9 +29470,35 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
     function Footer({ onScrollTo, onAdminClick, settings }) {
       const brandName = (settings == null ? void 0 : settings.business_name) || (settings == null ? void 0 : settings.businessName) || "Travelluxx";
       const whatsappNum = (settings == null ? void 0 : settings.whatsapp_number) || "441217140876";
+      const emailAddr = (settings == null ? void 0 : settings.business_email) || "info@travelluxx.co.uk";
+      const officeAddr = (settings == null ? void 0 : settings.office_address) || "Shirley B90 Shirley, Solihull, West Midlands, UK";
       (settings == null ? void 0 : settings.footer_info) || (settings == null ? void 0 : settings.footerInfo) || `© ${(/* @__PURE__ */ new Date()).getFullYear()} ${brandName}. All rights reserved.`;
       const isRenax = (settings == null ? void 0 : settings.active_theme) === "renax";
+      const formattedPhone = whatsappNum.startsWith("44") ? `+44 ${whatsappNum.substring(2, 6)} ${whatsappNum.substring(6)}` : whatsappNum;
       return /* @__PURE__ */ jsxRuntimeExports.jsx("footer", { className: `pt-16 pb-8 text-slate-400 ${isRenax ? "bg-[#08080a] border-t border-slate-900 font-['Outfit']" : "bg-slate-950 border-t border-slate-900 font-sans"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+        isRenax && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#0e1017] border border-slate-800/60 rounded-2xl p-6 mb-10 grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-4 justify-center md:justify-start", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "w-5 h-5 text-emerald-400" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-500 font-medium uppercase tracking-wider", children: "Call Us" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-white mt-0.5", children: formattedPhone })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-4 justify-center md:justify-start border-t border-b md:border-t-0 md:border-b-0 border-slate-800/60 py-4 md:py-0 md:px-6", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "w-5 h-5 text-emerald-400" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "truncate", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-500 font-medium uppercase tracking-wider", children: "Write to Us" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-white mt-0.5 truncate", children: emailAddr })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-4 justify-center md:justify-start md:pl-6", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(MapPin, { className: "w-5 h-5 text-emerald-400" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-500 font-medium uppercase tracking-wider", children: "Address" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-white mt-0.5 line-clamp-1", children: officeAddr })
+            ] })
+          ] })
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `rounded-3xl p-6 sm:p-8 mb-12 flex flex-col md:flex-row justify-between items-center gap-6 shadow-xl relative overflow-hidden group ${isRenax ? "bg-[#0e0f16] border border-slate-800/60" : "bg-slate-900/60 border border-slate-800/80"}`, children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors duration-500" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 text-center md:text-left relative z-10", children: [
@@ -44121,7 +44180,7 @@ ${escapeText(this.code(index, length))}
       handleSelectClassPreset
     }) {
       var _a, _b, _c;
-      (settings == null ? void 0 : settings.business_name) || (settings == null ? void 0 : settings.businessName) || "Travelluxx";
+      const brandName = (settings == null ? void 0 : settings.business_name) || (settings == null ? void 0 : settings.businessName) || "Travelluxx";
       const whatsappNum = (settings == null ? void 0 : settings.whatsapp_number) || "441217140876";
       const emailAddr = (settings == null ? void 0 : settings.business_email) || "info@travelluxx.co.uk";
       const officeAddr = (settings == null ? void 0 : settings.office_address) || "Shirley B90 Shirley, Solihull, West Midlands, UK";
@@ -44269,7 +44328,66 @@ ${escapeText(this.code(index, length))}
             }
           )
         ] }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "fleet", className: "py-24 bg-[#08090d] border-t border-slate-900/60", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "about", className: "py-24 bg-[#08090d] border-t border-slate-900/60", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-16 items-center", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 text-xs tracking-widest uppercase font-bold block", children: "About Travelluxx" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-3xl sm:text-4xl lg:text-5xl font-bold text-white uppercase tracking-tight leading-tight", children: [
+              "We Are More Than ",
+              /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400", children: "A Private Hire Company" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-slate-400 text-sm leading-relaxed font-light", children: [
+              "At ",
+              brandName,
+              ", we provide a first-class private hire and airport chauffeur service across the United Kingdom. With absolute luxury and punctuality, our services are customized for executive corporate transfers, weddings, and premium airport pickups."
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-3.5 h-3.5 text-emerald-400" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs sm:text-sm font-semibold text-slate-200", children: "Sports & Luxury Cars" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-3.5 h-3.5 text-emerald-400" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs sm:text-sm font-semibold text-slate-200", children: "Executive Economy Cars" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-3.5 h-3.5 text-emerald-400" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs sm:text-sm font-semibold text-slate-200", children: "High Capacity MPVs" })
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center space-x-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-3.5 h-3.5 text-emerald-400" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs sm:text-sm font-semibold text-slate-200", children: "24/7 Flight Monitoring" })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "button",
+              {
+                onClick: () => handleScrollTo("contact"),
+                className: "bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-6 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all duration-300 shadow-md shadow-emerald-700/10",
+                children: "Read More ↗"
+              }
+            ) })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative rounded-3xl overflow-hidden aspect-square lg:aspect-[4/3] border border-slate-800/40 bg-slate-950", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              "img",
+              {
+                src: getCustomImage("about_showcase", transferPortImg),
+                alt: "Travelluxx Luxury Chauffeur",
+                className: "w-full h-full object-cover opacity-75"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute bottom-6 left-6 flex items-center space-x-4 bg-emerald-950/80 border border-emerald-500/20 px-4 py-3 rounded-2xl backdrop-blur-sm", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-4 h-4 text-white" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-emerald-400 font-bold uppercase tracking-widest leading-none", children: "Chauffeur Certified" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-white font-bold mt-1 leading-none", children: "Safe & Professional Travels" })
+              ] })
+            ] })
+          ] })
+        ] }) }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "fleet", className: "py-24 bg-[#0a0b0e] border-t border-slate-900/60", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center max-w-3xl mx-auto mb-16", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold", children: "Our Premium Fleet" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl sm:text-4xl font-bold text-white tracking-tight mb-4 uppercase", children: "Explore Our Luxury Vehicles" }),
@@ -44348,17 +44466,102 @@ ${escapeText(this.code(index, length))}
             ] })
           ] })
         ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-24 bg-[#08090d] border-t border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center max-w-2xl mx-auto mb-16", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold", children: "How It Works" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-white uppercase", children: "3 Easy Steps to Rent" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-8", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden group shadow-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { className: "w-6 h-6 text-emerald-400" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold text-white mb-3", children: "1. Choose A Class" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-xs sm:text-sm leading-relaxed font-light", children: "Select your preferred luxury class—Economy, Chauffeur First Class, or high capacity Family MPVs according to requirements." }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -bottom-4 -right-4 w-12 h-12 bg-[#08090d] rounded-full flex items-center justify-center font-bold text-xs text-slate-500 select-none group-hover:text-emerald-400 transition-colors duration-300 border border-slate-900", children: "01" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden group shadow-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "w-6 h-6 text-emerald-400" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold text-white mb-3", children: "2. Book Chauffeur" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-xs sm:text-sm leading-relaxed font-light", children: "Enter your locations, date, and pickup times in our fixed rates calculator. Confirm pricing and chauffeur details." }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -bottom-4 -right-4 w-12 h-12 bg-[#08090d] rounded-full flex items-center justify-center font-bold text-xs text-slate-500 select-none group-hover:text-emerald-400 transition-colors duration-300 border border-slate-900", children: "02" })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden group shadow-lg", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ThumbsUp, { className: "w-6 h-6 text-emerald-400" }) }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold text-white mb-3", children: "3. Enjoy Journey" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-xs sm:text-sm leading-relaxed font-light", children: "Our professionally dressed licensed chauffeur arrives on-time in a pristine vehicle to complete your nationwide transfer." }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -bottom-4 -right-4 w-12 h-12 bg-[#08090d] rounded-full flex items-center justify-center font-bold text-xs text-slate-500 select-none group-hover:text-emerald-400 transition-colors duration-300 border border-slate-900", children: "03" })
+            ] })
+          ] })
+        ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-24 bg-[#0a0b0e] border-t border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center max-w-2xl mx-auto mb-16", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold", children: "Testimonials" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-white uppercase", children: "What Clients Say" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-8", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden shadow-lg space-y-6", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 font-serif text-5xl leading-none block select-none", children: "“" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-300 text-xs sm:text-sm leading-relaxed font-light italic", children: '"Outstanding service from Heathrow. The Mercedes S-class was immaculate and the driver was prompt, professional, and took care of all our luggage. Highly recommended for corporate transfers."' }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-slate-850 pt-4 flex justify-between items-center", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-sm font-bold text-white", children: "David Miller" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-500 uppercase tracking-widest mt-0.5", children: "Corporate Client" })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex space-x-0.5 text-emerald-400 shrink-0", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden shadow-lg space-y-6", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 font-serif text-5xl leading-none block select-none", children: "“" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-300 text-xs sm:text-sm leading-relaxed font-light italic", children: '"Booked the MPV class for our family vacation to Gatwick. Plenty of space for 6 suitcases and our children. The driver was extremely polite and monitored our flights for our return."' }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-slate-850 pt-4 flex justify-between items-center", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-sm font-bold text-white", children: "Sarah Jenkins" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-500 uppercase tracking-widest mt-0.5", children: "Family Transfer" })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex space-x-0.5 text-emerald-400 shrink-0", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#0e1017] border border-slate-800/60 p-8 rounded-3xl relative overflow-hidden shadow-lg space-y-6", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 font-serif text-5xl leading-none block select-none", children: "“" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-300 text-xs sm:text-sm leading-relaxed font-light italic", children: '"The fixed price booking was exactly as quoted, without any hidden charges. The best chauffeur service in Solihull. Will certainly use Travelluxx for all my executive trips."' }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-t border-slate-850 pt-4 flex justify-between items-center", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-sm font-bold text-white", children: "James Sterling" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-500 uppercase tracking-widest mt-0.5", children: "Executive Commuter" })
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex space-x-0.5 text-emerald-400 shrink-0", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(Star, { className: "w-3.5 h-3.5 fill-current" })
+                ] })
+              ] })
+            ] })
+          ] })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-24 bg-[#08090d] border-t border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center max-w-2xl mx-auto mb-16", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold", children: "Fixed Presets" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-white uppercase", children: "Popular Transfer Routes" })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(AirportsGrid, { onSelectTransfer: handleSelectTransferPreset })
         ] }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { className: "py-24 bg-[#0e1017] border-t border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-4xl mx-auto px-4 sm:px-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("section", { id: "contact", className: "py-24 bg-[#0e1017] border-t border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-4xl mx-auto px-4 sm:px-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center mb-16", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-emerald-400 text-xs tracking-widest uppercase block mb-3 font-bold font-sans", children: "Get In Touch" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-white uppercase", children: "Contact Our Desk" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-bold text-white uppercase font-sans", children: "Contact Our Desk" }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed", children: "Have unique requirements or need a dedicated luxury chauffeur contract? Fill out our contact form below." })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-[#08090d] border border-slate-800/60 p-6 sm:p-10 rounded-[28px] shadow-lg", children: [
@@ -44518,7 +44721,7 @@ ${escapeText(this.code(index, length))}
             }
           ) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(FleetCatalog, { onSelectClass: handleSelectClassPreset }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AirportsGrid, { onSelectTransfer: handleSelectTransferPreset }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AirportsGrid$1, { onSelectTransfer: handleSelectTransferPreset }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(ContactForm, { settings }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Footer,
