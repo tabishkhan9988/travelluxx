@@ -23,6 +23,7 @@ import {
   Info
 } from "lucide-react";
 import BookingCalculator from "./BookingCalculator";
+import AirportsGrid from "./AirportsGrid";
 
 import mercedesEconomyImg from "../assets/images/fleet_economy_1786403470397.jpg";
 import mercedesLuxuryImg from "../assets/images/fleet_luxury_1786403483244.jpg";

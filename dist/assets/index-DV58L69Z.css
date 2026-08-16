@@ -1295,10 +1295,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     margin-inline: auto;
   }
 
-  .-mt-16 {
-    margin-top: calc(var(--spacing) * -16);
-  }
-
   .-mt-20 {
     margin-top: calc(var(--spacing) * -20);
   }
@@ -3042,10 +3038,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .pt-16 {
     padding-top: calc(var(--spacing) * 16);
-  }
-
-  .pt-20 {
-    padding-top: calc(var(--spacing) * 20);
   }
 
   .pt-32 {

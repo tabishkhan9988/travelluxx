@@ -6,7 +6,7 @@ var __commonJS = (cb, mod) => function __require() {
 };
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 var require_index_001 = __commonJS({
-  "assets/index-Tm2f-ryz.js"(exports, module) {
+  "assets/index-B085b-R5.js"(exports, module) {
     function _mergeNamespaces(n, m) {
       for (var i = 0; i < m.length; i++) {
         const e = m[i];
@@ -29157,7 +29157,7 @@ Please change the parent <Route path="${parentPath}"> to <Route path="${parentPa
     const stationTransfersImg = "/assets/transfer_station_1786403548164-CFCuDDFB.jpg";
     const popularCitiesImg = "/assets/transfer_city_1786403562698-CTOpR5C2.jpg";
     const businessTravelImg = "/assets/transfer_business_1786403576291-d6AxRFiS.jpg";
-    function AirportsGrid$1({ onSelectTransfer }) {
+    function AirportsGrid({ onSelectTransfer }) {
       const [, setRefreshKey] = reactExports.useState(0);
       reactExports.useEffect(() => {
         const handleUpdate = () => setRefreshKey((prev) => prev + 1);
@@ -44518,7 +44518,7 @@ ${escapeText(this.code(index, length))}
             }
           ) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(FleetCatalog, { onSelectClass: handleSelectClassPreset }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(AirportsGrid$1, { onSelectTransfer: handleSelectTransferPreset }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AirportsGrid, { onSelectTransfer: handleSelectTransferPreset }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(ContactForm, { settings }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Footer,
