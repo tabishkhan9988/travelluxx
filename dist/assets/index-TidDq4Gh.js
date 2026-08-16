@@ -6,7 +6,7 @@ var __commonJS = (cb, mod) => function __require() {
 };
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
 var require_index_001 = __commonJS({
-  "assets/index-HKNFnygy.js"(exports, module) {
+  "assets/index-TidDq4Gh.js"(exports, module) {
     function _mergeNamespaces(n, m) {
       for (var i = 0; i < m.length; i++) {
         const e = m[i];
@@ -43267,22 +43267,6 @@ ${escapeText(this.code(index, length))}
                             ] })
                           ] })
                         ] })
-                      ] }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:col-span-2 border-t border-[#f0f0f1] pt-4", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-semibold text-[#1d2327] mb-1.5", children: "Website Layout Theme" }),
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                          "select",
-                          {
-                            value: settings.active_theme || "default",
-                            onChange: (e) => setSettings({ ...settings, active_theme: e.target.value }),
-                            className: "border border-[#8c8f94] bg-white rounded px-3 py-2 text-xs w-64 text-black focus:outline-none focus:border-[#2271b1]",
-                            children: [
-                              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "default", children: "Emerald Classic (Original Layout)" }),
-                              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "renax", children: "Renax Luxury (Premium Dark Layout)" })
-                            ]
-                          }
-                        ),
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-[#646970] mt-1", children: "Switch between the original Travelluxx theme and the luxury Renax rental layout." })
                       ] })
                     ] })
                   ] }),
