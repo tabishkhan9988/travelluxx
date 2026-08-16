@@ -6,7 +6,7 @@ import {defineConfig} from 'vite';
 export default defineConfig(() => {
   return {
     plugins: [react(), tailwindcss()],
-    esbuild: false,
+    esbuild: false as const,
     build: {
       minify: false,
     },

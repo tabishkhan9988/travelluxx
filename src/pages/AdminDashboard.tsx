@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Eye, EyeOff, LayoutDashboard, FileText, Newspaper, Menu, Image, Settings, BookOpen, LogOut, Plus, Trash2, Edit2, Save, X, Upload, Check, ChevronUp, ChevronDown, ExternalLink, Users, MessageSquare } from "lucide-react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
@@ -392,6 +393,8 @@ function YoastSeoBox({
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminDashboard() {
+  const navigate = useNavigate();
+  const { tab: routeTab, subtab: routeSubtab } = useParams();
   const [token, setToken] = useState<string | null>(localStorage.getItem("travelluxx_admin_token"));
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [showPassword, setShowPassword] = useState(false);
@@ -502,45 +505,40 @@ export default function AdminDashboard() {
     }
   }, [token]);
 
-  // Sync state to URL hash
+  // Sync route params to state
   useEffect(() => {
     if (!token) return;
-    let targetHash = activeTab as string;
-    if (activeTab === "settings") {
-      targetHash = `settings/${settingsTab}`;
-    }
-    if (window.location.hash !== `#${targetHash}`) {
-      window.location.hash = targetHash;
-    }
-  }, [activeTab, settingsTab, token]);
-
-  // Sync URL hash to state
-  useEffect(() => {
-    if (!token) return;
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace("#", "");
-      if (!hash) return;
-      const parts = hash.split("/");
-      const primaryTab = parts[0] as Tab;
+    if (routeTab) {
       const validTabs: Tab[] = ["dashboard", "leads", "posts", "pages", "media", "menus", "settings", "inquiries"];
-      if (validTabs.includes(primaryTab)) {
-        setActiveTab(primaryTab);
-        if (primaryTab === "settings" && parts[1]) {
-          const subTab = parts[1] as any;
-          const validSubTabs = ["general", "connectors", "writing", "reading", "discussion", "media", "permalinks", "privacy"];
-          if (validSubTabs.includes(subTab)) {
-            setSettingsTab(subTab);
-          }
+      if (validTabs.includes(routeTab as Tab)) {
+        setActiveTab(routeTab as Tab);
+      }
+      if (routeTab === "settings" && routeSubtab) {
+        const validSubTabs = ["general", "connectors", "writing"];
+        if (validSubTabs.includes(routeSubtab)) {
+          setSettingsTab(routeSubtab as any);
         }
       }
-    };
+    } else {
+      setActiveTab("dashboard");
+      navigate("/admin/dashboard", { replace: true });
+    }
+  }, [routeTab, routeSubtab, token]);
 
-    // Initial check on mount/token load
-    handleHashChange();
-
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, [token]);
+  const handleTabClick = (tabId: Tab) => {
+    if (tabId === "posts") {
+      setEditingPost(undefined);
+    }
+    if (tabId === "pages") {
+      setEditingPage(undefined);
+    }
+    setActiveTab(tabId);
+    if (tabId === "settings") {
+      navigate(`/admin/settings/${settingsTab === "general" || settingsTab === "connectors" || settingsTab === "writing" ? settingsTab : "general"}`);
+    } else {
+      navigate(`/admin/${tabId}`);
+    }
+  };
 
   const fetchAll = () => {
     fetchBookings(); fetchPosts(); fetchPages(); fetchSettings(); fetchMenu(); fetchInquiries(); fetchMedia();
@@ -645,7 +643,9 @@ export default function AdminDashboard() {
       template: "Single Posts",
       discussion: "Open",
       socialImage: "",
-      xImage: ""
+      xImage: "",
+      noIndexNoFollow: false,
+      faqs: []
     });
   };
   const openEditPost = (post: any) => {
@@ -664,7 +664,9 @@ export default function AdminDashboard() {
       template: post.template || "Single Posts",
       discussion: post.discussion || "Open",
       socialImage: post.socialImage || "",
-      xImage: post.xImage || ""
+      xImage: post.xImage || "",
+      noIndexNoFollow: !!post.noIndexNoFollow,
+      faqs: post.faqs || []
     });
   };
   const savePost = async (e?: React.FormEvent) => {
@@ -710,7 +712,8 @@ export default function AdminDashboard() {
       discussion: "Closed",
       image: "",
       socialImage: "",
-      xImage: ""
+      xImage: "",
+      noIndexNoFollow: false
     });
   };
   const openEditPage = (page: any) => {
@@ -728,7 +731,8 @@ export default function AdminDashboard() {
       discussion: page.discussion || "Closed",
       image: page.image || "",
       socialImage: page.socialImage || "",
-      xImage: page.xImage || ""
+      xImage: page.xImage || "",
+      noIndexNoFollow: !!page.noIndexNoFollow
     });
   };
   const savePage = async (e?: React.FormEvent) => {
@@ -1003,7 +1007,7 @@ export default function AdminDashboard() {
             {navItems.map(item => (
               <button
                 key={item.id}
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => handleTabClick(item.id)}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition text-[13px] font-medium ${
                   activeTab === item.id
                     ? "bg-[#2271b1] text-white"
@@ -1092,7 +1096,7 @@ export default function AdminDashboard() {
                       { label: "Inquiries", tab: "inquiries" as Tab },
                       { label: "Settings", tab: "settings" as Tab },
                     ].map(l => (
-                      <button key={l.label} onClick={() => setActiveTab(l.tab)}
+                      <button key={l.label} onClick={() => handleTabClick(l.tab)}
                         className="block text-left text-xs text-[#2271b1] hover:text-[#135e96] py-1 hover:underline">
                         {l.label}
                       </button>
@@ -1338,6 +1342,70 @@ export default function AdminDashboard() {
                           onSlugChange={v => setPostForm(prev => ({ ...prev, slug: v }))}
                           onMetaDescriptionChange={v => setPostForm(prev => ({ ...prev, metaDescription: v }))}
                         />
+                        {/* FAQs Editor Block */}
+                        <div className="bg-white border border-[#c3c4c7] rounded-sm shadow-sm mt-6">
+                          <div className="border-b border-[#f0f0f1] px-4 py-2.5 bg-[#f6f7f7] flex justify-between items-center">
+                            <h3 className="font-semibold text-xs text-[#2c3338]">Frequently Asked Questions (FAQ)</h3>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updatedFaqs = [...(postForm.faqs || []), { question: "", answer: "" }];
+                                setPostForm({ ...postForm, faqs: updatedFaqs });
+                              }}
+                              className="bg-[#2271b1] hover:bg-[#135e96] text-white px-2.5 py-1 rounded-sm text-[10px] font-semibold transition"
+                            >
+                              + Add FAQ
+                            </button>
+                          </div>
+                          <div className="p-4 space-y-4">
+                            {(!postForm.faqs || postForm.faqs.length === 0) ? (
+                              <p className="text-xs text-slate-400">No FAQs added yet. Click "+ Add FAQ" to create one.</p>
+                            ) : (
+                              (postForm.faqs || []).map((faq: any, idx: number) => (
+                                <div key={idx} className="border border-slate-200 p-3 rounded bg-slate-50 relative space-y-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const updatedFaqs = (postForm.faqs || []).filter((_: any, i: number) => i !== idx);
+                                      setPostForm({ ...postForm, faqs: updatedFaqs });
+                                    }}
+                                    className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                  <div>
+                                    <label className="block text-[10px] font-semibold text-[#646970] mb-1">QUESTION</label>
+                                    <input
+                                      type="text"
+                                      value={faq.question}
+                                      onChange={e => {
+                                        const updatedFaqs = [...(postForm.faqs || [])];
+                                        updatedFaqs[idx].question = e.target.value;
+                                        setPostForm({ ...postForm, faqs: updatedFaqs });
+                                      }}
+                                      placeholder="Enter FAQ Question..."
+                                      className="w-full border border-[#8c8f94] bg-white rounded-sm px-2 py-1 text-xs focus:outline-none focus:border-[#2271b1] text-black"
+                                    />
+                                  </div>
+                                  <div>
+                                    <label className="block text-[10px] font-semibold text-[#646970] mb-1">ANSWER</label>
+                                    <textarea
+                                      rows={2}
+                                      value={faq.answer}
+                                      onChange={e => {
+                                        const updatedFaqs = [...(postForm.faqs || [])];
+                                        updatedFaqs[idx].answer = e.target.value;
+                                        setPostForm({ ...postForm, faqs: updatedFaqs });
+                                      }}
+                                      placeholder="Enter FAQ Answer..."
+                                      className="w-full border border-[#8c8f94] bg-white rounded-sm px-2 py-1 text-xs focus:outline-none focus:border-[#2271b1] text-black"
+                                    />
+                                  </div>
+                                </div>
+                              ))
+                            )}
+                          </div>
+                        </div>
                       </div>
 
                       {/* Right Sidebar Content (1 col) - Styled exactly like WP */}
@@ -1444,6 +1512,20 @@ export default function AdminDashboard() {
                               <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
                                 <span className="text-[#646970]">Discussion</span>
                                 <select value={postForm.discussion} onChange={e => setPostForm({...postForm, discussion: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="Open">Open</option><option value="Closed">Closed</option></select>
+                              </div>
+
+                              {/* Search visibility */}
+                              <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
+                                <span className="text-[#646970]">Search Visibility</span>
+                                <label className="flex items-center gap-1.5 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={!!postForm.noIndexNoFollow}
+                                    onChange={e => setPostForm({ ...postForm, noIndexNoFollow: e.target.checked })}
+                                    className="rounded-sm border-[#8c8f94] text-[#2271b1]"
+                                  />
+                                  <span className="text-[#2c3338]">Noindex</span>
+                                </label>
                               </div>
                             </div>
                           </div>
@@ -1940,6 +2022,20 @@ export default function AdminDashboard() {
                                 <span className="text-[#646970]">Discussion</span>
                                 <select value={pageForm.discussion} onChange={e => setPageForm({...pageForm, discussion: e.target.value})} className="border border-[#c3c4c7] bg-white rounded px-1.5 py-0.5 text-xs text-[#2c3338] outline-none"><option value="Open">Open</option><option value="Closed">Closed</option></select>
                               </div>
+
+                              {/* Search visibility */}
+                              <div className="flex justify-between items-center py-2 border-b border-[#f0f0f1] text-[13px]">
+                                <span className="text-[#646970]">Search Visibility</span>
+                                <label className="flex items-center gap-1.5 cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={!!pageForm.noIndexNoFollow}
+                                    onChange={e => setPageForm({ ...pageForm, noIndexNoFollow: e.target.checked })}
+                                    className="rounded-sm border-[#8c8f94] text-[#2271b1]"
+                                  />
+                                  <span className="text-[#2c3338]">Noindex</span>
+                                </label>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -2426,12 +2522,7 @@ export default function AdminDashboard() {
                   {[
                     { key: "general", label: "General" },
                     { key: "connectors", label: "Connectors" },
-                    { key: "writing", label: "Writing" },
-                    { key: "reading", label: "Reading" },
-                    { key: "discussion", label: "Discussion" },
-                    { key: "media", label: "Media" },
-                    { key: "permalinks", label: "Permalinks" },
-                    { key: "privacy", label: "Privacy" }
+                    { key: "writing", label: "Writing" }
                   ].map(tab => (
                     <button
                       key={tab.key}
@@ -2489,6 +2580,99 @@ export default function AdminDashboard() {
                               className="w-full border border-[#8c8f94] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2271b1] bg-white text-black" />
                             <p className="text-[#646970] text-[10px] mt-1">This text displays in the website footer.</p>
                           </div>
+
+                          {/* Search engine visibility */}
+                          <div className="md:col-span-2 border-t border-[#f0f0f1] pt-4">
+                            <label className="block text-xs font-semibold text-[#1d2327] mb-1">Search Engine Visibility</label>
+                            <label className="flex items-start gap-2 cursor-pointer font-medium text-xs mt-2 text-black">
+                              <input
+                                type="checkbox"
+                                checked={!!settings.search_engine_visibility}
+                                onChange={e => setSettings({ ...settings, search_engine_visibility: e.target.checked })}
+                                className="rounded-sm border-[#8c8f94] text-[#2271b1] mt-0.5"
+                              />
+                              <span>Discourage search engines from indexing this site</span>
+                            </label>
+                            <p className="text-[11px] text-[#646970] pl-6 mt-1">
+                              This will add noindex and nofollow tags to all your public pages.
+                            </p>
+                          </div>
+
+                          {/* Homepage Displays */}
+                          <div className="md:col-span-2 border-t border-[#f0f0f1] pt-4">
+                            <label className="block text-xs font-semibold text-[#1d2327] mb-2">Your homepage displays</label>
+                            <div className="space-y-3">
+                              <label className="flex items-center gap-2 cursor-pointer text-xs text-black">
+                                <input
+                                  type="radio"
+                                  name="homepage_displays"
+                                  checked={settings.homepage_displays !== "page"}
+                                  onChange={() => setSettings({ ...settings, homepage_displays: "latest" })}
+                                  className="text-[#2271b1] focus:ring-[#2271b1]"
+                                />
+                                <span>Your latest posts (Landing page calculator layout)</span>
+                              </label>
+                              <div className="space-y-2">
+                                <label className="flex items-center gap-2 cursor-pointer text-xs text-black">
+                                  <input
+                                    type="radio"
+                                    name="homepage_displays"
+                                    checked={settings.homepage_displays === "page"}
+                                    onChange={() => setSettings({ ...settings, homepage_displays: "page" })}
+                                    className="text-[#2271b1]"
+                                  />
+                                  <span>A static page (select below)</span>
+                                </label>
+                                {settings.homepage_displays === "page" && (
+                                  <div className="pl-6 space-y-2 text-[11px] text-black">
+                                    <div className="flex items-center gap-3">
+                                      <span className="w-24">Homepage:</span>
+                                      <select
+                                        value={settings.homepage_page_id || ""}
+                                        onChange={e => setSettings({ ...settings, homepage_page_id: e.target.value })}
+                                        className="border border-[#8c8f94] bg-white rounded px-2 py-1 text-xs w-48 text-black"
+                                      >
+                                        <option value="">— Select —</option>
+                                        {pages.map(p => (
+                                          <option key={p.id} value={p.slug}>{p.title}</option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                      <span className="w-24">Posts page:</span>
+                                      <select
+                                        value={settings.posts_page_id || ""}
+                                        onChange={e => setSettings({ ...settings, posts_page_id: e.target.value })}
+                                        className="border border-[#8c8f94] bg-white rounded px-2 py-1 text-xs w-48 text-black"
+                                      >
+                                        <option value="">— Select —</option>
+                                        <option value="blog">Blog (Default)</option>
+                                        {pages.map(p => (
+                                          <option key={p.id} value={p.slug}>{p.title}</option>
+                                        ))}
+                                      </select>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Theme Selection */}
+                          <div className="md:col-span-2 border-t border-[#f0f0f1] pt-4">
+                            <label className="block text-xs font-semibold text-[#1d2327] mb-1.5">Website Layout Theme</label>
+                            <select
+                              value={settings.active_theme || "default"}
+                              onChange={e => setSettings({ ...settings, active_theme: e.target.value })}
+                              className="border border-[#8c8f94] bg-white rounded px-3 py-2 text-xs w-64 text-black focus:outline-none focus:border-[#2271b1]"
+                            >
+                              <option value="default">Emerald Classic (Original Layout)</option>
+                              <option value="renax">Renax Luxury (Premium Dark Layout)</option>
+                            </select>
+                            <p className="text-[10px] text-[#646970] mt-1">
+                              Switch between the original Travelluxx theme and the luxury Renax rental layout.
+                            </p>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -2531,106 +2715,7 @@ export default function AdminDashboard() {
                       </div>
                     )}
 
-                    {settingsTab === "reading" && (
-                      <div className="space-y-6 text-[#2c3338]">
-                        <h2 className="text-xl font-medium text-[#1d2327] pb-3 border-b border-[#f0f0f1] font-serif">
-                          Reading Settings
-                        </h2>
 
-                        {/* Your homepage displays */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-start text-xs">
-                          <span className="font-semibold md:text-right pr-4 pt-1">Your homepage displays</span>
-                          <div className="md:col-span-3 space-y-3">
-                            <label className="flex items-center gap-2 cursor-pointer font-medium">
-                              <input type="radio" name="homepage_displays" defaultChecked className="text-[#2271b1] focus:ring-[#2271b1]" />
-                              <span>Your latest posts</span>
-                            </label>
-                            <div className="space-y-2">
-                              <label className="flex items-center gap-2 cursor-pointer font-medium">
-                                <input type="radio" name="homepage_displays" disabled className="text-[#2271b1]" />
-                                <span className="text-slate-400">A static page (select below)</span>
-                              </label>
-                              <div className="pl-6 space-y-2 text-slate-400 text-[11px]">
-                                <div className="flex items-center gap-3">
-                                  <span className="w-24">Homepage:</span>
-                                  <select disabled className="border border-slate-200 bg-slate-50 rounded px-2 py-1 text-xs w-36">
-                                    <option>— Select —</option>
-                                  </select>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <span className="w-24">Posts page:</span>
-                                  <select disabled className="border border-slate-200 bg-slate-50 rounded px-2 py-1 text-xs w-36">
-                                    <option>— Select —</option>
-                                  </select>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Blog pages show at most */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-center text-xs pt-2">
-                          <span className="font-semibold md:text-right pr-4 font-medium">Blog pages show at most</span>
-                          <div className="md:col-span-3 flex items-center gap-2">
-                            <input
-                              type="number"
-                              defaultValue={10}
-                              className="border border-[#8c8f94] bg-white rounded px-2 py-1.5 text-xs w-16 text-center focus:outline-none focus:border-[#2271b1]"
-                            />
-                            <span>posts</span>
-                          </div>
-                        </div>
-
-                        {/* Syndication feeds show */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-center text-xs">
-                          <span className="font-semibold md:text-right pr-4 font-medium">Syndication feeds show the most recent</span>
-                          <div className="md:col-span-3 flex items-center gap-2">
-                            <input
-                              type="number"
-                              defaultValue={10}
-                              className="border border-[#8c8f94] bg-white rounded px-2 py-1.5 text-xs w-16 text-center focus:outline-none focus:border-[#2271b1]"
-                            />
-                            <span>items</span>
-                          </div>
-                        </div>
-
-                        {/* Feed article content */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-start text-xs pt-2">
-                          <span className="font-semibold md:text-right pr-4 pt-1">For each post in a feed, include</span>
-                          <div className="md:col-span-3 space-y-2">
-                            <label className="flex items-center gap-2 cursor-pointer font-medium">
-                              <input type="radio" name="feed_content" defaultChecked className="text-[#2271b1] focus:ring-[#2271b1]" />
-                              <span>Full text</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer font-medium">
-                              <input type="radio" name="feed_content" className="text-[#2271b1] focus:ring-[#2271b1]" />
-                              <span>Excerpt</span>
-                            </label>
-                          </div>
-                        </div>
-
-                        {/* Search engine visibility */}
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-2 items-start text-xs pt-2">
-                          <span className="font-semibold md:text-right pr-4 pt-1">Search engine visibility</span>
-                          <div className="md:col-span-3 space-y-1">
-                            <label className="flex items-start gap-2 cursor-pointer font-medium">
-                              <input type="checkbox" className="rounded-sm border-[#8c8f94] text-[#2271b1] mt-0.5" />
-                              <span>Discourage search engines from indexing this site</span>
-                            </label>
-                            <p className="text-[11px] text-[#646970] pl-6 leading-relaxed">
-                              It is up to search engines to honor this request.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {["discussion", "media", "permalinks", "privacy"].includes(settingsTab) && (
-                      <div className="space-y-4 py-10 text-center text-slate-400 text-xs">
-                        <svg className="w-8 h-8 mx-auto text-slate-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                        <p>Configure defaults on {settingsTab} tab (Default active state)</p>
-                      </div>
-                    )}
 
                     <div className="pt-4 border-t border-[#f0f0f1] flex justify-end">
                       <button type="submit" disabled={isSaving}

@@ -8,6 +8,15 @@ export default function BlogPostDetail() {
   const [post, setPost] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(res => res.json())
+      .then(data => setSettings(data))
+      .catch(err => console.error(err));
+  }, []);
+
   useEffect(() => {
     if (!slug) return;
     fetch(`/api/posts/${slug}`)
@@ -16,14 +25,84 @@ export default function BlogPostDetail() {
       .catch(() => setLoading(false));
   }, [slug]);
 
-  // Set SEO meta tags
+  // Set SEO meta tags and Schema
   useEffect(() => {
     if (post) {
       document.title = post.metaTitle || post.title || "Blog | Travelluxx";
       const meta = document.querySelector("meta[name='description']");
-      if (meta) meta.setAttribute("content", post.metaDescription || post.excerpt || "");
+      if (meta) {
+        meta.setAttribute("content", post.metaDescription || post.excerpt || "");
+      } else {
+        const newMeta = document.createElement("meta");
+        newMeta.setAttribute("name", "description");
+        newMeta.setAttribute("content", post.metaDescription || post.excerpt || "");
+        document.head.appendChild(newMeta);
+      }
+
+      // Update robots meta tag
+      let robotsMeta = document.querySelector("meta[name='robots']");
+      if (!robotsMeta) {
+        robotsMeta = document.createElement("meta");
+        robotsMeta.setAttribute("name", "robots");
+        document.head.appendChild(robotsMeta);
+      }
+      const isNoIndex = !!settings?.search_engine_visibility || !!post.noIndexNoFollow;
+      robotsMeta.setAttribute("content", isNoIndex ? "noindex, nofollow" : "index, follow");
+
+      // Inject JSON-LD Schema
+      const existingScript = document.getElementById("jsonld-post-schema");
+      if (existingScript) existingScript.remove();
+
+      const schemas: any[] = [
+        {
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": post.title,
+          "image": post.image || "",
+          "datePublished": post.date || "",
+          "author": {
+            "@type": "Person",
+            "name": post.author || "Travelluxx Editorial"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": settings?.business_name || "Travelluxx",
+            "logo": settings?.logo_image ? {
+              "@type": "ImageObject",
+              "url": settings.logo_image
+            } : undefined
+          },
+          "description": post.excerpt || post.metaDescription || ""
+        }
+      ];
+
+      if (post.faqs && post.faqs.length > 0) {
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": post.faqs.map((f: any) => ({
+            "@type": "Question",
+            "name": f.question,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": f.answer
+            }
+          }))
+        });
+      }
+
+      const script = document.createElement("script");
+      script.id = "jsonld-post-schema";
+      script.type = "application/ld+json";
+      script.innerHTML = JSON.stringify(schemas.length === 1 ? schemas[0] : schemas);
+      document.head.appendChild(script);
     }
-  }, [post]);
+
+    return () => {
+      const existingScript = document.getElementById("jsonld-post-schema");
+      if (existingScript) existingScript.remove();
+    };
+  }, [post, settings]);
 
   return (
     <div className="min-h-screen bg-[#faf9f6] text-[#1a1a1a] flex flex-col font-sans antialiased">
@@ -68,7 +147,7 @@ export default function BlogPostDetail() {
             )}
 
             {/* Article Content */}
-            <div className="max-w-2xl mx-auto px-4 md:px-6">
+            <div className="max-w-4xl mx-auto px-4 md:px-6">
               {/* Excerpt */}
               {post.excerpt && (
                 <div className="text-slate-500 text-lg md:text-xl font-light italic leading-relaxed mb-8 border-l-2 border-emerald-600 pl-4">
@@ -85,6 +164,21 @@ export default function BlogPostDetail() {
                 }}
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
+
+              {/* FAQs Section */}
+              {post.faqs && post.faqs.length > 0 && (
+                <div className="mt-12 pt-8 border-t border-slate-200">
+                  <h3 className="font-serif text-2xl font-semibold mb-6 text-slate-900">Frequently Asked Questions</h3>
+                  <div className="space-y-6">
+                    {post.faqs.map((faq: any, idx: number) => (
+                      <div key={idx} className="border-b border-slate-100 pb-4 last:border-0">
+                        <h4 className="font-sans text-base font-semibold text-slate-800 mb-1.5">{faq.question}</h4>
+                        <p className="font-serif text-slate-600 text-sm md:text-base leading-relaxed">{faq.answer}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Back to Blog */}
               <div className="mt-12 pt-8 border-t border-slate-200 text-center">

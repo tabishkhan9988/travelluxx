@@ -56,6 +56,8 @@ const PostSchema = new mongoose.Schema({
   published: { type: Number, default: 1 },
   metaTitle: String,
   metaDescription: String,
+  noIndexNoFollow: { type: Boolean, default: false },
+  faqs: { type: Array, default: [] },
   createdAt: { type: String, default: () => new Date().toISOString() }
 }, { strict: false });
 
@@ -68,6 +70,7 @@ const PageSchema = new mongoose.Schema({
   content: String,
   metaTitle: String,
   metaDescription: String,
+  noIndexNoFollow: { type: Boolean, default: false },
   updatedAt: { type: String, default: () => new Date().toISOString() }
 }, { strict: false });
 
@@ -326,7 +329,12 @@ function getCurrentWebsiteSettings() {
     minimum_distance: 10.00,
     hero_image: "",
     logo_image: "",
-    footer_info: "© 2026 Travelluxx. All rights reserved."
+    footer_info: "© 2026 Travelluxx. All rights reserved.",
+    homepage_displays: "latest",
+    homepage_page_id: "",
+    posts_page_id: "",
+    search_engine_visibility: false,
+    active_theme: "default"
   };
   try {
     const webSettingsPath = path.join(process.cwd(), "website_settings.json");

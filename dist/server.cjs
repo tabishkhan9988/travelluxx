@@ -80,6 +80,8 @@ var PostSchema = new import_mongoose.default.Schema({
   published: { type: Number, default: 1 },
   metaTitle: String,
   metaDescription: String,
+  noIndexNoFollow: { type: Boolean, default: false },
+  faqs: { type: Array, default: [] },
   createdAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
 var PostModel = import_mongoose.default.model("Post", PostSchema);
@@ -90,6 +92,7 @@ var PageSchema = new import_mongoose.default.Schema({
   content: String,
   metaTitle: String,
   metaDescription: String,
+  noIndexNoFollow: { type: Boolean, default: false },
   updatedAt: { type: String, default: () => (/* @__PURE__ */ new Date()).toISOString() }
 }, { strict: false });
 var PageModel = import_mongoose.default.model("Page", PageSchema);
@@ -311,7 +314,12 @@ function getCurrentWebsiteSettings() {
     minimum_distance: 10,
     hero_image: "",
     logo_image: "",
-    footer_info: "\xA9 2026 Travelluxx. All rights reserved."
+    footer_info: "\xA9 2026 Travelluxx. All rights reserved.",
+    homepage_displays: "latest",
+    homepage_page_id: "",
+    posts_page_id: "",
+    search_engine_visibility: false,
+    active_theme: "default"
   };
   try {
     const webSettingsPath = import_path.default.join(process.cwd(), "website_settings.json");

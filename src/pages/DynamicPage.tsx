@@ -8,6 +8,15 @@ export default function DynamicPage() {
   const [page, setPage] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  const [settings, setSettings] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then(res => res.json())
+      .then(data => setSettings(data))
+      .catch(err => console.error(err));
+  }, []);
+
   useEffect(() => {
     if (!slug) return;
     fetch(`/api/pages/${slug}`)
@@ -19,10 +28,59 @@ export default function DynamicPage() {
   useEffect(() => {
     if (page) {
       document.title = page.metaTitle || page.title || "Travelluxx";
+      
       const meta = document.querySelector("meta[name='description']");
-      if (meta) meta.setAttribute("content", page.metaDescription || "");
+      if (meta) {
+        meta.setAttribute("content", page.metaDescription || "");
+      } else {
+        const newMeta = document.createElement("meta");
+        newMeta.setAttribute("name", "description");
+        newMeta.setAttribute("content", page.metaDescription || "");
+        document.head.appendChild(newMeta);
+      }
+
+      // Update robots meta tag
+      let robotsMeta = document.querySelector("meta[name='robots']");
+      if (!robotsMeta) {
+        robotsMeta = document.createElement("meta");
+        robotsMeta.setAttribute("name", "robots");
+        document.head.appendChild(robotsMeta);
+      }
+      const isNoIndex = !!settings?.search_engine_visibility || !!page.noIndexNoFollow;
+      robotsMeta.setAttribute("content", isNoIndex ? "noindex, nofollow" : "index, follow");
+
+      // Inject JSON-LD Schema
+      const existingScript = document.getElementById("jsonld-page-schema");
+      if (existingScript) existingScript.remove();
+
+      const schema = {
+        "@context": "https://schema.org",
+        "@type": page.template === "About Page" ? "AboutPage" : page.template === "Contact Page" ? "ContactPage" : "WebPage",
+        "name": page.title,
+        "description": page.metaDescription || "",
+        "url": window.location.href,
+        "publisher": {
+          "@type": "Organization",
+          "name": settings?.business_name || "Travelluxx",
+          "logo": settings?.logo_image ? {
+            "@type": "ImageObject",
+            "url": settings.logo_image
+          } : undefined
+        }
+      };
+
+      const script = document.createElement("script");
+      script.id = "jsonld-page-schema";
+      script.type = "application/ld+json";
+      script.innerHTML = JSON.stringify(schema);
+      document.head.appendChild(script);
     }
-  }, [page]);
+
+    return () => {
+      const existingScript = document.getElementById("jsonld-page-schema");
+      if (existingScript) existingScript.remove();
+    };
+  }, [page, settings]);
 
   return (
     <div className="min-h-screen bg-white text-slate-800 flex flex-col font-sans">

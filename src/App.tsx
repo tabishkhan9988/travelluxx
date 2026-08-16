@@ -11,6 +11,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import BlogList from "./pages/BlogList";
 import BlogPostDetail from "./pages/BlogPostDetail";
 import DynamicPage from "./pages/DynamicPage";
+import RenaxLayout from "./components/RenaxLayout";
 import { trackVisit, trackClick } from "./utils/analytics";
 
 
@@ -21,6 +22,7 @@ function PublicLandingPage() {
   const [calculatorPickup, setCalculatorPickup] = useState("");
   const [calculatorDropoff, setCalculatorDropoff] = useState("");
   const [settings, setSettings] = useState<any>(null);
+  const [homepageContent, setHomepageContent] = useState<any>(null);
 
   useEffect(() => {
     trackVisit();
@@ -29,6 +31,27 @@ function PublicLandingPage() {
       .then(data => setSettings(data))
       .catch(err => console.error("Failed to load settings:", err));
   }, []);
+
+  useEffect(() => {
+    if (settings && settings.homepage_displays === "page" && settings.homepage_page_id) {
+      fetch(`/api/pages/${settings.homepage_page_id}`)
+        .then(res => res.json())
+        .then(data => { if (!data.error) setHomepageContent(data); })
+        .catch(err => console.error("Failed to load static homepage:", err));
+    }
+  }, [settings]);
+
+  useEffect(() => {
+    if (settings) {
+      let robotsMeta = document.querySelector("meta[name='robots']");
+      if (!robotsMeta) {
+        robotsMeta = document.createElement("meta");
+        robotsMeta.setAttribute("name", "robots");
+        document.head.appendChild(robotsMeta);
+      }
+      robotsMeta.setAttribute("content", settings.search_engine_visibility ? "noindex, nofollow" : "index, follow");
+    }
+  }, [settings]);
 
   // Smooth scroll handler
   const handleScrollTo = (elementId: string) => {
@@ -42,14 +65,14 @@ function PublicLandingPage() {
   const handleSelectTransferPreset = (pickup: string, dropoff: string) => {
     setCalculatorPickup(pickup);
     setCalculatorDropoff(dropoff);
-    handleScrollTo("calculator");
+    handleScrollTo("calculator-section");
   };
 
   // Prefill class handler
   const handleSelectClassPreset = (carClass: "Economy" | "Luxury" | "Family") => {
     setCalculatorPickup("Shirley, Solihull B90");
     setCalculatorDropoff("London Heathrow Airport (LHR)");
-    handleScrollTo("calculator");
+    handleScrollTo("calculator-section");
   };
 
   const handleUpdateSettings = (newSettings: any) => {
@@ -65,6 +88,60 @@ function PublicLandingPage() {
     );
   }
 
+  // 1. STATIC HOMEPAGE VIEW
+  if (settings.homepage_displays === "page") {
+    return (
+      <div className="min-h-screen bg-white text-slate-800 flex flex-col selection:bg-emerald-600 selection:text-white font-sans">
+        <Navbar
+          onScrollTo={() => {}}
+          settings={settings}
+          onUpdateSettings={handleUpdateSettings}
+        />
+        <main className="flex-grow max-w-4xl mx-auto px-6 py-28 w-full">
+          {!homepageContent ? (
+            <div className="text-center py-20 text-slate-400">Loading home...</div>
+          ) : (
+            <div>
+              <h1 className="text-4xl font-extrabold text-slate-900 mb-8">{homepageContent.title}</h1>
+              <div
+                className="prose prose-slate max-w-none text-slate-700 text-base leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: homepageContent.content }}
+              />
+            </div>
+          )}
+        </main>
+        <Footer
+          onScrollTo={() => {}}
+          settings={settings}
+        />
+      </div>
+    );
+  }
+
+  // 2. RENAX LUXURY THEME VIEW
+  if (settings.active_theme === "renax") {
+    return (
+      <div className="min-h-screen bg-[#0c0d12] text-slate-100 flex flex-col selection:bg-emerald-600 selection:text-white font-sans">
+        <Navbar
+          onScrollTo={handleScrollTo}
+          settings={settings}
+          onUpdateSettings={handleUpdateSettings}
+        />
+        <RenaxLayout
+          settings={settings}
+          calculatorPickup={calculatorPickup}
+          calculatorDropoff={calculatorDropoff}
+          setCalculatorPickup={setCalculatorPickup}
+          setCalculatorDropoff={setCalculatorDropoff}
+          handleScrollTo={handleScrollTo}
+          handleSelectTransferPreset={handleSelectTransferPreset}
+          handleSelectClassPreset={handleSelectClassPreset}
+        />
+      </div>
+    );
+  }
+
+  // 3. CLASSIC EMERALD THEME VIEW
   return (
     <div className="min-h-screen bg-white text-slate-800 flex flex-col selection:bg-emerald-600 selection:text-white font-sans">
       <Navbar
@@ -75,15 +152,17 @@ function PublicLandingPage() {
 
       <main className="flex-grow">
         <HeroSection 
-          onScrollToCalculator={() => handleScrollTo("calculator")} 
+          onScrollToCalculator={() => handleScrollTo("calculator-section")} 
           settings={settings}
         />
 
-        <BookingCalculator
-          initialPickup={calculatorPickup}
-          initialDropoff={calculatorDropoff}
-          settings={settings}
-        />
+        <div id="calculator-section">
+          <BookingCalculator
+            initialPickup={calculatorPickup}
+            initialDropoff={calculatorDropoff}
+            settings={settings}
+          />
+        </div>
 
         <FleetCatalog onSelectClass={handleSelectClassPreset} />
 
@@ -127,6 +206,8 @@ export default function App() {
         
         {/* ADMIN DASHBOARD */}
         <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin/:tab" element={<AdminDashboard />} />
+        <Route path="/admin/:tab/:subtab" element={<AdminDashboard />} />
 
         {/* BLOG PAGES */}
         <Route path="/blog" element={<BlogList />} />

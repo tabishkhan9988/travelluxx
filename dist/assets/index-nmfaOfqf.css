@@ -1161,6 +1161,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
     top: 50%;
   }
 
+  .top-2 {
+    top: calc(var(--spacing) * 2);
+  }
+
   .top-2\.5 {
     top: calc(var(--spacing) * 2.5);
   }
@@ -1187,6 +1191,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .right-1 {
     right: var(--spacing);
+  }
+
+  .right-2 {
+    right: calc(var(--spacing) * 2);
   }
 
   .right-2\.5 {
@@ -1231,6 +1239,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .z-10 {
     z-index: 10;
+  }
+
+  .z-20 {
+    z-index: 20;
   }
 
   .z-40 {
@@ -1281,6 +1293,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .mx-auto {
     margin-inline: auto;
+  }
+
+  .-mt-16 {
+    margin-top: calc(var(--spacing) * -16);
   }
 
   .mt-0\.5 {
@@ -1622,12 +1638,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
     width: calc(var(--spacing) * 32);
   }
 
-  .w-36 {
-    width: calc(var(--spacing) * 36);
-  }
-
   .w-44 {
     width: calc(var(--spacing) * 44);
+  }
+
+  .w-48 {
+    width: calc(var(--spacing) * 48);
   }
 
   .w-56 {
@@ -2277,6 +2293,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
     border-bottom-color: #2271b1;
   }
 
+  .bg-\[\#0a0b0e\] {
+    background-color: #0a0b0e;
+  }
+
+  .bg-\[\#0c0d12\] {
+    background-color: #0c0d12;
+  }
+
   .bg-\[\#1d2327\] {
     background-color: #1d2327;
   }
@@ -2287,6 +2311,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .bg-\[\#2271b1\] {
     background-color: #2271b1;
+  }
+
+  .bg-\[\#12141c\] {
+    background-color: #12141c;
   }
 
   .bg-\[\#d63638\] {
@@ -2829,6 +2857,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
     padding-block: calc(var(--spacing) * 24);
   }
 
+  .py-28 {
+    padding-block: calc(var(--spacing) * 28);
+  }
+
   .py-32 {
     padding-block: calc(var(--spacing) * 32);
   }
@@ -2859,6 +2891,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
   .pt-16 {
     padding-top: calc(var(--spacing) * 16);
+  }
+
+  .pt-20 {
+    padding-top: calc(var(--spacing) * 20);
   }
 
   .pt-32 {
@@ -3798,6 +3834,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
       color: var(--color-emerald-800);
     }
 
+    .hover\:text-red-700:hover {
+      color: var(--color-red-700);
+    }
+
     .hover\:text-rose-600:hover {
       color: var(--color-rose-600);
     }
@@ -4010,10 +4050,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       grid-column: span 2 / span 2;
     }
 
-    .md\:col-span-3 {
-      grid-column: span 3 / span 3;
-    }
-
     .md\:mb-12 {
       margin-bottom: calc(var(--spacing) * 12);
     }
@@ -4050,10 +4086,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
-    .md\:grid-cols-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
     .md\:grid-cols-5 {
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
@@ -4088,13 +4120,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
       text-align: left;
     }
 
-    .md\:text-right {
-      text-align: right;
-    }
-
     .md\:text-5xl {
       font-size: var(--text-5xl);
       line-height: var(--tw-leading, var(--text-5xl--line-height));
+    }
+
+    .md\:text-base {
+      font-size: var(--text-base);
+      line-height: var(--tw-leading, var(--text-base--line-height));
     }
 
     .md\:text-xl {
